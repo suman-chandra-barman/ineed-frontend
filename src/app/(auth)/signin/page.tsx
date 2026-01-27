@@ -109,7 +109,6 @@ function SigninPage() {
                       <Input
                         placeholder="Enter your email address"
                         {...field}
-                        className="h-12"
                       />
                     </FormControl>
                     <FormMessage />
@@ -136,7 +135,6 @@ function SigninPage() {
                         type="password"
                         placeholder="Enter your password"
                         {...field}
-                        className="h-12"
                       />
                     </FormControl>
                     <FormMessage />
