@@ -5,6 +5,7 @@ import HowItWorks from "@/components/Home/HowItWorks";
 import Services from "@/components/Home/Services";
 import Testimonials from "@/components/Home/Testimonials";
 import WhyChooseUs from "@/components/Home/WhyChooseUs";
+import Contact from "@/components/Home/Contact";
 
 function HomePage() {
   return (
@@ -16,6 +17,7 @@ function HomePage() {
       <WhyChooseUs />
       <AboutUs />
       <Testimonials />
+      <Contact />
     </main>
   );
 }
