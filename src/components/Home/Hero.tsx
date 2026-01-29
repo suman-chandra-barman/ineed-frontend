@@ -15,13 +15,13 @@ import womenCleaner from "@/assets/women-cleaner.png";
 
 export default function Hero() {
   return (
-    <section className="relative md:min-h-screen bg-blue-50 overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-24">
+    <section className="relative md:min-h-[90vh] bg-blue-50 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8 z-10">
             <div className="space-y-4">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
                 Where{" "}
                 <span className="text-primary rounded-l-full bg-linear-to-r from-blue-200 to-blue-50">
                   Cleaning feels easier
