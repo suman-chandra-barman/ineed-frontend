@@ -15,7 +15,7 @@ import womenCleaner from "@/assets/women-cleaner.png";
 
 export default function Hero() {
   return (
-    <section className="relative md:min-h-[90vh] bg-blue-50 overflow-hidden">
+    <section className="relative md:min-h-[90vh] bg-primary/5 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Content */}
@@ -102,7 +102,7 @@ export default function Hero() {
 
             {/* Main Image */}
             <div className="relative z-10 flex items-center justify-center h-full">
-              <div className="relative w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-[450px] lg:h-[450px]">
+              <div className="relative w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-[500px] lg:h-[500px]">
                 <Image
                   src={womenCleaner}
                   alt="Professional Cleaning Service"

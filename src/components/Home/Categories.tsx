@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { CategoryCard } from "../Cards/CategoryCard";
 import clening from "@/assets/women-cleaning.png";
+import { Button } from "../ui/button";
 
 export default function Home() {
   const categories = [
@@ -29,7 +30,7 @@ export default function Home() {
   ];
 
   return (
-    <section className="bg-blue-100 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+    <section className="bg-[#FBFBFB] px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
       <div className="mx-auto container">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-4 pb-8">
           <Image src={clening} alt="Woman Cleaning" />
@@ -57,6 +58,9 @@ export default function Home() {
               />
             </div>
           ))}
+        </div>
+        <div className="text-center mt-12">
+          <Button className="px-12">See All</Button>
         </div>
       </div>
     </section>

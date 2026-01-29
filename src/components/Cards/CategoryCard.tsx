@@ -38,8 +38,8 @@ export function CategoryCard({
       </div>
 
       {/* Arrow Button - Positioned outside bottom-right */}
-      <div  className="absolute bottom-3 right-3 translate-x-6 translate-y-6 flex h-18 w-18 items-center justify-center rounded-tr-xl rounded-full bg-blue-100 text-gray-700 transition-all duration-300">
-        <Button className="rounded-full w-14 h-14 bg-white text-black hover:text-primary hover:bg-white  hover:border hover:border-primary">
+      <div  className="absolute bottom-3 right-3 translate-x-6 translate-y-6 flex h-18 w-18 items-center justify-center rounded-tr-xl rounded-full bg-[#FBFBFB] text-gray-700 transition-all duration-300">
+        <Button className="rounded-full w-14 h-14 bg-white text-black hover:text-primary hover:bg-white border  hover:border hover:border-primary">
           <ArrowRight className="w-10" />
         </Button>
       </div>
