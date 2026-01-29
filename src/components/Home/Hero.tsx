@@ -15,13 +15,13 @@ import womenCleaner from "@/assets/women-cleaner.png";
 
 export default function Hero() {
   return (
-    <section className="relative md:min-h-[90vh] bg-primary/5 overflow-hidden">
+    <section className="relative lg:h-[90vh] bg-primary/5 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-4 lg:gap-8 items-center">
           {/* Left Content */}
           <div className="space-y-8 z-10">
             <div className="space-y-4">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold leading-tight">
                 Where{" "}
                 <span className="text-primary rounded-l-full bg-linear-to-r from-blue-200 to-blue-50">
                   Cleaning feels easier
@@ -37,7 +37,7 @@ export default function Hero() {
 
             {/* Search Box */}
             <div className="rounded-2xl space-y-4">
-              <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 border border-primary p-2 rounded-2xl">
+              <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-3 md:gap-0 border border-primary p-2 rounded-2xl">
                 {/* Service Select */}
                 <Select>
                   <SelectTrigger className="border-0 bg-white h-14">
@@ -89,27 +89,29 @@ export default function Hero() {
           </div>
 
           {/* Right Image */}
-          <div className="relative hidden md:block h-[400px] md:h-[500px] lg:h-[600px] mt-8 md:mt-0">
-            {/* Circular Backgrounds - Layered */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              {/* Outer lightest circle */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] md:w-[450px] md:h-[450px] lg:w-[550px] lg:h-[550px] bg-primary/20 rounded-full" />
-              {/* Middle circle */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[380px] md:h-[380px] lg:w-[480px] lg:h-[480px] bg-primary/40 rounded-full" />
-              {/* Inner darker circle */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[260px] h-[260px] md:w-[340px] md:h-[340px] lg:w-[420px] lg:h-[420px] bg-primary/60 rounded-full" />
-            </div>
+          <div className="relative hidden lg:block">
+            <div className="relative -bottom-30 hidden md:block mt-8 md:mt-0">
+              {/* Circular Backgrounds - Layered */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                {/* Outer lightest circle */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] xl:w-[600px] xl:h-[600px] bg-primary/20 rounded-full" />
+                {/* Middle circle */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:w-[400px] md:h-[400px] lg:w-[450px] lg:h-[450px] xl:w-[500px] xl:h-[500px] bg-primary/40 rounded-full" />
+                {/* Inner darker circle */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:w-[350px] md:h-[350px] lg:w-[400px] lg:h-[400px] xl:w-[400px] xl:h-[400px] bg-primary/60 rounded-full" />
+              </div>
 
-            {/* Main Image */}
-            <div className="relative z-10 flex items-center justify-center h-full">
-              <div className="relative w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-[500px] lg:h-[500px]">
-                <Image
-                  src={womenCleaner}
-                  alt="Professional Cleaning Service"
-                  fill
-                  className="object-contain"
-                  priority
-                />
+              {/* Main Image */}
+              <div className="relative z-10 flex items-center justify-center h-full">
+                <div className="relative w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-150 lg:h-150">
+                  <Image
+                    src={womenCleaner}
+                    alt="Professional Cleaning Service"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                </div>
               </div>
             </div>
           </div>
