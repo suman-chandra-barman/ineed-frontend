@@ -1,3 +1,4 @@
+import AboutUs from "@/components/Home/AboutUs";
 import Categories from "@/components/Home/Categories";
 import Hero from "@/components/Home/Hero";
 import HowItWorks from "@/components/Home/HowItWorks";
@@ -9,9 +10,10 @@ function HomePage() {
     <main>
       <Hero />
       <Categories />
+      <Services />
       <HowItWorks />
       <WhyChooseUs />
-      <Services />
+      <AboutUs />
     </main>
   );
 }
