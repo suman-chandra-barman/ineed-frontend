@@ -86,7 +86,8 @@ const serviceData = {
       {
         id: "1",
         author: "Adrian Hendriques",
-        avatar: "/images/avatar-1.jpg",
+        avatar:
+          "https://ui-avatars.com/api/?name=Adrian+Hendriques&background=3b82f6&color=fff&size=96",
         date: "2 days ago",
         serviceType: "Excellences Service!",
         rating: 4.9,
@@ -97,8 +98,9 @@ const serviceData = {
       },
       {
         id: "2",
-        author: "Adrian Hendriques",
-        avatar: "/images/avatar-2.jpg",
+        author: "Sarah Martinez",
+        avatar:
+          "https://ui-avatars.com/api/?name=Sarah+Martinez&background=10b981&color=fff&size=96",
         date: "2 days ago",
         serviceType: "Greate Service!",
         rating: 4.9,
@@ -109,8 +111,9 @@ const serviceData = {
       },
       {
         id: "3",
-        author: "Adrian Hendriques",
-        avatar: "/images/avatar-3.jpg",
+        author: "Michael Chen",
+        avatar:
+          "https://ui-avatars.com/api/?name=Michael+Chen&background=f59e0b&color=fff&size=96",
         date: "2 days ago",
         serviceType: "Reliabel & trustworthy Service!",
         rating: 4.0,
@@ -177,10 +180,12 @@ export default function ServiceDetailsPage() {
             <ServiceGallery images={serviceData.images} />
             <ServiceInfo
               overview={serviceData.overview}
-              additionalServices={serviceData.additionalServices.map(service => ({
-                ...service,
-                image: service.image.src
-              }))}
+              additionalServices={serviceData.additionalServices.map(
+                (service) => ({
+                  ...service,
+                  image: service.image.src,
+                }),
+              )}
             />
             <Reviews reviews={serviceData.reviews} />
           </div>
@@ -189,6 +194,7 @@ export default function ServiceDetailsPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-6">
               <ServiceBooking
+                serviceId={serviceData.id}
                 price={serviceData.price}
                 originalPrice={serviceData.originalPrice}
                 discount={serviceData.discount}

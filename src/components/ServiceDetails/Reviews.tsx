@@ -126,12 +126,6 @@ export default function Reviews({ reviews }: ReviewsProps) {
                       className="w-full h-full object-cover"
                       width={48}
                       height={48}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          review.author,
-                        )}&background=3b82f6&color=fff`;
-                      }}
                     />
                   </div>
                 </div>

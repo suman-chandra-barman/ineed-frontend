@@ -2,6 +2,7 @@
 
 import { CalendarDays } from "lucide-react";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 interface ServiceHour {
   day: string;
@@ -10,6 +11,7 @@ interface ServiceHour {
 }
 
 interface ServiceBookingProps {
+  serviceId: string;
   price: number;
   originalPrice: number;
   discount: number;
@@ -17,11 +19,13 @@ interface ServiceBookingProps {
 }
 
 export default function ServiceBooking({
+  serviceId,
   price,
   originalPrice,
   discount,
   serviceHours,
 }: ServiceBookingProps) {
+  const router = useRouter();
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Price Section */}
@@ -50,13 +54,14 @@ export default function ServiceBooking({
           </div>
         </div>
 
-        <Button className="w-full font-semibold py-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
+        <Button
+          className="w-full font-semibold py-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md"
+          onClick={() => router.push(`/booking/${serviceId}`)}
+        >
           <CalendarDays className="w-5 h-5" />
           Book Service
         </Button>
       </div>
-
-      {/* Service Hours Section */}
       <div className="p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Service Hours</h3>
         <div className="space-y-3">
