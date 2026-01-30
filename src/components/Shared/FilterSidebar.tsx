@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, ChevronDown, ChevronUp, X } from "lucide-react";
+import { MapPin, ChevronDown, ChevronUp, X, Filter } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
@@ -110,19 +110,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <svg
-            className="w-5 h-5 text-gray-700"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-            />
-          </svg>
+          <Filter className="w-5 h-5 text-gray-700" />
           <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
         </div>
         <button
@@ -179,9 +167,9 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
               </div>
             ))}
             {categories.length > 8 && (
-              <button
+              <Button
                 onClick={() => setShowAllCategories(!showAllCategories)}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                className="text-sm font-medium flex items-center gap-1"
               >
                 {showAllCategories ? "See less" : "See more"}
                 <ChevronDown
@@ -189,7 +177,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
                     showAllCategories ? "rotate-180" : ""
                   }`}
                 />
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -264,7 +252,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
       {/* Search Button */}
       <Button
         onClick={handleSearch}
-        className="w-full py-6 text-base font-medium"
+        className="w-full"
       >
         Search
       </Button>

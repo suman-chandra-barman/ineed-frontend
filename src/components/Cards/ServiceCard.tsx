@@ -1,13 +1,29 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Service } from "../Home/Services";
 import { Star } from "lucide-react";
 import { Button } from "../ui/button";
 
 function ServiceCard({ service }: { service: Service }) {
+  const router = useRouter();
+
+  const handleBookNow = (e: React.MouseEvent) => {
+    // Prevent card click navigation
+    e.stopPropagation();
+    e.preventDefault();
+
+    // Navigate to service details page with booking section in focus
+    router.push(`/services/${service.id}?scrollTo=booking`);
+  };
+
   return (
-    <div
-      key={service.id}
-      className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
+    <Link
+      href={`/services/${service.id}`}
+      className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      aria-label={`View details for ${service.title}`}
     >
       {/* Image */}
       <div className="relative h-48 sm:h-56 bg-gray-200">
@@ -20,13 +36,16 @@ function ServiceCard({ service }: { service: Service }) {
       </div>
 
       {/* Content */}
-      <div className="p-5 sm:p-6">
+      <div className="p-5 sm:p-6 flex flex-col flex-1">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
           {service.title}
         </h3>
         <p className="text-xs sm:text-sm text-gray-600 mb-4 line-clamp-2">
           {service.description}
         </p>
+
+        {/* Spacer to push footer to bottom */}
+        <div className="grow"></div>
 
         {/* Price and Rating */}
         <div className="flex items-center justify-between mb-4">
@@ -45,11 +64,15 @@ function ServiceCard({ service }: { service: Service }) {
         </div>
 
         {/* Book Now Button */}
-        <Button className="w-full py-2.5 sm:py-3 text-sm sm:text-base">
+        <Button
+          onClick={handleBookNow}
+          className="w-full py-2.5 sm:py-3 text-sm sm:text-base"
+          aria-label={`Book ${service.title} now`}
+        >
           Book Now
         </Button>
       </div>
-    </div>
+    </Link>
   );
 }
 
