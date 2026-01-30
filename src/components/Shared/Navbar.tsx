@@ -33,7 +33,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <div className="relative w-40 h-12">
+            <div className="relative w-25 h-12">
               <Image
                 src={logo}
                 alt="iNeed Logo"

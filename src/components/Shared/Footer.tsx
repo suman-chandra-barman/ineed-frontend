@@ -20,7 +20,7 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block mb-4">
-              <div className="relative w-40 h-12">
+              <div className="relative w-25 h-12">
                 <Image
                   src={logo}
                   alt="iNeed Logo"
