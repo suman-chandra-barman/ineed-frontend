@@ -53,10 +53,10 @@ function CategoriesPage() {
         <h1 className="text-3xl md:text-4xl lg:text-5xl text-center font-bold">
           Services
         </h1>
-        <div className="flex items-center justify-center gap-4">
-          <Home className="" />
-          <ChevronRight className="" />
-          <span className="">Categories</span>
+        <div className="flex items-center justify-center gap-2">
+          <Home size={20} />
+          <ChevronRight size={20} />
+          <span>Services</span>
         </div>
       </div>
       <div className="mx-auto container px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
