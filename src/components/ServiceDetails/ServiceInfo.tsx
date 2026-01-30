@@ -101,6 +101,8 @@ export default function ServiceInfo({
                       src={service.image}
                       alt={service.name}
                       className="w-full h-full object-cover"
+                      width={100}
+                      height={100}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = `https://placehold.co/80x80/e5e7eb/6b7280?text=Service`;
