@@ -142,8 +142,8 @@ export default function BookingPage() {
       />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-3  gap-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           <BookingSidebar
             serviceName={serviceName}
             servicePrice={servicePrice}
@@ -154,7 +154,7 @@ export default function BookingPage() {
           />
 
           {/* Right Content Area */}
-          <div className="col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8">
             {bookingState.currentStep === 1 && (
               <AdditionalFeaturesStep
                 services={additionalServices}
