@@ -66,7 +66,6 @@ function CategoriesPage() {
               <CategoryCard
                 title={category.title}
                 description={category.description}
-                onClick={() => console.log(`Clicked: ${category.title}`)}
               />
             </div>
           ))}
