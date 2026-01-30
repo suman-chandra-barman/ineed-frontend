@@ -4,8 +4,9 @@ import Image from "next/image";
 import { CategoryCard } from "../Cards/CategoryCard";
 import clening from "@/assets/women-cleaning.png";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
-export default function Home() {
+export default function Categories() {
   const categories = [
     {
       title: "Residential Services",
@@ -60,7 +61,9 @@ export default function Home() {
           ))}
         </div>
         <div className="text-center mt-12">
-          <Button className="px-12">See All</Button>
+          <Link href="/categories">
+            <Button className="px-12">See All</Button>
+          </Link>
         </div>
       </div>
     </section>
