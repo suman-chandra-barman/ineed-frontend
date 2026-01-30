@@ -2,22 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Service } from "../Home/Services";
 import { Star } from "lucide-react";
 import { Button } from "../ui/button";
 
 function ServiceCard({ service }: { service: Service }) {
-  const router = useRouter();
-
-  const handleBookNow = (e: React.MouseEvent) => {
-    // Prevent card click navigation
-    e.stopPropagation();
-    e.preventDefault();
-
-    // Navigate to service details page with booking section in focus
-    router.push(`/services/${service.id}?scrollTo=booking`);
-  };
 
   return (
     <Link
@@ -65,11 +54,11 @@ function ServiceCard({ service }: { service: Service }) {
 
         {/* Book Now Button */}
         <Button
-          onClick={handleBookNow}
+          asChild
           className="w-full py-2.5 sm:py-3 text-sm sm:text-base"
           aria-label={`Book ${service.title} now`}
         >
-          Book Now
+          <Link href={`/booking/${service.id}`}>Book Now</Link>
         </Button>
       </div>
     </Link>

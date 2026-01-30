@@ -3,6 +3,7 @@
 import { CalendarDays } from "lucide-react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface ServiceHour {
   day: string;
@@ -55,11 +56,13 @@ export default function ServiceBooking({
         </div>
 
         <Button
+          asChild
           className="w-full font-semibold py-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md"
-          onClick={() => router.push(`/booking/${serviceId}`)}
         >
-          <CalendarDays className="w-5 h-5" />
-          Book Service
+          <Link href={`/booking/${serviceId}`}>
+            <CalendarDays className="w-5 h-5" />
+            Book Service
+          </Link>
         </Button>
       </div>
       <div className="p-6">
