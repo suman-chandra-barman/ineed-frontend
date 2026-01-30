@@ -14,10 +14,16 @@ function HomePage() {
       <Categories />
       <Services />
       <HowItWorks />
-      <WhyChooseUs />
-      <AboutUs />
+      <section id="why-choose-us">
+        <WhyChooseUs />
+      </section>
+      <section id="about">
+        <AboutUs />
+      </section>
       <Testimonials />
-      <Contact />
+      <section id="contact">
+        <Contact />
+      </section>
     </main>
   );
 }

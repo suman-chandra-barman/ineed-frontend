@@ -14,10 +14,10 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/why-choose-ineed", label: "Why people choose iNeed" },
+    { href: "/#why-choose-us", label: "Why people choose iNeed" },
     { href: "/services", label: "Services" },
-    { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact Us" },
+    { href: "/#about", label: "About" },
+    { href: "/#contact", label: "Contact Us" },
   ];
 
   const isActive = (href: string) => {
