@@ -2,7 +2,7 @@ import { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Service } from "../Home/Services";
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { Button } from "../ui/button";
 
 interface ServiceCardProps {
@@ -29,6 +29,11 @@ const ServiceCard = memo(({ service, priority = false }: ServiceCardProps) => {
             priority={priority}
             loading={priority ? undefined : "lazy"}
           />
+
+          {/* Favorite Icon */}
+          <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+            <Heart className={`w-5 h-5 transition-colors duration-200 `} />
+          </button>
         </div>
 
         {/* Content */}
