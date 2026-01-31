@@ -18,7 +18,7 @@ function UserDashboardLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content Area */}
       <main className="pt-16 lg:pl-64">
-        <div className="min-h-[calc(100vh-4rem)]">{children}</div>
+        <div>{children}</div>
         {!isChatPage && <Footer />}
       </main>
 
