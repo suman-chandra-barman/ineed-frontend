@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { MapPin, Search } from "lucide-react";
 import Image from "next/image";
-import womenCleaner from "@/assets/women-cleaner.png";
+import womenCleaner from "@/assets/women-cleaner.svg";
 
 export default function Hero() {
   return (
