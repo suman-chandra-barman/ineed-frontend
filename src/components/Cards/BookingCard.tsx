@@ -15,6 +15,7 @@ export interface BookingCardProps {
   providerName: string;
   providerContact: string;
   status: BookingStatus;
+  onClick?: () => void;
   onChatClick?: () => void;
   onReviewClick?: () => void;
 }
@@ -55,13 +56,17 @@ export default function BookingCard({
   providerName,
   providerContact,
   status,
+  onClick,
   onChatClick,
   onReviewClick,
 }: BookingCardProps) {
   const statusStyle = statusConfig[status];
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-2 sm:p-4 hover:shadow-md transition-shadow">
+    <div
+      onClick={onClick}
+      className="bg-white rounded-2xl border border-gray-200 p-2 sm:p-4 hover:shadow-md transition-shadow cursor-pointer"
+    >
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Service Image */}
         <div className="relative w-full sm:w-28 h-40 sm:h-28 rounded-xl overflow-hidden shrink-0">
@@ -110,7 +115,7 @@ export default function BookingCard({
 
             <div className="flex items-start gap-2">
               <span className="text-gray-500 font-medium whitespace-nowrap">
-                Provider Date
+                Provider
               </span>
               <span className="text-gray-500">:</span>
               <div className="flex items-center gap-2">
@@ -127,7 +132,13 @@ export default function BookingCard({
         {/* Action Buttons */}
         <div className="flex sm:flex-col gap-2 justify-end sm:justify-start">
           {/* Chat Button */}
-          <Button onClick={onChatClick} size="sm">
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onChatClick?.();
+            }}
+            size="sm"
+          >
             <MessageCircle className="w-4 h-4" />
             <span>Chat</span>
           </Button>
@@ -143,7 +154,10 @@ export default function BookingCard({
           {status === "complete" && (
             <Button
               size="sm"
-              onClick={onReviewClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                onReviewClick?.();
+              }}
               className=" bg-amber-400 hover:bg-amber-500"
             >
               <Star className="w-4 h-4" />

@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import PageHeader from "@/components/Dashboard/PageHeader";
 import BookingCard, { BookingCardProps } from "@/components/Cards/BookingCard";
+import ReviewModal from "@/components/Dashboard/ReviewModal";
 import cleanningServiceImage from "@/assets/service-1.jpg";
 
 // Sample booking data - Replace with actual data from your API
@@ -57,14 +60,32 @@ const bookings: BookingCardProps[] = [
 ];
 
 function BookingPage() {
+  const router = useRouter();
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] =
+    useState<BookingCardProps | null>(null);
+
+  const handleBookingClick = (bookingId: string) => {
+    router.push(`/user/booking/${bookingId}`);
+  };
+
   const handleChatClick = (bookingId: string) => {
     console.log("Chat clicked for booking:", bookingId);
     // Navigate to chat or open chat modal
   };
 
-  const handleReviewClick = (bookingId: string) => {
-    console.log("Review clicked for booking:", bookingId);
-    // Open review modal or navigate to review page
+  const handleReviewClick = (booking: BookingCardProps) => {
+    setSelectedBooking(booking);
+    setIsReviewModalOpen(true);
+  };
+
+  const handleSubmitReview = (rating: number, review: string) => {
+    console.log("Review submitted:", {
+      bookingId: selectedBooking?.id,
+      rating,
+      review,
+    });
+    // Submit review to your API
   };
 
   return (
@@ -78,11 +99,25 @@ function BookingPage() {
           <BookingCard
             key={booking.id}
             {...booking}
+            onClick={() => handleBookingClick(booking.id)}
             onChatClick={() => handleChatClick(booking.id)}
-            onReviewClick={() => handleReviewClick(booking.id)}
+            onReviewClick={() => handleReviewClick(booking)}
           />
         ))}
       </div>
+
+      {/* Review Modal */}
+      {selectedBooking && (
+        <ReviewModal
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          serviceImage={selectedBooking.serviceImage}
+          serviceTitle={selectedBooking.serviceTitle}
+          serviceDescription="A minute repair service..."
+          amount={selectedBooking.amount}
+          onSubmit={handleSubmitReview}
+        />
+      )}
 
       {/* Empty State */}
       {bookings.length === 0 && (
