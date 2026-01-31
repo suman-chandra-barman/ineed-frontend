@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "provider policy, independent contractor agreement, service provider terms, contractor agreement",
 };
 
-export default function PrivacyPolicyPage() {
+export default function TermsAndConditionPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header Section */}

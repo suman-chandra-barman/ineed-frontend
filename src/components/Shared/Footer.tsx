@@ -79,15 +79,15 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/how-it-works"
+                  href="/#how-it-works"
                   className="text-gray-600 hover:text-[#0077CC] transition-colors"
                 >
-                  How it work
+                  How it works
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/about"
+                  href="/#about"
                   className="text-gray-600 hover:text-[#0077CC] transition-colors"
                 >
                   About Us
@@ -95,7 +95,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/contact"
+                  href="/#contact"
                   className="text-gray-600 hover:text-[#0077CC] transition-colors"
                 >
                   Contact Us
@@ -128,7 +128,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/terms"
+                  href="/terms-condition"
                   className="text-gray-600 hover:text-[#0077CC] transition-colors"
                 >
                   Terms & Conditions

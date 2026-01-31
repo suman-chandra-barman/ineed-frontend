@@ -13,7 +13,9 @@ function HomePage() {
       <Hero />
       <Categories />
       <Services />
-      <HowItWorks />
+      <section id="how-it-works">
+        <HowItWorks />
+      </section>
       <section id="why-choose-us">
         <WhyChooseUs />
       </section>
