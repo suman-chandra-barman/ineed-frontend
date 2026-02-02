@@ -1,3 +1,5 @@
+"use client";
+
 import { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +11,10 @@ interface ServiceCardProps {
   service: Service;
   priority?: boolean;
 }
+const handleFavoriteClick = (serviceId: number) => {
+  // Implement favorite logic here
+  console.log(`Toggled favorite for service ID: ${serviceId}`);
+};
 
 const ServiceCard = memo(({ service, priority = false }: ServiceCardProps) => {
   return (
@@ -31,8 +37,12 @@ const ServiceCard = memo(({ service, priority = false }: ServiceCardProps) => {
 
         {/* Favorite Icon */}
         <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleFavoriteClick(service.id);
+          }}
           className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          onClick={(e) => e.preventDefault()}
         >
           <Heart className={`w-5 h-5 transition-colors duration-200 `} />
         </button>
