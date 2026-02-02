@@ -88,8 +88,8 @@ export function ProviderDashboardSidebar() {
                       tooltip={link.label}
                       className={
                         isActive
-                          ? "bg-primary h-full text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-                          : ""
+                          ? "bg-primary! h-full text-white!"
+                          : "h-full"
                       }
                     >
                       <Link href={link.href} >
