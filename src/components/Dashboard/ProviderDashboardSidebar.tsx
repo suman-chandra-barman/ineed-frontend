@@ -74,10 +74,13 @@ export function ProviderDashboardSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu >
+            <SidebarMenu>
               {navLinks.map((link) => {
                 const Icon = link.icon;
-                const isActive = pathname === link.href;
+                const isActive =
+                  pathname === link.href ||
+                  (link.href === "/provider/settings" &&
+                    pathname.startsWith("/provider/settings"));
 
                 return (
                   <SidebarMenuItem key={link.href} className="h-12">
@@ -87,12 +90,10 @@ export function ProviderDashboardSidebar() {
                       isActive={isActive}
                       tooltip={link.label}
                       className={
-                        isActive
-                          ? "bg-primary! h-full text-white!"
-                          : "h-full"
+                        isActive ? "bg-primary! h-full text-white!" : "h-full"
                       }
                     >
-                      <Link href={link.href} >
+                      <Link href={link.href}>
                         <Icon className="w-5! h-5!" />
                         <span>{link.label}</span>
                       </Link>
