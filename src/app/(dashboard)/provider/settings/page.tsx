@@ -59,7 +59,7 @@ function SettingsPage() {
             <button
               key={item.id}
               onClick={() => router.push(item.href)}
-              className="w-full bg-white rounded-xl p-4 flex items-center justify-between hover:shadow-md transition-shadow border border-gray-200"
+              className="w-full bg-white rounded-xl p-2 flex items-center justify-between hover:shadow-md transition-shadow border border-gray-200"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
