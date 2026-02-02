@@ -9,11 +9,9 @@ function ProviderLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <ProviderDashboardSidebar />
-      <SidebarInset>
-        <ProviderPageHeader
-          title="Provider Dashboard"
-        />
-        {children}
+      <SidebarInset className="flex flex-col h-screen overflow-hidden">
+        <ProviderPageHeader title="Provider Dashboard" />
+        <div className="flex-1 overflow-y-auto">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
