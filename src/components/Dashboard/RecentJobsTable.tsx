@@ -94,13 +94,13 @@ const getStatusStyle = (status: string) => {
   }
 };
 
-export function RecentJobsTable() {
+export function RecentJobsTable({title}: {title: string}) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       {/* Header */}
       <div className="p-6 border-b border-gray-100">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h2 className="text-xl font-bold text-gray-900">Recent Job</h2>
+          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
