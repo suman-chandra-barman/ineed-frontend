@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 interface Job {
   id: string;
@@ -16,7 +16,7 @@ interface Job {
 
 const jobs: Job[] = [
   {
-    id: "#CD1002",
+    id: "CD1002",
     category: "Home Cleaning",
     clientName: "Zara Khan",
     contactNumber: "1235 021500 54 22",
@@ -24,7 +24,7 @@ const jobs: Job[] = [
     status: "Pending",
   },
   {
-    id: "#CD1002",
+    id: "CD1002",
     category: "Commercial Cleaning",
     clientName: "Zara Khan",
     contactNumber: "1235 021500 54 22",
@@ -32,7 +32,7 @@ const jobs: Job[] = [
     status: "In Progress",
   },
   {
-    id: "#CD1002",
+    id: "CD1002",
     category: "Maintenance",
     clientName: "Zara Khan",
     contactNumber: "1235 021500 54 22",
@@ -40,7 +40,7 @@ const jobs: Job[] = [
     status: "Complete",
   },
   {
-    id: "#CD1002",
+    id: "CD1002",
     category: "Maintenance",
     clientName: "Zara Khan",
     contactNumber: "1235 021500 54 22",
@@ -48,7 +48,7 @@ const jobs: Job[] = [
     status: "Pending",
   },
   {
-    id: "#CD1002",
+    id: "CD1002",
     category: "Repairing",
     clientName: "Zara Khan",
     contactNumber: "1235 021500 54 22",
@@ -56,7 +56,7 @@ const jobs: Job[] = [
     status: "In Progress",
   },
   {
-    id: "#CD1002",
+    id: "CD1002",
     category: "Maintenance",
     clientName: "Zara Khan",
     contactNumber: "1235 021500 54 22",
@@ -64,7 +64,7 @@ const jobs: Job[] = [
     status: "Complete",
   },
   {
-    id: "#CD1002",
+    id: "CD1002",
     category: "Maintenance",
     clientName: "Zara Khan",
     contactNumber: "1235 021500 54 22",
@@ -72,7 +72,7 @@ const jobs: Job[] = [
     status: "Complete",
   },
   {
-    id: "#CD1002",
+    id: "CD1002",
     category: "Repairing",
     clientName: "Zara Khan",
     contactNumber: "1235 021500 54 22",
@@ -170,9 +170,10 @@ export function RecentJobsTable() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <Button
                     variant="link"
+                    asChild
                     className="text-blue-600 hover:text-blue-700 p-0"
                   >
-                    [ Job View ]
+                   <Link href={`/provider/jobs/${job.id}`}> [ Job View ] </Link>
                   </Button>
                 </td>
               </tr>
