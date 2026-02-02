@@ -145,7 +145,7 @@ function ChatPage() {
   };
 
   return (
-    <div className="p-2 sm:p-4 lg:p-8 pb-24 lg:pb-8">
+    <div className="p-2 pt-4 sm:p-4 ">
       <div className="bg-white rounded-lg shadow-sm border overflow-hidden h-[calc(100vh-9rem)] md:h-[calc(100vh-10rem)] lg:h-[calc(100vh-8rem)]">
         <div className="flex h-full">
           {/* Sidebar - Message List */}
