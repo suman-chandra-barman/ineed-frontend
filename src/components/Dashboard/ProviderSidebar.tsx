@@ -105,7 +105,7 @@ export function ProviderSidebar() {
                 )}
                 title={isCollapsed ? link.label : ""}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon className="w-5 h-5 shrink-0" />
                 {!isCollapsed && (
                   <span className="font-medium">{link.label}</span>
                 )}
@@ -115,7 +115,7 @@ export function ProviderSidebar() {
         </nav>
 
         {/* Logout Button */}
-        <div className="p-3 pb-6">
+        <div className="p-3">
           <Button
             className={cn(
               "w-full flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors",
@@ -123,7 +123,7 @@ export function ProviderSidebar() {
             )}
             title={isCollapsed ? "Log Out" : ""}
           >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
+            <LogOut className="w-5 h-5 shrink-0" />
             {!isCollapsed && <span className="font-medium">Log Out</span>}
           </Button>
         </div>

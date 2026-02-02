@@ -8,7 +8,7 @@ import { UserProfileDropdown } from "@/components/Shared/UserProfileDropdown";
 
 export function ProviderPageHeader({ title }: { title: string }) {
   return (
-    <header className="h-20 flex shrink-0 items-center gap-2 border-b bg-white px-4">
+    <header className="h-20 flex shrink-0 items-center gap-2 border-b bg-white px-4"> 
       <div className="flex items-center gap-2 flex-1">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="h-6" />
@@ -32,3 +32,5 @@ export function ProviderPageHeader({ title }: { title: string }) {
     </header>
   );
 }
+
+// fixed top-0 left-0 lg:left-64 right-0 h-16 bg-white shadow-sm z-50

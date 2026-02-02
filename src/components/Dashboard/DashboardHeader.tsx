@@ -7,7 +7,7 @@ import { UserProfileDropdown } from "@/components/Shared/UserProfileDropdown";
 
 export function DashboardHeader() {
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-white shadow-sm z-50">
+    <header className="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-white shadow-sm z-50">
       <div className="h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">

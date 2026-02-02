@@ -32,7 +32,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed top-16 left-0 bottom-0 w-64 bg-white shadow-sm z-40 hidden lg:block">
+    <aside className="fixed top-0 left-0 bottom-0 w-64 bg-white shadow-sm z-40 hidden lg:block">
       <div className="h-full flex flex-col p-6">
         {/* User Profile Card */}
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">

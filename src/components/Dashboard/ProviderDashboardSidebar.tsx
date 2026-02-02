@@ -106,7 +106,7 @@ export function ProviderDashboardSidebar() {
       </SidebarContent>
 
       {/* Sidebar Footer - Logout Button */}
-      <SidebarFooter className="border-t border-sidebar-border px-2 py-6">
+      <SidebarFooter className="px-2 py-4">
         <Button
           className="w-full flex items-center justify-center gap-2 bg-red-500 text-white hover:bg-red-600"
           size={isCollapsed ? "icon" : "default"}
