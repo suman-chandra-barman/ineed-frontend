@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 interface UserProfileDropdownProps {
   userName?: string;
@@ -43,7 +44,7 @@ export function UserProfileDropdown({
         <button className="flex items-center gap-2 hover:bg-gray-50 rounded-full pr-3 pl-1 py-1 transition-colors">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
             {userAvatar ? (
-              <img
+              <Image
                 src={userAvatar}
                 alt={userName}
                 className="w-full h-full object-cover"
