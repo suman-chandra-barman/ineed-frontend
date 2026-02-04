@@ -1,5 +1,3 @@
-"use client";
-
 import { StatusCards } from "@/components/Dashboard/StatusCards";
 import { RecentJobsTable } from "@/components/Dashboard/RecentJobsTable";
 
