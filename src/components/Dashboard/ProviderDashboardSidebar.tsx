@@ -91,11 +91,9 @@ export function ProviderDashboardSidebar() {
                       asChild
                       isActive={isActive}
                       tooltip={link.label}
-                      className={
-                        isActive ? "bg-primary! h-full text-white!" : "h-full"
-                      }
+                      className={`h-full ${isActive ? "bg-primary! text-white!" : ""}`}
                     >
-                      <Link href={link.href}>
+                      <Link href={link.href} className="min-w-9!">
                         <Icon className="w-5! h-5!" />
                         <span>{link.label}</span>
                       </Link>
