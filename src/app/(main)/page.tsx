@@ -5,7 +5,7 @@ import HowItWorks from "@/components/Home/HowItWorks";
 import Services from "@/components/Home/Services";
 import Testimonials from "@/components/Home/Testimonials";
 import WhyChooseUs from "@/components/Home/WhyChooseUs";
-import Contact from "@/components/Home/Contact";
+import GetInTouch from "@/components/Home/GetInTouch";
 
 function HomePage() {
   return (
@@ -24,7 +24,8 @@ function HomePage() {
       </section>
       <Testimonials />
       <section id="contact">
-        <Contact />
+        {/* <Contact /> */}
+        <GetInTouch />
       </section>
     </main>
   );
