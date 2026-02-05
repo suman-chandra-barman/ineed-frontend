@@ -30,8 +30,8 @@ const GetInTouch = () => {
   };
 
   return (
-    <section className="py-16 px-4 md:px-8 lg:px-16 bg-white">
-      <div className="max-w-7xl mx-auto">
+    <section className=" bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="relative min-h-[500px] rounded-3xl overflow-hidden shadow-2xl">
           {/* Blue Background Section */}
           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#0077CC] via-[#0066BB] to-[#0088DD]">
@@ -63,7 +63,7 @@ const GetInTouch = () => {
             </div>
 
             {/* Right Side - Contact Form */}
-            <div className="w-full lg:w-1/2 p-8 md:p-12 flex items-center">
+            <div className="w-full lg:w-1/2 p-4 sm:p-6 lg:p-8 md:p-12 flex items-center">
               <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Full Name */}

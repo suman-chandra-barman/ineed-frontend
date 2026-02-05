@@ -31,8 +31,8 @@ export default function Categories() {
   ];
 
   return (
-    <section className="bg-[#FBFBFB] px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-      <div className="mx-auto container">
+    <section className="bg-[#FBFBFB]">
+      <div className="mx-auto container px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-4 pb-8">
           <Image src={clening} alt="Woman Cleaning" />
           <div className="max-w-xl">

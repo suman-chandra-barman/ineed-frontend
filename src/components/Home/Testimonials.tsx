@@ -79,8 +79,8 @@ export default function Testimonials() {
   }, [emblaApi]);
 
   return (
-    <section className="bg-[#FBFBFB] px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-      <div className="mx-auto max-w-7xl">
+    <section className="bg-[#FBFBFB]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 sm:mb-12">
           <div>

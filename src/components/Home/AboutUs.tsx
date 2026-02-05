@@ -34,8 +34,8 @@ export default function AboutUs() {
   ];
 
   return (
-    <section className="bg-white px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-      <div className="mx-auto container">
+    <section className="bg-white">
+      <div className="mx-auto container px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Side - Images */}
           <div className="relative order-2 lg:order-1">
