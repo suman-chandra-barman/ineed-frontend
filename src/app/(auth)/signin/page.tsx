@@ -80,11 +80,13 @@ function SigninPage() {
           {/* Logo and Header */}
           <div className="text-center mb-8">
             <div className="text-3xl font-bold">
-              <Image
-                src={logo}
-                alt="iNeed Logo"
-                className="mx-auto w-32 h-auto"
-              />
+              <Link href="/">
+                <Image
+                  src={logo}
+                  alt="iNeed Logo"
+                  className="mx-auto w-32 h-auto"
+                />
+              </Link>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Welcome Back
@@ -142,10 +144,7 @@ function SigninPage() {
                 )}
               />
 
-              <Button
-                type="submit"
-                className="w-full"
-              >
+              <Button type="submit" className="w-full">
                 Sign In
               </Button>
             </form>

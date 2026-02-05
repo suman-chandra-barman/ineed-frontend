@@ -60,11 +60,13 @@ export function ProviderDashboardSidebar() {
             <div
               className={`flex items-center justify-center overflow-hidden shrink-0 transition-all duration-300 ease-in-out ${isCollapsed ? "w-12 h-10" : "w-24 h-10"}`}
             >
-              <Image
-                src={logo}
-                alt="Logo"
-                className="w-full h-full object-contain"
-              />
+              <Link href="/">
+                <Image
+                  src={logo}
+                  alt="iNeed Logo"
+                  className="w-full h-full object-contain"
+                />
+              </Link>
             </div>
           </div>
         </div>
