@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.svg";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { ProfileDropdown } from "./ProfileDropdown";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -71,6 +72,7 @@ export default function Navbar() {
             <Button className="bg-primary text-white" asChild>
               <Link href="/signup">Join Us</Link>
             </Button>
+            <ProfileDropdown/>
           </div>
 
           {/* Mobile Menu Button */}
@@ -114,6 +116,7 @@ export default function Navbar() {
                 <Button className="w-full bg-primary text-white" asChild>
                   <Link href="/signup">Join Us</Link>
                 </Button>
+                <ProfileDropdown/>
               </div>
             </div>
           </div>
