@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,8 +21,19 @@ import service from "@/assets/login.png";
 import Image from "next/image";
 import { loginformSchema } from "@/schemas/auth.schema";
 import { LoginFormValues } from "@/types/auth.type";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useLoginMutation } from "@/redux/api/authApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { setCredentials } from "@/redux/features/authSlice";
+import { toast } from "sonner";
 
 function SigninPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [login, { isLoading: isLoggingIn }] = useLoginMutation();
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginformSchema),
     defaultValues: {
@@ -28,9 +42,29 @@ function SigninPage() {
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log(data);
-    // Handle sign in logic here
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      const response = await login({
+        email_address: data.email,
+        password: data.password,
+      }).unwrap();
+
+      if (response.success) {
+        dispatch(
+          setCredentials({
+            user: response.data.user,
+            tokens: response.data.tokens,
+          }),
+        );
+        toast.success("Login successful!");
+        router.push("/");
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.data?.message || "Failed to login. Please try again.";
+      toast.error(errorMessage);
+      console.error("Login error:", error);
+    }
   };
 
   const handleGoogleSignIn = () => {
@@ -133,19 +167,39 @@ function SigninPage() {
                       </Link>
                     </div>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter your password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter your password"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button type="submit" className="w-full">
-                Sign In
+              <Button type="submit" className="w-full" disabled={isLoggingIn}>
+                {isLoggingIn ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
             </form>
           </Form>

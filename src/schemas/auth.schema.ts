@@ -33,6 +33,24 @@ export const otpVerificationSchema = z.object({
     .regex(/^\d+$/, { message: "OTP must contain only numbers" }),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+    confirmPassword: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
 // Onboarding Step 1: Personal Information
 export const onboardingStep1Schema = z.object({
   fullName: z
