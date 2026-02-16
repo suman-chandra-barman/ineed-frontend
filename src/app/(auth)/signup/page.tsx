@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -26,11 +28,16 @@ import Image from "next/image";
 import { signupformSchema } from "@/schemas/auth.schema";
 import { SignupFormValues } from "@/types/auth.type";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useSignupMutation } from "@/redux/api/authApi";
+import { toast } from "sonner";
 
 function SignupPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [signup, { isLoading: isSigningUp }] = useSignupMutation();
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupformSchema),
@@ -43,9 +50,29 @@ function SignupPage() {
     },
   });
 
-  const onSubmit = (data: SignupFormValues) => {
-    console.log(data);
-    // Handle sign up logic here
+  const onSubmit = async (data: SignupFormValues) => {
+    try {
+      const response = await signup({
+        full_name: data.fullName,
+        email_address: data.email,
+        user_role: data.userRole as "user" | "provider",
+        password: data.password,
+        confirm_password: data.confirmPassword,
+      }).unwrap();
+
+      if (response.success) {
+        toast.success("Verification code sent to your email!");
+        const params = new URLSearchParams();
+        params.set("email", data.email);
+        params.set("expires", response.data.otp_expires_at);
+        router.push(`/verify-email?${params.toString()}`);
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.data?.message || "Failed to sign up. Please try again.";
+      toast.error(errorMessage);
+      console.error("Signup error:", error);
+    }
   };
 
   return (
@@ -238,8 +265,15 @@ function SignupPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
-                Sign Up
+              <Button type="submit" className="w-full" disabled={isSigningUp}>
+                {isSigningUp ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
             </form>
           </Form>

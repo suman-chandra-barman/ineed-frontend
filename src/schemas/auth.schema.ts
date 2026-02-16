@@ -26,6 +26,13 @@ export const signupformSchema = z
     path: ["confirmPassword"],
   });
 
+export const otpVerificationSchema = z.object({
+  otp: z
+    .string()
+    .length(6, { message: "OTP must be exactly 6 digits" })
+    .regex(/^\d+$/, { message: "OTP must contain only numbers" }),
+});
+
 // Onboarding Step 1: Personal Information
 export const onboardingStep1Schema = z.object({
   fullName: z
