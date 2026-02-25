@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,16 @@ import { Step2ServiceInfo } from "@/components/Onboarding/Step2ServiceInfo";
 import { Step3Availability } from "@/components/Onboarding/Step3Availability";
 import { Step4LegalInfo } from "@/components/Onboarding/Step4LegalInfo";
 import { Step5Confirmation } from "@/components/Onboarding/Step5Confirmation";
+import { useRouter } from "next/navigation";
+import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+  useGetServiceOptionsQuery,
+  useCreateServiceInfoMutation,
+  useCreateAvailabilityMutation,
+  useCreateW9InfoMutation,
+  useSubmitOnboardingMutation,
+} from "@/redux/api/onboardingApi";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -57,6 +67,7 @@ interface FormData {
 }
 
 function OnboardingPage() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -81,6 +92,19 @@ function OnboardingPage() {
     w9ZipCode: "",
     acknowledged: false,
   });
+
+  // API Hooks
+  const { data: profileData } = useGetProfileQuery();
+  const { data: serviceOptions } = useGetServiceOptionsQuery();
+  const [updateProfile, { isLoading: isUpdatingProfile }] =
+    useUpdateProfileMutation();
+  const [createServiceInfo, { isLoading: isCreatingService }] =
+    useCreateServiceInfoMutation();
+  const [createAvailability, { isLoading: isCreatingAvailability }] =
+    useCreateAvailabilityMutation();
+  const [createW9Info, { isLoading: isCreatingW9 }] = useCreateW9InfoMutation();
+  const [submitOnboarding, { isLoading: isSubmitting }] =
+    useSubmitOnboardingMutation();
 
   // Step 1 Form
   const step1Form = useForm<z.infer<typeof onboardingStep1Schema>>({
@@ -143,6 +167,25 @@ function OnboardingPage() {
     },
   });
 
+  // Load profile data on mount
+  useEffect(() => {
+    if (profileData?.data) {
+      const profile = profileData.data;
+
+      // Reset step 1 form with loaded data
+      step1Form.reset({
+        fullName: profile.full_name || "",
+        email: profile.email_address || "",
+        contactNumber: profile.contact_number || "",
+        streetAddress: profile.street_address || "",
+        city: profile.city || "",
+        state: profile.state || "",
+        zipCode: profile.zip_code || "",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileData]);
+
   const getCurrentForm = () => {
     switch (currentStep) {
       case 1:
@@ -188,12 +231,127 @@ function OnboardingPage() {
     const stepData = currentForm.getValues();
     setFormData((prev) => ({ ...prev, ...stepData }));
 
-    if (currentStep < 5) {
-      setCurrentStep((currentStep + 1) as Step);
-    } else {
-      // Handle final submission
-      console.log("Form submitted:", { ...formData, ...stepData });
-      // Add your submission logic here
+    try {
+      // Handle API calls based on current step
+      if (currentStep === 1) {
+        // Step 1: Update profile
+        const step1Data = stepData as z.infer<typeof onboardingStep1Schema>;
+        await updateProfile({
+          full_name: step1Data.fullName,
+          contact_number: step1Data.contactNumber,
+          street_address: step1Data.streetAddress,
+          city: step1Data.city,
+          state: step1Data.state,
+          zip_code: step1Data.zipCode,
+        }).unwrap();
+
+        setCurrentStep(2);
+      } else if (currentStep === 2) {
+        // Step 2: Create service information
+        const step2Data = stepData as z.infer<typeof onboardingStep2Schema>;
+        // Need to get the selected service ID from the category options
+        const selectedCategory = serviceOptions?.data.find(
+          (cat: {
+            category: { id: number; name: string; is_active: boolean };
+            services: Array<{ id: number; name: string; is_active: boolean }>;
+          }) => cat.category.name === step2Data.serviceType,
+        );
+
+        if (selectedCategory && selectedCategory.services.length > 0) {
+          await createServiceInfo({
+            services: [
+              {
+                service_id: selectedCategory.services[0].id,
+                experience_level: step2Data.experienceLevel,
+                short_description: step2Data.shortDescription || "",
+              },
+            ],
+          }).unwrap();
+
+          setCurrentStep(3);
+        }
+      } else if (currentStep === 3) {
+        // Step 3: Create availability
+        const step3Data = stepData as z.infer<typeof onboardingStep3Schema>;
+        const dayMap: { [key: string]: number } = {
+          Sunday: 0,
+          Monday: 1,
+          Tuesday: 2,
+          Wednesday: 3,
+          Thursday: 4,
+          Friday: 5,
+          Saturday: 6,
+        };
+
+        const days = step3Data.availableDays.map((day: string) => ({
+          day_of_week: dayMap[day],
+          is_active: true,
+        }));
+
+        const timeSlotMap: {
+          [key: string]: {
+            slot_type: string;
+            from_time: string;
+            to_time: string;
+          };
+        } = {
+          morning: {
+            slot_type: "morning",
+            from_time: "08:00:00",
+            to_time: "12:00:00",
+          },
+          afternoon: {
+            slot_type: "afternoon",
+            from_time: "12:00:00",
+            to_time: "16:00:00",
+          },
+          evening: {
+            slot_type: "evening",
+            from_time: "16:00:00",
+            to_time: "23:59:59",
+          },
+        };
+
+        const slots = step3Data.availableDays.flatMap((day: string) =>
+          step3Data.availableTimes.map((time: string) => ({
+            day_of_week: dayMap[day],
+            ...timeSlotMap[time],
+            is_active: true,
+          })),
+        );
+
+        await createAvailability({ days, slots }).unwrap();
+
+        setCurrentStep(4);
+      } else if (currentStep === 4) {
+        // Step 4: Create W-9 information
+        const step4Data = stepData as z.infer<typeof onboardingStep4Schema>;
+        await createW9Info({
+          legal_name: step4Data.legalName,
+          business_name: step4Data.businessName || "",
+          tax_type: step4Data.taxType,
+          ssn_or_ein: step4Data.taxId,
+          street_address: step4Data.w9StreetAddress,
+          city: step4Data.w9City,
+          state: step4Data.w9State,
+          zip_code: step4Data.w9ZipCode,
+        }).unwrap();
+
+        setCurrentStep(5);
+      } else if (currentStep === 5) {
+        // Step 5: Submit onboarding
+        const step5Data = stepData as z.infer<typeof onboardingStep5Schema>;
+        await submitOnboarding({
+          is_agreed: step5Data.acknowledged,
+        }).unwrap();
+
+        // Navigate to home page after successful submission
+        router.push("/");
+      }
+    } catch (error: unknown) {
+      console.error("Onboarding error:", error);
+      const apiError = error as { data?: { message?: string } };
+      alert(apiError?.data?.message || "An error occurred. Please try again.");
     }
   };
 
@@ -317,7 +475,12 @@ function OnboardingPage() {
           {currentStep === 1 && <Step1PersonalInfo form={step1Form} />}
 
           {/* Step 2: Service Information */}
-          {currentStep === 2 && <Step2ServiceInfo form={step2Form} />}
+          {currentStep === 2 && (
+            <Step2ServiceInfo
+              form={step2Form}
+              serviceOptions={serviceOptions}
+            />
+          )}
 
           {/* Step 3: Availability */}
           {currentStep === 3 && (
@@ -338,7 +501,14 @@ function OnboardingPage() {
             <Button
               variant="outline"
               onClick={handlePrevious}
-              disabled={currentStep === 1}
+              disabled={
+                currentStep === 1 ||
+                isUpdatingProfile ||
+                isCreatingService ||
+                isCreatingAvailability ||
+                isCreatingW9 ||
+                isSubmitting
+              }
               className="px-6 w-full sm:w-auto"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -346,11 +516,28 @@ function OnboardingPage() {
             </Button>
             <Button
               onClick={handleContinue}
-              disabled={!getCurrentForm().formState.isValid}
+              disabled={
+                !getCurrentForm().formState.isValid ||
+                isUpdatingProfile ||
+                isCreatingService ||
+                isCreatingAvailability ||
+                isCreatingW9 ||
+                isSubmitting
+              }
               className="px-8 w-full sm:w-auto"
             >
-              {currentStep === 5 ? "Submit" : "Continue"}
-              {currentStep < 5 && <ChevronRight className="w-4 h-4 ml-2" />}
+              {isUpdatingProfile ||
+              isCreatingService ||
+              isCreatingAvailability ||
+              isCreatingW9 ||
+              isSubmitting ? (
+                "Loading..."
+              ) : (
+                <>
+                  {currentStep === 5 ? "Submit" : "Continue"}
+                  {currentStep < 5 && <ChevronRight className="w-4 h-4 ml-2" />}
+                </>
+              )}
             </Button>
           </div>
         </div>

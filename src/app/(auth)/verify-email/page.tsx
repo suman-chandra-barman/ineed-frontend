@@ -105,7 +105,12 @@ function VerifyEmailContent() {
           }),
         );
         toast.success("Email verified successfully!");
-        router.push("/");
+
+        if (response.data.user.role === "provider") {
+          router.push("/onbording");
+        } else {
+          router.push("/");
+        }
       }
     } catch (error: any) {
       const errorMessage =

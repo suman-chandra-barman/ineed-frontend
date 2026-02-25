@@ -17,11 +17,12 @@ interface Step4LegalInfoProps {
 }
 
 const TAX_TYPES = [
-  { value: "individual", label: "Individual / Sole Proprietor" },
-  { value: "single-llc", label: "Single-Member LLC" },
+  { value: "individual", label: "Individual" },
+  { value: "sole_proprietor", label: "Sole Proprietor" },
   { value: "partnership", label: "Partnership" },
-  { value: "c-corp", label: "C Corporation" },
-  { value: "s-corp", label: "S Corporation" },
+  { value: "c_corp", label: "C Corporation" },
+  { value: "s_corp", label: "S Corporation" },
+  { value: "single_member_llc", label: "Single-Member LLC" },
 ];
 
 export function Step4LegalInfo({ form }: Step4LegalInfoProps) {

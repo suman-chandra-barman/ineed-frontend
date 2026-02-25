@@ -12,8 +12,38 @@ import {
 import * as z from "zod";
 import { onboardingStep2Schema } from "@/schemas/auth.schema";
 
+interface Category {
+  id: number;
+  name: string;
+  is_active: boolean;
+}
+
+interface Service {
+  id: number;
+  name: string;
+  is_active: boolean;
+}
+
+interface CategoryWithServices {
+  category: Category;
+  services: Service[];
+}
+
+interface ServiceOptionsResponse {
+  success: boolean;
+  message: string;
+  meta: {
+    category_total: number;
+    service_total: number;
+    category_active: number;
+    service_active: number;
+  };
+  data: CategoryWithServices[];
+}
+
 interface Step2ServiceInfoProps {
   form: UseFormReturn<z.infer<typeof onboardingStep2Schema>>;
+  serviceOptions?: ServiceOptionsResponse;
 }
 
 const EXPERIENCE_LEVELS = [
@@ -22,7 +52,13 @@ const EXPERIENCE_LEVELS = [
   { value: "experienced", label: "Experienced (3+ years)" },
 ];
 
-export function Step2ServiceInfo({ form }: Step2ServiceInfoProps) {
+export function Step2ServiceInfo({
+  form,
+  serviceOptions,
+}: Step2ServiceInfoProps) {
+  // Extract active categories from service options
+  const categories = serviceOptions?.data || [];
+
   return (
     <div className="space-y-6">
       <div>
@@ -41,12 +77,17 @@ export function Step2ServiceInfo({ form }: Step2ServiceInfoProps) {
           }
         >
           <SelectTrigger className="bg-white">
-            <SelectValue placeholder="Cleaning Service" />
+            <SelectValue placeholder="Select a service type..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="cleaning">Cleaning Service</SelectItem>
-            <SelectItem value="deep-cleaning">Deep Cleaning</SelectItem>
-            <SelectItem value="maintenance">Maintenance</SelectItem>
+            {categories.map((categoryItem) => (
+              <SelectItem
+                key={categoryItem.category.id}
+                value={categoryItem.category.name}
+              >
+                {categoryItem.category.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         {form.formState.errors.serviceType && (
@@ -100,7 +141,7 @@ export function Step2ServiceInfo({ form }: Step2ServiceInfoProps) {
           id="shortDescription"
           placeholder="Briefly describe your cleaning experience Info Note..."
           {...form.register("shortDescription")}
-          className="bg-white min-h-[120px]"
+          className="bg-white min-h-30"
         />
       </div>
     </div>
