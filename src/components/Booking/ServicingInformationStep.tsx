@@ -17,8 +17,12 @@ import {
   ServicingInformationFormData,
   servicingInformationSchema,
 } from "@/schemas/booking.schema";
+import { useUpdateServicingInfoMutation } from "@/redux/features/booking/bookingApi";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface ServicingInformationStepProps {
+  bookingId: number;
   data: ServicingInformationFormData;
   onNext: (data: ServicingInformationFormData) => void;
   onBack: () => void;
@@ -78,10 +82,13 @@ const US_STATES = [
 ];
 
 export default function ServicingInformationStep({
+  bookingId,
   data,
   onNext,
   onBack,
 }: ServicingInformationStepProps) {
+  const [updateServicingInfo, { isLoading }] = useUpdateServicingInfoMutation();
+
   const {
     register,
     handleSubmit,
@@ -95,8 +102,31 @@ export default function ServicingInformationStep({
 
   const selectedState = watch("state");
 
-  const onSubmit = (formData: ServicingInformationFormData) => {
-    onNext(formData);
+  const onSubmit = async (formData: ServicingInformationFormData) => {
+    try {
+      // Split full name into first and last name
+      const nameParts = formData.fullName.trim().split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      await updateServicingInfo({
+        bookingId,
+        full_name: formData.fullName,
+        email: formData.email,
+        contact_number: formData.contactNumber,
+        state: formData.state,
+        zip_code: formData.zipCode,
+        notes: formData.notes || "",
+        bedrooms: parseInt(formData.numberOfBedrooms) || 0,
+        square_footage: parseInt(formData.approximateSquareFootage) || 0,
+      }).unwrap();
+
+      toast.success("Service information saved successfully");
+      onNext(formData);
+    } catch (error: any) {
+      console.error("Failed to update servicing info:", error);
+      toast.error(error?.data?.message || "Failed to save service information");
+    }
   };
 
   return (
@@ -248,8 +278,15 @@ export default function ServicingInformationStep({
         </Button>
         <div className="flex items-center gap-4">
           <p className="text-sm text-gray-600">You&apos;re 15% complete</p>
-          <Button type="submit" size="lg">
-            Continue
+          <Button type="submit" size="lg" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              "Continue"
+            )}
           </Button>
         </div>
       </div>

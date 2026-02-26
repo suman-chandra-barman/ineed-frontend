@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: "**.devtunnels.ms",
         pathname: "/media/**",
       },
+      {
+        protocol: "http",
+        hostname: "**localhost",
+        pathname: "/media/**",
+      },
     ],
   },
 };

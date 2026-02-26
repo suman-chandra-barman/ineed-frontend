@@ -9,7 +9,7 @@ interface Step {
 interface BookingSidebarProps {
   serviceName: string;
   servicePrice: number;
-  serviceImage: StaticImageData;
+  serviceImage: StaticImageData | string;
   currentStep: number;
   steps: Step[];
   onStepClick: (stepId: number) => void;
@@ -30,7 +30,7 @@ export default function BookingSidebar({
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
             <Image
-              src={serviceImage}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${serviceImage}`}
               alt={serviceName}
               width={64}
               height={64}

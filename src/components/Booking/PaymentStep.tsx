@@ -2,9 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { AdditionalService, ServiceImage } from "@/types/booking.type";
+import { useCreatePaymentMutation } from "@/redux/features/booking/bookingApi";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
 interface PaymentStepProps {
+  bookingId: number;
   serviceName: string;
   servicePrice: number;
   serviceImage: ServiceImage;
@@ -15,6 +19,7 @@ interface PaymentStepProps {
 }
 
 export default function PaymentStep({
+  bookingId,
   serviceName,
   servicePrice,
   serviceImage,
@@ -23,6 +28,8 @@ export default function PaymentStep({
   onNext,
   onBack,
 }: PaymentStepProps) {
+  const [createPayment, { isLoading }] = useCreatePaymentMutation();
+
   const selectedServices = additionalServices.filter((s) =>
     selectedServiceIds.includes(s.id),
   );
@@ -34,6 +41,22 @@ export default function PaymentStep({
   );
   const tax = (serviceFee + additionalServiceFee) * 0.1; // 10% tax
   const total = serviceFee + additionalServiceFee + tax;
+
+  const handlePayment = async () => {
+    try {
+      const result = await createPayment(bookingId).unwrap();
+
+      // Redirect to Stripe checkout
+      if (result.checkout_url) {
+        window.location.href = result.checkout_url;
+      } else {
+        toast.error("Failed to get checkout URL");
+      }
+    } catch (err) {
+      console.error("Failed to create payment:", err);
+      toast.error("Failed to process payment");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -80,8 +103,20 @@ export default function PaymentStep({
           </div>
 
           {/* Payment Button */}
-          <Button className="w-full mt-6" size="lg">
-            Pay
+          <Button
+            className="w-full mt-6"
+            size="lg"
+            onClick={handlePayment}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Pay with Stripe"
+            )}
           </Button>
         </div>
 

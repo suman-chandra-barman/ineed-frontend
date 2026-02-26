@@ -2,21 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { TimeSlot } from "@/types/booking.type";
+import { useUpdateScheduleMutation } from "@/redux/features/booking/bookingApi";
+import { toast } from "sonner";
 
 interface DateTimeStepProps {
+  bookingId: number;
   selectedDate: Date | null;
   selectedTime: string;
   isRecurring: boolean;
   recurringType: "weekly" | "bi-weekly" | "monthly" | null;
-  onDateChange: (date: Date) => void;
-  onTimeChange: (time: string) => void;
-  onRecurringChange: (
-    isRecurring: boolean,
-    type: "weekly" | "bi-weekly" | "monthly" | null,
-  ) => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -43,17 +40,22 @@ const TIME_SLOTS: TimeSlot[] = [
 ];
 
 export default function DateTimeStep({
+  bookingId,
   selectedDate,
   selectedTime,
   isRecurring,
   recurringType,
-  onDateChange,
-  onTimeChange,
-  onRecurringChange,
   onNext,
   onBack,
 }: DateTimeStepProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [updateSchedule, { isLoading }] = useUpdateScheduleMutation();
+
+  const [localDate, setLocalDate] = useState<Date | null>(selectedDate);
+  const [localTime, setLocalTime] = useState(selectedTime);
+  const [localIsRecurring, setLocalIsRecurring] = useState(isRecurring);
+  const [localRecurringType, setLocalRecurringType] = useState(recurringType);
+
+  const [currentMonth, setCurrentMonth] = useState(() => new Date());
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -83,15 +85,15 @@ export default function DateTimeStep({
 
   const handleDateClick = (day: number) => {
     const newDate = new Date(year, month, day);
-    onDateChange(newDate);
+    setLocalDate(newDate);
   };
 
   const isDateSelected = (day: number) => {
-    if (!selectedDate) return false;
+    if (!localDate) return false;
     return (
-      selectedDate.getDate() === day &&
-      selectedDate.getMonth() === month &&
-      selectedDate.getFullYear() === year
+      localDate.getDate() === day &&
+      localDate.getMonth() === month &&
+      localDate.getFullYear() === year
     );
   };
 
@@ -126,14 +128,42 @@ export default function DateTimeStep({
   const handleRecurringTypeChange = (
     type: "weekly" | "bi-weekly" | "monthly",
   ) => {
-    if (recurringType === type) {
-      onRecurringChange(false, null);
+    if (localRecurringType === type) {
+      setLocalIsRecurring(false);
+      setLocalRecurringType(null);
     } else {
-      onRecurringChange(true, type);
+      setLocalIsRecurring(true);
+      setLocalRecurringType(type);
     }
   };
 
-  const canProceed = selectedDate && selectedTime;
+  const handleSubmit = async () => {
+    if (!localDate || !localTime) {
+      toast.error("Please select both date and time");
+      return;
+    }
+
+    try {
+      // Format date as YYYY-MM-DD
+      const formattedDate = localDate.toISOString().split("T")[0];
+
+      await updateSchedule({
+        bookingId,
+        service_date: formattedDate,
+        time_slot: localTime,
+        is_recurring: localIsRecurring,
+        recurring_type: localRecurringType,
+      }).unwrap();
+
+      toast.success("Schedule saved successfully");
+      onNext();
+    } catch (err) {
+      console.error("Failed to update schedule:", err);
+      toast.error("Failed to save schedule");
+    }
+  };
+
+  const canProceed = localDate && localTime;
 
   return (
     <div className="space-y-6">
@@ -220,11 +250,11 @@ export default function DateTimeStep({
               <button
                 key={slot.value}
                 type="button"
-                onClick={() => onTimeChange(slot.value)}
+                onClick={() => setLocalTime(slot.value)}
                 className={`
                   w-full p-4 rounded-lg border-2 transition-all text-left
                   ${
-                    selectedTime === slot.value
+                    localTime === slot.value
                       ? "border-primary bg-primary/20"
                       : "border-gray-200 hover:border-gray-300"
                   }
@@ -250,10 +280,11 @@ export default function DateTimeStep({
             <input
               type="radio"
               name="recurring"
-              checked={isRecurring}
+              checked={localIsRecurring}
               onChange={() => {
-                if (!isRecurring) {
-                  onRecurringChange(true, "weekly");
+                if (!localIsRecurring) {
+                  setLocalIsRecurring(true);
+                  setLocalRecurringType("weekly");
                 }
               }}
               className="w-4 h-4"
@@ -264,15 +295,18 @@ export default function DateTimeStep({
             <input
               type="radio"
               name="recurring"
-              checked={!isRecurring}
-              onChange={() => onRecurringChange(false, null)}
+              checked={!localIsRecurring}
+              onChange={() => {
+                setLocalIsRecurring(false);
+                setLocalRecurringType(null);
+              }}
               className="w-4 h-4"
             />
             <span className="text-gray-700">- One-time cleaning</span>
           </label>
         </div>
 
-        {isRecurring && (
+        {localIsRecurring && (
           <div>
             <Label className="text-sm font-medium mb-2 block">Select</Label>
             <div className="grid grid-cols-3 gap-4">
@@ -284,7 +318,7 @@ export default function DateTimeStep({
                   className={`
                     p-4 rounded-lg border-2 transition-all capitalize
                     ${
-                      recurringType === type
+                      localRecurringType === type
                         ? "border-primary bg-primary/20"
                         : "border-gray-200 hover:border-gray-300"
                     }
@@ -305,8 +339,19 @@ export default function DateTimeStep({
         </Button>
         <div className="flex items-center gap-4">
           <p className="text-sm text-gray-600">You&apos;re 15% complete</p>
-          <Button onClick={onNext} disabled={!canProceed} size="lg">
-            Continue
+          <Button
+            onClick={handleSubmit}
+            disabled={!canProceed || isLoading}
+            size="lg"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              "Continue"
+            )}
           </Button>
         </div>
       </div>

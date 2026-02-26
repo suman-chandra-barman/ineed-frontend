@@ -1,12 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Service as StaticService } from "../Home/Services";
 import { Service as ApiService } from "@/types/service.type";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { useCreateBookingMutation } from "@/redux/features/booking/bookingApi";
+import { toast } from "sonner";
 
 interface ServiceCardProps {
   service: StaticService | ApiService;
@@ -25,6 +29,9 @@ const isApiService = (
 };
 
 const ServiceCard = memo(({ service, priority = false }: ServiceCardProps) => {
+  const router = useRouter();
+  const [createBooking, { isLoading }] = useCreateBookingMutation();
+
   // Extract data based on service type
   const serviceData = isApiService(service)
     ? {
@@ -48,6 +55,24 @@ const ServiceCard = memo(({ service, priority = false }: ServiceCardProps) => {
         originalPrice: null,
         rating: service.rating,
       };
+
+  const handleBookNow = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      const result = await createBooking({
+        service_id: serviceData.id,
+      }).unwrap();
+
+      // Navigate to booking page with booking ID
+      router.push(`/booking/${result.id}`);
+    } catch (error: any) {
+
+      console.error("Failed to create booking:", error);
+      toast.error(
+        error?.data?.message || error?.data?.detail || "Failed to create booking. Please try again.",
+      );
+    }
+  };
 
   return (
     <article className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 group">
@@ -123,11 +148,19 @@ const ServiceCard = memo(({ service, priority = false }: ServiceCardProps) => {
 
         {/* Book Now Button */}
         <Button
-          asChild
+          onClick={handleBookNow}
+          disabled={isLoading}
           className="w-full py-2.5 sm:py-3 text-sm sm:text-base"
           aria-label={`Book ${serviceData.title} now`}
         >
-          <Link href={`/booking/${serviceData.id}`}>Book Now</Link>
+          {isLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Creating...
+            </>
+          ) : (
+            "Book Now"
+          )}
         </Button>
       </div>
     </article>

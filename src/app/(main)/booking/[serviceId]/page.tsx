@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { AdditionalService, BookingState } from "@/types/booking.type";
+import { BookingState } from "@/types/booking.type";
+import { useGetBookingAddonsQuery } from "@/redux/features/booking/bookingApi";
 import AdditionalFeaturesStep from "@/components/Booking/AdditionalFeaturesStep";
 import ServicingInformationStep from "@/components/Booking/ServicingInformationStep";
 import DateTimeStep from "@/components/Booking/DateTimeStep";
@@ -10,10 +11,6 @@ import PaymentStep from "@/components/Booking/PaymentStep";
 import ConfirmationStep from "@/components/Booking/ConfirmationStep";
 import BookingHeader from "@/components/Booking/BookingHeader";
 import BookingSidebar from "@/components/Booking/BookingSidebar";
-import sercice1 from "@/assets/service-1.jpg";
-import sercice2 from "@/assets/service-2.jpg";
-import sercice3 from "@/assets/service-3.jpg";
-import sercice4 from "@/assets/service-4.jpg";
 
 const STEPS = [
   { id: 1, label: "Additional Features" },
@@ -23,63 +20,28 @@ const STEPS = [
   { id: 5, label: "Confirmation" },
 ];
 
-// Mock data - in real app, fetch based on serviceId
-const additionalServices: AdditionalService[] = [
-  {
-    id: "1",
-    name: "Inside Refrigerator Cleaning",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    price: 30,
-    duration: 30,
-    image: sercice1,
-  },
-  {
-    id: "2",
-    name: "Laundry (Wash & Fold)",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    price: 30,
-    duration: 30,
-    image: sercice2,
-  },
-  {
-    id: "3",
-    name: "Extra Bathroom Cleaning",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    price: 30,
-    duration: 30,
-    image: sercice3,
-  },
-  {
-    id: "4",
-    name: "Garage Cleaning (light)",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    price: 30,
-    duration: 30,
-    image: sercice4,
-  },
-];
-
 export default function BookingPage() {
   const router = useRouter();
   const params = useParams();
-  const serviceId = params.serviceId as string;
+  const bookingId = parseInt(params.serviceId as string);
+  const [mounted] = useState(typeof window !== "undefined");
 
-  // Mock service data - in real app, fetch based on serviceId
-  const serviceName = "Inside Refrigerator Cleaning";
-  const servicePrice = 30;
-  const serviceImage = sercice1;
+  // Fetch booking data
+  const {
+    data: bookingData,
+    isLoading,
+    error,
+  } = useGetBookingAddonsQuery(bookingId, {
+    skip: !mounted,
+  });
 
   const [bookingState, setBookingState] = useState<BookingState>({
     currentStep: 1,
     totalSteps: 5,
-    serviceId,
-    serviceName,
-    servicePrice,
-    serviceImage,
+    serviceId: bookingId.toString(),
+    serviceName: "",
+    servicePrice: 0,
+    serviceImage: "",
     additionalServices: [],
     fullName: "",
     email: "",
@@ -95,8 +57,6 @@ export default function BookingPage() {
     recurringType: null,
     paymentMethod: "stripe",
   });
-
-  const [transactionId, setTransactionId] = useState("");
 
   const handleNext = () => {
     setBookingState((prev) => ({
@@ -118,13 +78,6 @@ export default function BookingPage() {
     router.push("/services");
   };
 
-  const handlePaymentNext = () => {
-    // Generate a random transaction ID
-    const randomId = Math.floor(10000 + Math.random() * 90000);
-    setTransactionId(randomId.toString());
-    handleNext();
-  };
-
   const handleStepClick = (stepId: number) => {
     setBookingState((prev) => ({
       ...prev,
@@ -132,6 +85,33 @@ export default function BookingPage() {
     }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (!mounted || isLoading) {
+    return (
+      <div className="min-h-screen bg-primary/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading booking...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !bookingData) {
+    return (
+      <div className="min-h-screen bg-primary/5 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600">Failed to load booking</p>
+          <button
+            onClick={() => router.back()}
+            className="mt-4 px-4 py-2 bg-primary text-white rounded-lg"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-primary/5">
@@ -145,9 +125,9 @@ export default function BookingPage() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           <BookingSidebar
-            serviceName={serviceName}
-            servicePrice={servicePrice}
-            serviceImage={serviceImage}
+            serviceName={bookingData.service.name}
+            servicePrice={parseFloat(bookingData.service.base_price)}
+            serviceImage={bookingData.service.image}
             currentStep={bookingState.currentStep}
             steps={STEPS}
             onStepClick={handleStepClick}
@@ -155,22 +135,18 @@ export default function BookingPage() {
 
           {/* Right Content Area */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8">
+            {/* Step 1: Additional Features */}
             {bookingState.currentStep === 1 && (
               <AdditionalFeaturesStep
-                services={additionalServices}
-                selectedServices={bookingState.additionalServices}
-                onServicesChange={(serviceIds) =>
-                  setBookingState((prev) => ({
-                    ...prev,
-                    additionalServices: serviceIds,
-                  }))
-                }
+                bookingId={bookingId}
                 onNext={handleNext}
               />
             )}
 
+            {/* Step 2: Servicing Information */}
             {bookingState.currentStep === 2 && (
               <ServicingInformationStep
+                bookingId={bookingId}
                 data={{
                   fullName: bookingState.fullName,
                   email: bookingState.email,
@@ -190,50 +166,37 @@ export default function BookingPage() {
               />
             )}
 
+            {/* Step 3: Date & Time */}
             {bookingState.currentStep === 3 && (
               <DateTimeStep
+                bookingId={bookingId}
                 selectedDate={bookingState.selectedDate}
                 selectedTime={bookingState.selectedTime}
                 isRecurring={bookingState.isRecurring}
                 recurringType={bookingState.recurringType}
-                onDateChange={(date) =>
-                  setBookingState((prev) => ({ ...prev, selectedDate: date }))
-                }
-                onTimeChange={(time) =>
-                  setBookingState((prev) => ({ ...prev, selectedTime: time }))
-                }
-                onRecurringChange={(isRecurring, type) =>
-                  setBookingState((prev) => ({
-                    ...prev,
-                    isRecurring,
-                    recurringType: type,
-                  }))
-                }
                 onNext={handleNext}
                 onBack={handleBack}
               />
             )}
 
+            {/* Step 4: Payment */}
             {bookingState.currentStep === 4 && (
               <PaymentStep
-                serviceName={serviceName}
-                servicePrice={servicePrice}
-                serviceImage={serviceImage}
-                additionalServices={additionalServices}
+                bookingId={bookingId}
+                serviceName={bookingData.service.name}
+                servicePrice={parseFloat(bookingData.service.base_price)}
+                serviceImage={bookingData.service.image}
+                additionalServices={[]}
                 selectedServiceIds={bookingState.additionalServices}
-                onNext={handlePaymentNext}
+                onNext={handleNext}
                 onBack={handleBack}
               />
             )}
 
+            {/* Step 5: Confirmation  */}
             {bookingState.currentStep === 5 && (
               <ConfirmationStep
-                transactionId={transactionId}
-                serviceName={serviceName}
-                servicePrice={servicePrice}
-                serviceImage={serviceImage}
-                additionalServices={additionalServices}
-                selectedServiceIds={bookingState.additionalServices}
+                bookingId={bookingId}
                 onComplete={handleComplete}
               />
             )}

@@ -1,9 +1,10 @@
 "use client";
 
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useCreateBookingMutation } from "@/redux/features/booking/bookingApi";
+import { toast } from "sonner";
 
 interface ServiceHour {
   day: string;
@@ -27,6 +28,24 @@ export default function ServiceBooking({
   serviceHours,
 }: ServiceBookingProps) {
   const router = useRouter();
+  const [createBooking, { isLoading }] = useCreateBookingMutation();
+
+  const handleBookService = async () => {
+    try {
+      const result = await createBooking({
+        service_id: parseInt(serviceId),
+      }).unwrap();
+
+      // Navigate to booking page with booking ID
+      router.push(`/booking/${result.id}`);
+    } catch (error: any) {
+      console.error("Failed to create booking:", error);
+      toast.error(
+        error?.data?.message || "Failed to create booking. Please try again.",
+      );
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Price Section */}
@@ -56,13 +75,21 @@ export default function ServiceBooking({
         </div>
 
         <Button
-          asChild
+          onClick={handleBookService}
+          disabled={isLoading}
           className="w-full font-semibold py-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md"
         >
-          <Link href={`/booking/${serviceId}`}>
-            <CalendarDays className="w-5 h-5" />
-            Book Service
-          </Link>
+          {isLoading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Creating...
+            </>
+          ) : (
+            <>
+              <CalendarDays className="w-5 h-5" />
+              Book Service
+            </>
+          )}
         </Button>
       </div>
       <div className="p-6">
