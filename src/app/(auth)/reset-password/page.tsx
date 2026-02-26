@@ -20,9 +20,9 @@ import {
 import { resetPasswordSchema } from "@/schemas/auth.schema";
 import { ResetPasswordFormValues } from "@/types/auth.type";
 import { Loader2, Lock, Eye, EyeOff } from "lucide-react";
-import { useResetPasswordMutation } from "@/redux/api/authApi";
+import { useResetPasswordMutation } from "@/redux/features/auth/authApi";
 import { useAppDispatch } from "@/redux/hooks";
-import { setCredentials } from "@/redux/features/authSlice";
+import { setCredentials } from "@/redux/features/auth/authSlice";
 import { toast } from "sonner";
 import logo from "@/assets/logo.svg";
 

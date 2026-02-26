@@ -1,4 +1,5 @@
-import { baseApi } from "./baseApi";
+
+import { baseApi } from "@/redux/api/baseApi";
 import type {
   SignupRequest,
   SignupResponse,

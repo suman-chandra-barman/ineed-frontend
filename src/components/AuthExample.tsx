@@ -2,7 +2,7 @@
 
 import { useLogout } from "@/hooks/useLogout";
 import { useAppSelector } from "@/redux/hooks";
-import { selectCurrentUser } from "@/redux/features/authSlice";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 import { Button } from "@/components/ui/button";
 
 /**

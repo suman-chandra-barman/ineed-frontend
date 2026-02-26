@@ -19,7 +19,7 @@ import {
 import { forgotPasswordSchema } from "@/schemas/auth.schema";
 import { ForgotPasswordFormValues } from "@/types/auth.type";
 import { Loader2, KeyRound } from "lucide-react";
-import { useForgotPasswordMutation } from "@/redux/api/authApi";
+import { useForgotPasswordMutation } from "@/redux/features/auth/authApi";
 import { toast } from "sonner";
 import logo from "@/assets/logo.svg";
 

@@ -128,7 +128,7 @@ To implement logout in any component:
 
 ```tsx
 import { useAppDispatch } from "@/redux/hooks";
-import { logout } from "@/redux/features/authSlice";
+import { logout } from "@/redux/features/au";
 import { useRouter } from "next/navigation";
 
 function LogoutButton() {

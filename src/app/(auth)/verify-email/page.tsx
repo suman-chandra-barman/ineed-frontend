@@ -23,9 +23,9 @@ import { Loader2, Mail } from "lucide-react";
 import {
   useVerifyEmailMutation,
   useResendSignupOtpMutation,
-} from "@/redux/api/authApi";
+} from "@/redux/features/auth/authApi";
 import { useAppDispatch } from "@/redux/hooks";
-import { setCredentials } from "@/redux/features/authSlice";
+import { setCredentials } from "@/redux/features/auth/authSlice";
 import { toast } from "sonner";
 import logo from "@/assets/logo.svg";
 

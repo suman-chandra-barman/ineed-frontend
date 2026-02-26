@@ -22,9 +22,9 @@ import Image from "next/image";
 import { loginformSchema } from "@/schemas/auth.schema";
 import { LoginFormValues } from "@/types/auth.type";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useLoginMutation } from "@/redux/api/authApi";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useAppDispatch } from "@/redux/hooks";
-import { setCredentials } from "@/redux/features/authSlice";
+import { setCredentials } from "@/redux/features/auth/authSlice";
 import { toast } from "sonner";
 
 function SigninPage() {

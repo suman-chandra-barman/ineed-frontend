@@ -29,7 +29,7 @@ import {
   useCreateAvailabilityMutation,
   useCreateW9InfoMutation,
   useSubmitOnboardingMutation,
-} from "@/redux/api/onboardingApi";
+} from "@/redux/features/onbording/onbordingApi";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 

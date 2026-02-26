@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/hooks";
-import { setCredentials } from "@/redux/features/authSlice";
+import { setCredentials } from "@/redux/features/auth/authSlice";
 
 /**
  * Hook to restore authentication state from localStorage on app initialization

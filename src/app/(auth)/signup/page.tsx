@@ -29,7 +29,7 @@ import { signupformSchema } from "@/schemas/auth.schema";
 import { SignupFormValues } from "@/types/auth.type";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useSignupMutation } from "@/redux/api/authApi";
+import { useSignupMutation } from "@/redux/features/auth/authApi";
 import { toast } from "sonner";
 
 function SignupPage() {

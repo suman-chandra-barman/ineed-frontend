@@ -1,4 +1,4 @@
-import { baseApi } from "./baseApi";
+import { baseApi } from "../../api/baseApi";
 
 // Types based on API responses
 interface Profile {

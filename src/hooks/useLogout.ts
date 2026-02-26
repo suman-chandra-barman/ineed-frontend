@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppDispatch } from "@/redux/hooks";
-import { logout as logoutAction } from "@/redux/features/authSlice";
+import { logout as logoutAction } from "@/redux/features/auth/authSlice";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 

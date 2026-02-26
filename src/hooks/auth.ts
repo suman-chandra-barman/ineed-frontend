@@ -18,4 +18,4 @@ export {
   selectCurrentToken,
   setCredentials,
   logout,
-} from "@/redux/features/authSlice";
+} from "@/redux/features/auth/authSlice";
