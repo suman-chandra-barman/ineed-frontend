@@ -3,22 +3,34 @@
 import { ArrowRight, Building2 } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 interface CategoryCardProps {
   title: string;
   description: string;
+  icon?: string; // Optional icon URL
   onClick?: () => void;
 }
 
-export function CategoryCard({ title, description }: CategoryCardProps) {
+export function CategoryCard({ title, description, icon }: CategoryCardProps) {
   return (
     <Link href={`/services`}>
       <article className="relative w-full max-w-lg h-90">
         {/* Main Card */}
         <div className="border border-transparent hover:border-primary group h-full shadow relative flex flex-col rounded-3xl bg-white p-4 transition-all duration-300 cursor-pointer">
           {/* Icon Circle */}
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-            <Building2 className="h-8 w-8" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600 p-1">
+            {icon ? (
+              <Image
+                src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${icon}`}
+                alt="Category Icon"
+                width={40}
+                height={40}
+                className="w-full h-full rounded-full"
+              />
+            ) : (
+              <Building2 className="h-8 w-8" />
+            )}
           </div>
 
           {/* Content */}
