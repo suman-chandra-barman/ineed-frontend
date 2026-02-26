@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { CategoryCard } from "../Cards/CategoryCard";
+import { CategoryGridSkeleton } from "../Skeleton";
+import { ErrorDisplay } from "../Shared/ErrorDisplay";
 import clening from "@/assets/women-cleaning.png";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -9,30 +11,7 @@ import { useGetCategoriesQuery } from "@/redux/features/category/categoryApi";
 import { Category } from "@/types/category";
 
 export default function Categories() {
-  const {data: categoriesData, isLoading: isCategoriesLoading} = useGetCategoriesQuery({});
-
-  // const categories = [
-  //   {
-  //     title: "Residential Services",
-  //     description:
-  //       "From regular housekeeping to deep cleaning, we ensure your home is always welcoming and pristine.",
-  //   },
-  //   {
-  //     title: "Commercial Services",
-  //     description:
-  //       "Keep your workplace clean and pristine with our comprehensive commercial cleaning services.",
-  //   },
-  //   {
-  //     title: "Specialize Cleaning",
-  //     description:
-  //       "We Offer specialized services, including carpet cleaning, window washing, and address specific cleaning needs.",
-  //   },
-  //   {
-  //     title: "Office Cleaning",
-  //     description:
-  //       "Keep your workplace clean and pristine with our comprehensive commercial cleaning services.",
-  //   },
-  // ];
+  const { data: categoriesData, isLoading, error } = useGetCategoriesQuery({});
 
   return (
     <section className="bg-[#FBFBFB]">
@@ -53,18 +32,30 @@ export default function Categories() {
           </div>
         </div>
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {categoriesData?.data.slice(0, 4).map((category: Category) => (
-            <div key={category.id} className="flex justify-center">
+        {isLoading ? (
+          <CategoryGridSkeleton count={4} />
+        ) : error ? (
+          <ErrorDisplay
+            title="Failed to Load Categories"
+            message="We couldn't load the categories. Please try again later."
+            onRetry={() => window.location.reload()}
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {categoriesData?.data.slice(0, 4).map((category: Category) => (
               <CategoryCard
+                key={category.id}
+                id={category.id}
                 title={category.category_name}
                 icon={category.category_icon_upload}
                 description={category.subtitle}
-                onClick={() => console.log(`Clicked: ${category.category_name}`)}
+                onClick={() =>
+                  console.log(`Clicked: ${category.category_name}`)
+                }
               />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
         <div className="text-center mt-12">
           <Link href="/categories">
             <Button className="px-12">See All</Button>

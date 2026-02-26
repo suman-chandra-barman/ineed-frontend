@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import FilterSidebar, { FilterState } from "@/components/Shared/FilterSidebar";
 import ServiceCard from "@/components/Cards/ServiceCard";
 import Pagination from "@/components/Shared/Pagination";
-import { ChevronDown, ChevronRight, Home } from "lucide-react";
-import { services } from "@/components/Home/Services";
+import { ServiceGridSkeleton } from "@/components/Skeleton";
+import { ErrorDisplay, EmptyState } from "@/components/Shared/ErrorDisplay";
+import { ChevronDown, ChevronRight, Home, PackageX } from "lucide-react";
+import { useGetServicesQuery } from "@/redux/features/service/serviceApi";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,29 +16,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Generate more services for pagination demo
-const allServices = Array.from({ length: 56 }, (_, i) => ({
-  ...services[i % services.length],
-  id: i + 1,
-}));
-
 const ITEMS_PER_PAGE = 9;
 
 function ServicesPage() {
+  const searchParams = useSearchParams();
+  const categoryId = searchParams.get("category_id");
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState<FilterState | null>(null);
   const [sortBy, setSortBy] = useState("price-low-to-high");
 
+  // Fetch services from API
+  const {
+    data: servicesData,
+    isLoading,
+    error,
+  } = useGetServicesQuery({
+    category_id: categoryId ? parseInt(categoryId) : undefined,
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+  });
+
   // Calculate pagination
-  const totalPages = Math.ceil(allServices.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentServices = allServices.slice(startIndex, endIndex);
+  const totalPages = servicesData?.meta?.totalPage || 1;
+  const totalServices = servicesData?.meta?.total || 0;
 
   const handleFilterChange = (newFilters: FilterState) => {
-    setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filters change
     console.log("Filters applied:", newFilters);
+    // TODO: Apply filters to API query
   };
 
   const handlePageChange = (page: number) => {
@@ -70,7 +78,7 @@ function ServicesPage() {
               <h1 className="text-2xl font-bold text-gray-900">
                 Found{" "}
                 <span className="text-amber-500">
-                  {allServices.length} Services
+                  {isLoading ? "..." : `${totalServices} Services`}
                 </span>
               </h1>
 
@@ -110,11 +118,31 @@ function ServicesPage() {
             </div>
 
             {/* Services Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {currentServices.map((service) => (
-                <ServiceCard key={service.id} service={service} />
-              ))}
-            </div>
+            {isLoading ? (
+              <ServiceGridSkeleton count={9} />
+            ) : error ? (
+              <ErrorDisplay
+                title="Failed to Load Services"
+                message="We couldn't load the services. Please check your connection and try again."
+                onRetry={() => window.location.reload()}
+              />
+            ) : !servicesData?.data || servicesData.data.length === 0 ? (
+              <EmptyState
+                title="No Services Found"
+                message="We couldn't find any services matching your criteria. Try adjusting your filters."
+                icon={
+                  <div className="rounded-full bg-gray-100 p-4">
+                    <PackageX className="w-12 h-12 text-gray-400" />
+                  </div>
+                }
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {servicesData.data.map((service) => (
+                  <ServiceCard key={service.id} service={service} />
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
             <Pagination

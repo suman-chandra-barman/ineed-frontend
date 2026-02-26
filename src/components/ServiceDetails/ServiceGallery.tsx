@@ -58,6 +58,8 @@ export default function ServiceGallery({ images }: ServiceGalleryProps) {
                   <div className="relative aspect-video bg-gray-200">
                     <Image
                       src={image}
+                      width={100}
+                      height={100}
                       alt={`Service image ${index + 1}`}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -106,6 +108,8 @@ export default function ServiceGallery({ images }: ServiceGalleryProps) {
                     <Image
                       src={image}
                       alt={`Thumbnail ${index + 1}`}
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;

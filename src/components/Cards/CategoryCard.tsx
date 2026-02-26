@@ -6,16 +6,22 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface CategoryCardProps {
+  id: number;
   title: string;
   description: string;
   icon?: string; // Optional icon URL
   onClick?: () => void;
 }
 
-export function CategoryCard({ title, description, icon }: CategoryCardProps) {
+export function CategoryCard({
+  id,
+  title,
+  description,
+  icon,
+}: CategoryCardProps) {
   return (
-    <Link href={`/services`}>
-      <article className="relative w-full max-w-lg h-90">
+    <Link href={`/services?category_id=${id}`}>
+      <article className="relative w-full h-full">
         {/* Main Card */}
         <div className="border border-transparent hover:border-primary group h-full shadow relative flex flex-col rounded-3xl bg-white p-4 transition-all duration-300 cursor-pointer">
           {/* Icon Circle */}
