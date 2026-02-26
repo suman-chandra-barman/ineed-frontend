@@ -8,10 +8,15 @@ import logo from "@/assets/logo.svg";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { ProfileDropdown } from "./ProfileDropdown";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 export default function Navbar() {
-  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  console.log("User in Navbar:", user);
+  const pathname = usePathname();
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -62,17 +67,22 @@ export default function Navbar() {
 
           {/* Right Section - Desktop Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button
-              variant="outline"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
-              asChild
-            >
-              <Link href="/signin">Sign In</Link>
-            </Button>
-            <Button className="bg-primary text-white" asChild>
-              <Link href="/signup">Join Us</Link>
-            </Button>
-            <ProfileDropdown/>
+            {!user ? (
+              <>
+                <Button
+                  variant="outline"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  asChild
+                >
+                  <Link href="/signin">Sign In</Link>
+                </Button>
+                <Button className="bg-primary text-white" asChild>
+                  <Link href="/signup">Join Us</Link>
+                </Button>
+              </>
+            ) : (
+              <ProfileDropdown user={user} />
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -106,17 +116,22 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="flex flex-col space-y-3 pt-4 border-t">
-                <Button
-                  variant="outline"
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                  asChild
-                >
-                  <Link href="/signin">Sign In</Link>
-                </Button>
-                <Button className="w-full bg-primary text-white" asChild>
-                  <Link href="/signup">Join Us</Link>
-                </Button>
-                <ProfileDropdown/>
+                {!user ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                      asChild
+                    >
+                      <Link href="/signin">Sign In</Link>
+                    </Button>
+                    <Button className="bg-primary text-white" asChild>
+                      <Link href="/signup">Join Us</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <ProfileDropdown user={user} />
+                )}
               </div>
             </div>
           </div>

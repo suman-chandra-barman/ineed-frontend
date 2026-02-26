@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
@@ -11,23 +12,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
+import { LogoutModal } from "../Modals/LogoutModal";
+import { useState } from "react";
 
 interface ProfileDropdownProps {
-  userAvatar?: string;
-  onLogout?: () => void;
+  user: any;
 }
 
-export function ProfileDropdown({
-  userAvatar,
-  onLogout,
-}: ProfileDropdownProps) {
+export function ProfileDropdown({ user }: ProfileDropdownProps) {
+    const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+
   const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    } else {
-      // Default logout behavior
-      console.log("Logout clicked");
-    }
+    setLogoutModalOpen(true);
   };
 
   return (
@@ -35,9 +31,9 @@ export function ProfileDropdown({
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 hover:bg-gray-50 rounded-full p-1 transition-colors cursor-pointer">
           <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
-            {userAvatar ? (
+            {user.image ? (
               <Image
-                src={userAvatar}
+                src={user.image}
                 alt={"User Avatar"}
                 className="w-full h-full object-cover"
               />
@@ -50,19 +46,26 @@ export function ProfileDropdown({
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/user" className="cursor-pointer">
-            <LayoutDashboard className="mr-2 h-4 w-4" />
-            <span>User Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href='/provider' className="cursor-pointer">
-            <LayoutDashboard className="mr-2 h-4 w-4" />
-            <span>Provider Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
+        {user.role === "user" && (
+          <DropdownMenuItem asChild>
+            <Link href="/user" className="cursor-pointer">
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              <span>User Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
+
+        {user.role === "provider" && (
+          <DropdownMenuItem asChild>
+            <Link href="/provider" className="cursor-pointer">
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              <span>Provider Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuSeparator />
+
         <DropdownMenuItem
           onClick={handleLogout}
           className="cursor-pointer text-red-600"
@@ -71,6 +74,7 @@ export function ProfileDropdown({
           <span>Log Out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
+      <LogoutModal open={logoutModalOpen} onOpenChange={setLogoutModalOpen} />
     </DropdownMenu>
   );
 }
