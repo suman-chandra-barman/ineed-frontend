@@ -43,8 +43,6 @@ function PersonalInformationPage() {
   const userData = data.data;
   const imageUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${userData.image}`;
 
-  console.log("User Data image:", imageUrl);
-
   return (
     <>
       <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full">

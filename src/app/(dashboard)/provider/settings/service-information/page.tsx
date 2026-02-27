@@ -3,43 +3,74 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import EditProviderServiceInfoModal from "@/components/Dashboard/EditProviderServiceInfoModal";
+import {
+  useGetProviderServiceInformationQuery,
+  useUpdateProviderServiceInformationMutation,
+} from "@/redux/features/provider/providerApi";
+import { toast } from "sonner";
 
 function ServiceInformationPage() {
   const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // Mock data - replace with actual user data from API/context
-  const [serviceData, setServiceData] = useState({
-    serviceType: "cleaning",
-    experienceLevel: "experienced",
-    shortDescription:
-      "Professional cleaning service with over 5 years of experience in residential and commercial cleaning.",
-  });
+  // API hooks
+  const { data, isLoading, isError, error } =
+    useGetProviderServiceInformationQuery();
+  const [updateServiceInformation, { isLoading: isUpdating }] =
+    useUpdateProviderServiceInformationMutation();
 
-  const handleSave = (updatedData: any) => {
-    setServiceData(updatedData);
-    // Here you would typically make an API call to save the data
+  const handleSave = async (updatedData: any) => {
+    try {
+      await updateServiceInformation({
+        experience_level: updatedData.experienceLevel,
+        short_description: updatedData.shortDescription,
+      }).unwrap();
+      toast.success("Service information updated successfully!");
+      setIsEditModalOpen(false);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to update service information");
+    }
   };
 
-  // Helper function to get display label for service type
-  const getServiceTypeLabel = (value: string) => {
-    const types = [
-      { value: "cleaning", label: "Cleaning Service" },
-      { value: "deep-cleaning", label: "Deep Cleaning" },
-      { value: "maintenance", label: "Maintenance" },
-      { value: "plumbing", label: "Plumbing" },
-      { value: "electrical", label: "Electrical" },
-      { value: "carpentry", label: "Carpentry" },
-      { value: "painting", label: "Painting" },
-    ];
-    return types.find((type) => type.value === value)?.label || value;
-  };
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+            <p className="text-gray-600">Loading service information...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError || !data?.success) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">
+              Failed to load service information
+            </p>
+            <p className="text-gray-600 text-sm">
+              {(error as any)?.data?.message || "Please try again later"}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const serviceInfo = data.data;
 
   // Helper function to get display label for experience level
   const getExperienceLevelLabel = (value: string) => {
@@ -100,7 +131,7 @@ function ServiceInformationPage() {
                 </Label>
                 <Input
                   id="serviceType"
-                  value={getServiceTypeLabel(serviceData.serviceType)}
+                  value={serviceInfo.service.name}
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-900"
                 />
@@ -116,7 +147,7 @@ function ServiceInformationPage() {
                 </Label>
                 <Input
                   id="experienceLevel"
-                  value={getExperienceLevelLabel(serviceData.experienceLevel)}
+                  value={getExperienceLevelLabel(serviceInfo.experience_level)}
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-900"
                 />
@@ -132,7 +163,7 @@ function ServiceInformationPage() {
                 </Label>
                 <Textarea
                   id="shortDescription"
-                  value={serviceData.shortDescription}
+                  value={serviceInfo.short_description}
                   disabled
                   placeholder="Briefly describe your service experience..."
                   className="bg-gray-50 border-gray-200 text-gray-900 min-h-[120px]"
@@ -147,8 +178,13 @@ function ServiceInformationPage() {
       <EditProviderServiceInfoModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        serviceData={serviceData}
+        serviceData={{
+          serviceName: serviceInfo.service.name,
+          experienceLevel: serviceInfo.experience_level,
+          shortDescription: serviceInfo.short_description,
+        }}
         onSave={handleSave}
+        isLoading={isUpdating}
       />
     </>
   );

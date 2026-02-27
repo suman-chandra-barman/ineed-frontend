@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
-import { X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import {
@@ -18,22 +19,13 @@ interface EditProviderServiceInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
   serviceData: {
-    serviceType: string;
+    serviceName: string;
     experienceLevel: string;
     shortDescription: string;
   };
   onSave: (data: any) => void;
+  isLoading?: boolean;
 }
-
-const SERVICE_TYPES = [
-  { value: "cleaning", label: "Cleaning Service" },
-  { value: "deep-cleaning", label: "Deep Cleaning" },
-  { value: "maintenance", label: "Maintenance" },
-  { value: "plumbing", label: "Plumbing" },
-  { value: "electrical", label: "Electrical" },
-  { value: "carpentry", label: "Carpentry" },
-  { value: "painting", label: "Painting" },
-];
 
 const EXPERIENCE_LEVELS = [
   { value: "beginner", label: "Beginner (0-1 years)" },
@@ -46,12 +38,20 @@ export default function EditProviderServiceInfoModal({
   onClose,
   serviceData,
   onSave,
+  isLoading = false,
 }: EditProviderServiceInfoModalProps) {
   const [formData, setFormData] = useState({
-    serviceType: serviceData.serviceType,
     experienceLevel: serviceData.experienceLevel,
     shortDescription: serviceData.shortDescription,
   });
+
+  // Sync formData when serviceData changes
+  useEffect(() => {
+    setFormData({
+      experienceLevel: serviceData.experienceLevel,
+      shortDescription: serviceData.shortDescription,
+    });
+  }, [serviceData]);
 
   if (!isOpen) return null;
 
@@ -63,7 +63,6 @@ export default function EditProviderServiceInfoModal({
 
   const handleCancel = () => {
     setFormData({
-      serviceType: serviceData.serviceType,
       experienceLevel: serviceData.experienceLevel,
       shortDescription: serviceData.shortDescription,
     });
@@ -91,7 +90,7 @@ export default function EditProviderServiceInfoModal({
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
-            {/* Service Type */}
+            {/* Service Type - Display Only */}
             <div>
               <Label
                 htmlFor="serviceType"
@@ -99,23 +98,15 @@ export default function EditProviderServiceInfoModal({
               >
                 Service Type
               </Label>
-              <Select
-                value={formData.serviceType}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, serviceType: value })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select service type..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {SERVICE_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                id="serviceType"
+                value={serviceData.serviceName}
+                disabled
+                className="bg-gray-50 border-gray-200 text-gray-900"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Service type cannot be changed
+              </p>
             </div>
 
             {/* Experience Level */}
@@ -172,11 +163,19 @@ export default function EditProviderServiceInfoModal({
               variant="outline"
               onClick={handleCancel}
               className="flex-1"
+              disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button type="submit" className="flex-1">
-              Save Changes
+            <Button type="submit" className="flex-1" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </div>
         </form>

@@ -4,6 +4,9 @@ import type {
   GetProviderPersonalInformationResponse,
   UpdateProviderPersonalInformationRequest,
   UpdateProviderPersonalInformationResponse,
+  GetProviderServiceInformationResponse,
+  UpdateProviderServiceInformationRequest,
+  UpdateProviderServiceInformationResponse,
 } from "@/types/provider.type";
 
 export const providerApi = baseApi.injectEndpoints({
@@ -101,10 +104,33 @@ export const providerApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["Profile"],
     }),
+    getProviderServiceInformation: builder.query<
+      GetProviderServiceInformationResponse,
+      void
+    >({
+      query: () => ({
+        url: "/provider/settings/service-information/",
+        method: "GET",
+      }),
+      providesTags: ["Service"],
+    }),
+    updateProviderServiceInformation: builder.mutation<
+      UpdateProviderServiceInformationResponse,
+      UpdateProviderServiceInformationRequest
+    >({
+      query: (data) => ({
+        url: "/provider/settings/service-information/",
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Service"],
+    }),
   }),
 });
 
 export const {
   useGetProviderPersonalInformationQuery,
   useUpdateProviderPersonalInformationMutation,
+  useGetProviderServiceInformationQuery,
+  useUpdateProviderServiceInformationMutation,
 } = providerApi;

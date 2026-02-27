@@ -37,3 +37,36 @@ export interface UpdateProviderPersonalInformationResponse {
   message: string;
   data: ProviderPersonalInformation;
 }
+
+// Provider Service Information Types
+
+export interface ServiceInformation {
+  id: number;
+  service: {
+    id: number;
+    name: string;
+    category_id: number;
+  };
+  experience_level: string;
+  short_description: string;
+  created_at: string;
+  updated_at: string;
+  image: string;
+}
+
+export interface GetProviderServiceInformationResponse {
+  success: boolean;
+  message: string;
+  data: ServiceInformation;
+}
+
+export interface UpdateProviderServiceInformationRequest {
+  experience_level: string;
+  short_description: string;
+}
+
+export interface UpdateProviderServiceInformationResponse {
+  success: boolean;
+  message: string;
+  data: ServiceInformation;
+}
