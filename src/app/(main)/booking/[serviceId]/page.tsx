@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useState,
+  useCallback,
+  useSyncExternalStore,
+} from "react";
 import { useRouter, useParams } from "next/navigation";
 import { BookingState } from "@/types/booking.type";
 import { useGetBookingAddonsQuery } from "@/redux/features/booking/bookingApi";
@@ -20,23 +24,47 @@ const STEPS = [
   { id: 5, label: "Confirmation" },
 ];
 
+// Helper functions for step persistence
+const getStorageKey = (serviceId: number) => `booking_step_${serviceId}`;
+
+const getSavedStep = (serviceId: number): number => {
+  if (typeof window === "undefined") return 1;
+  const saved = sessionStorage.getItem(getStorageKey(serviceId));
+  if (saved) {
+    const step = parseInt(saved, 10);
+    if (step >= 1 && step <= 5) return step;
+  }
+  return 1;
+};
+
+const saveStep = (serviceId: number, step: number) => {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(getStorageKey(serviceId), step.toString());
+};
+
+const clearSavedStep = (serviceId: number) => {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(getStorageKey(serviceId));
+};
+
+// For detecting client-side rendering
+const emptySubscribe = () => () => {};
+
 export default function BookingPage() {
   const router = useRouter();
   const params = useParams();
   const bookingId = parseInt(params.serviceId as string);
-  const [mounted] = useState(typeof window !== "undefined");
 
-  // Fetch booking data
-  const {
-    data: bookingData,
-    isLoading,
-    error,
-  } = useGetBookingAddonsQuery(bookingId, {
-    skip: !mounted,
-  });
+  // Use useSyncExternalStore to safely detect client-side mounting without causing re-renders
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
-  const [bookingState, setBookingState] = useState<BookingState>({
-    currentStep: 1,
+  // Initialize with saved step using lazy initialization
+  const [bookingState, setBookingState] = useState<BookingState>(() => ({
+    currentStep: mounted ? getSavedStep(bookingId) : 1,
     totalSteps: 5,
     serviceId: bookingId.toString(),
     serviceName: "",
@@ -56,15 +84,29 @@ export default function BookingPage() {
     isRecurring: false,
     recurringType: null,
     paymentMethod: "stripe",
+  }));
+
+  // Fetch booking data
+  const {
+    data: bookingData,
+    isLoading,
+    error,
+  } = useGetBookingAddonsQuery(bookingId, {
+    skip: !mounted,
   });
 
-  const handleNext = () => {
-    setBookingState((prev) => ({
-      ...prev,
-      currentStep: Math.min(prev.currentStep + 1, prev.totalSteps),
-    }));
+  const handleNext = useCallback(() => {
+    setBookingState((prev) => {
+      const newStep = Math.min(prev.currentStep + 1, prev.totalSteps);
+      // Save the new step to sessionStorage
+      saveStep(bookingId, newStep);
+      return {
+        ...prev,
+        currentStep: newStep,
+      };
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, [bookingId]);
 
   const handleBack = () => {
     setBookingState((prev) => ({
@@ -75,15 +117,20 @@ export default function BookingPage() {
   };
 
   const handleComplete = () => {
+    // Clear saved step when booking is completed
+    clearSavedStep(bookingId);
     router.push("/services");
   };
 
   const handleStepClick = (stepId: number) => {
-    setBookingState((prev) => ({
-      ...prev,
-      currentStep: stepId,
-    }));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Only allow clicking on completed steps (steps before current)
+    if (stepId <= bookingState.currentStep) {
+      setBookingState((prev) => ({
+        ...prev,
+        currentStep: stepId,
+      }));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   if (!mounted || isLoading) {
