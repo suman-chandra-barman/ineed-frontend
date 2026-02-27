@@ -1,36 +1,49 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import EditProviderPersonalInfoModal from "@/components/Dashboard/EditProviderPersonalInfoModal";
+import { useGetProviderPersonalInformationQuery } from "@/redux/features/provider/providerApi";
 
 function PersonalInformationPage() {
   const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // Mock data - replace with actual user data from API/context
-  const [userData, setUserData] = useState({
-    fullName: "Suman Barman",
-    email: "namexxx@gmail.com",
-    contactNumber: "+01 0125 14254",
-    streetAddress: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    avatar: "/placeholder-avatar.jpg",
-    role: "Provider",
-  });
+  const { data, isLoading, isError } = useGetProviderPersonalInformationQuery();
 
-  const handleSave = (updatedData: any) => {
-    setUserData(updatedData);
-    // Here you would typically make an API call to save the data
-  };
+  if (isLoading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-gray-600">Loading personal information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !data?.data) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">
+            Failed to load personal information
+          </p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const userData = data.data;
+  const imageUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${userData.image}`;
+
+  console.log("User Data image:", imageUrl);
 
   return (
     <>
@@ -58,22 +71,22 @@ function PersonalInformationPage() {
               <div className="flex items-center gap-4">
                 <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
                   <Image
-                    src={userData.avatar}
-                    alt={userData.fullName}
+                    src={imageUrl}
+                    alt={userData.full_name}
                     fill
                     className="object-cover"
+                    sizes="64px"
+                    unoptimized
                   />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">
-                    {userData.fullName}
+                    {userData.full_name}
                   </h2>
-                  <p className="text-sm text-gray-500">{userData.role}</p>
+                  <p className="text-sm text-gray-500">Provider</p>
                 </div>
               </div>
-              <Button
-                onClick={() => setIsEditModalOpen(true)}
-              >
+              <Button onClick={() => setIsEditModalOpen(true)}>
                 <Pencil className="w-4 h-4 mr-2" />
                 Edit
               </Button>
@@ -91,7 +104,7 @@ function PersonalInformationPage() {
                 </Label>
                 <Input
                   id="fullName"
-                  value={userData.fullName}
+                  value={userData.full_name}
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-900"
                 />
@@ -108,7 +121,7 @@ function PersonalInformationPage() {
                 <div className="relative">
                   <Input
                     id="email"
-                    value={userData.email}
+                    value={userData.email_address}
                     disabled
                     className="bg-gray-50 border-gray-200 text-gray-900"
                   />
@@ -141,7 +154,7 @@ function PersonalInformationPage() {
                 </Label>
                 <Input
                   id="contactNumber"
-                  value={userData.contactNumber}
+                  value={userData.contact_number}
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-900"
                 />
@@ -157,7 +170,7 @@ function PersonalInformationPage() {
                 </Label>
                 <Input
                   id="streetAddress"
-                  value={userData.streetAddress}
+                  value={userData.street_address || ""}
                   placeholder="Enter street address"
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-500"
@@ -174,7 +187,7 @@ function PersonalInformationPage() {
                 </Label>
                 <Input
                   id="city"
-                  value={userData.city}
+                  value={userData.city || ""}
                   placeholder="Enter city"
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-500"
@@ -191,7 +204,7 @@ function PersonalInformationPage() {
                 </Label>
                 <Input
                   id="state"
-                  value={userData.state}
+                  value={userData.state || ""}
                   placeholder="Select state..."
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-500"
@@ -208,7 +221,7 @@ function PersonalInformationPage() {
                 </Label>
                 <Input
                   id="zipCode"
-                  value={userData.zipCode}
+                  value={userData.zip_code || ""}
                   placeholder="Enter ZIP code..."
                   disabled
                   className="bg-gray-50 border-gray-200 text-gray-500"
@@ -224,7 +237,6 @@ function PersonalInformationPage() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         userData={userData}
-        onSave={handleSave}
       />
     </>
   );

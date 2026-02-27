@@ -1,133 +1,135 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
-import { X, Upload } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Upload, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import Image from "next/image";
+import { useUpdateProviderPersonalInformationMutation } from "@/redux/features/provider/providerApi";
+import { ProviderPersonalInformation } from "@/types/provider.type";
+import { toast } from "sonner";
 
 interface EditProviderPersonalInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userData: {
-    fullName: string;
-    email: string;
-    contactNumber: string;
-    streetAddress: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    avatar?: string;
-  };
-  onSave: (data: any) => void;
+  userData: ProviderPersonalInformation;
 }
-
-// US States list
-const US_STATES = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",
-];
 
 export default function EditProviderPersonalInfoModal({
   isOpen,
   onClose,
   userData,
-  onSave,
 }: EditProviderPersonalInfoModalProps) {
+  const [updatePersonalInfo, { isLoading }] =
+    useUpdateProviderPersonalInformationMutation();
+
   const [formData, setFormData] = useState({
-    fullName: userData.fullName,
-    contactNumber: userData.contactNumber,
-    streetAddress: userData.streetAddress,
-    city: userData.city,
-    state: userData.state,
-    zipCode: userData.zipCode,
-    avatar: userData.avatar,
+    full_name: userData.full_name || "",
+    contact_number: userData.contact_number || "",
+    street_address: userData.street_address || "",
+    city: userData.city || "",
+    state: userData.state || "",
+    zip_code: userData.zip_code || "",
   });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>(
+    userData.image
+      ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${userData.image}`
+      : "",
+  );
+
+  // Reset form when modal opens or userData changes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        full_name: userData.full_name || "",
+        contact_number: userData.contact_number || "",
+        street_address: userData.street_address || "",
+        city: userData.city || "",
+        state: userData.state || "",
+        zip_code: userData.zip_code || "",
+      });
+      setImageFile(null);
+      setImagePreview(
+        userData.image
+          ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${userData.image}`
+          : "",
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
-    onClose();
+
+    try {
+      const updateData: {
+        full_name?: string;
+        contact_number?: string;
+        street_address?: string;
+        city?: string;
+        state?: string;
+        zip_code?: string;
+        image?: File;
+      } = {
+        full_name: formData.full_name,
+        contact_number: formData.contact_number,
+        street_address: formData.street_address,
+        city: formData.city,
+        state: formData.state,
+        zip_code: formData.zip_code,
+      };
+
+      if (imageFile) {
+        updateData.image = imageFile;
+      }
+
+      const result = await updatePersonalInfo(updateData).unwrap();
+
+      if (result.success) {
+        toast.success(
+          result.message || "Personal information updated successfully",
+        );
+        onClose();
+      }
+    } catch (error: unknown) {
+      console.error("Failed to update personal information:", error);
+      toast.error(
+        (error as { data?: { message?: string } })?.data?.message ||
+          "Failed to update personal information",
+      );
+    }
   };
 
   const handleCancel = () => {
     setFormData({
-      fullName: userData.fullName,
-      contactNumber: userData.contactNumber,
-      streetAddress: userData.streetAddress,
-      city: userData.city,
-      state: userData.state,
-      zipCode: userData.zipCode,
-      avatar: userData.avatar,
+      full_name: userData.full_name || "",
+      contact_number: userData.contact_number || "",
+      street_address: userData.street_address || "",
+      city: userData.city || "",
+      state: userData.state || "",
+      zip_code: userData.zip_code || "",
     });
+    setImageFile(null);
+    setImagePreview(
+      userData.image
+        ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${userData.image}`
+        : "",
+    );
     onClose();
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ ...formData, avatar: reader.result as string });
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -156,9 +158,9 @@ export default function EditProviderPersonalInfoModal({
           {/* Avatar */}
           <div className="flex flex-col items-center mb-6">
             <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-100 mb-3">
-              {formData.avatar ? (
+              {imagePreview ? (
                 <Image
-                  src={formData.avatar}
+                  src={imagePreview}
                   alt="Profile"
                   fill
                   className="object-cover"
@@ -185,19 +187,19 @@ export default function EditProviderPersonalInfoModal({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* First Name */}
+            {/* Full Name */}
             <div>
               <Label
-                htmlFor="firstName"
+                htmlFor="fullName"
                 className="text-sm font-medium text-gray-700 mb-1.5 block"
               >
-                First Name
+                Full Name
               </Label>
               <Input
                 id="fullName"
-                value={formData.fullName}
+                value={formData.full_name}
                 onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
+                  setFormData({ ...formData, full_name: e.target.value })
                 }
                 placeholder="Enter full name"
                 className="w-full"
@@ -216,9 +218,9 @@ export default function EditProviderPersonalInfoModal({
               <Input
                 id="contactNumber"
                 type="tel"
-                value={formData.contactNumber}
+                value={formData.contact_number}
                 onChange={(e) =>
-                  setFormData({ ...formData, contactNumber: e.target.value })
+                  setFormData({ ...formData, contact_number: e.target.value })
                 }
                 placeholder="Enter contact number"
                 className="w-full"
@@ -236,9 +238,9 @@ export default function EditProviderPersonalInfoModal({
               </Label>
               <Input
                 id="streetAddress"
-                value={formData.streetAddress}
+                value={formData.street_address}
                 onChange={(e) =>
-                  setFormData({ ...formData, streetAddress: e.target.value })
+                  setFormData({ ...formData, street_address: e.target.value })
                 }
                 placeholder="Enter street address"
                 className="w-full"
@@ -272,23 +274,15 @@ export default function EditProviderPersonalInfoModal({
               >
                 State
               </Label>
-              <Select
+              <Input
+                id="state"
                 value={formData.state}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, state: value })
+                onChange={(e) =>
+                  setFormData({ ...formData, state: e.target.value })
                 }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select state..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {US_STATES.map((state) => (
-                    <SelectItem key={state} value={state}>
-                      {state}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Enter state"
+                className="w-full"
+              />
             </div>
 
             {/* Zip Code */}
@@ -301,9 +295,9 @@ export default function EditProviderPersonalInfoModal({
               </Label>
               <Input
                 id="zipCode"
-                value={formData.zipCode}
+                value={formData.zip_code}
                 onChange={(e) =>
-                  setFormData({ ...formData, zipCode: e.target.value })
+                  setFormData({ ...formData, zip_code: e.target.value })
                 }
                 placeholder="Enter ZIP code"
                 className="w-full"
@@ -318,15 +312,20 @@ export default function EditProviderPersonalInfoModal({
               type="button"
               variant="outline"
               onClick={handleCancel}
-              className="flex-1 "
+              className="flex-1"
+              disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              className="flex-1 "
-            >
-              Save Changes
+            <Button type="submit" className="flex-1" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </div>
         </form>
