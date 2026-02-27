@@ -15,7 +15,6 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
 
-  console.log("User in Navbar:", user);
   const pathname = usePathname();
 
   const navLinks = [
