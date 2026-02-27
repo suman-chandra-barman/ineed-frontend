@@ -1,14 +1,6 @@
-import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import * as z from "zod";
 import { onboardingStep1Schema } from "@/schemas/auth.schema";
 
@@ -131,24 +123,12 @@ export function Step1PersonalInfo({ form }: Step1PersonalInfoProps) {
           >
             State
           </Label>
-          <Select
-            value={form.watch("state")}
-            onValueChange={(value) =>
-              form.setValue("state", value, {
-                shouldValidate: true,
-              })
-            }
-          >
-            <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Select state..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ny">New York</SelectItem>
-              <SelectItem value="ca">California</SelectItem>
-              <SelectItem value="tx">Texas</SelectItem>
-              <SelectItem value="fl">Florida</SelectItem>
-            </SelectContent>
-          </Select>
+          <Input
+            id="state"
+            placeholder="Enter state"
+            {...form.register("state")}
+            className="bg-white"
+          />
           {form.formState.errors.state && (
             <p className="text-red-500 text-sm mt-1">
               {form.formState.errors.state.message}

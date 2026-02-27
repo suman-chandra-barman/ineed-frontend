@@ -1,6 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+  useSyncExternalStore,
+  useLayoutEffect,
+} from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -32,6 +37,32 @@ import {
 } from "@/redux/features/onbording/onbordingApi";
 
 type Step = 1 | 2 | 3 | 4 | 5;
+
+// Helper functions for step persistence
+const ONBOARDING_STORAGE_KEY = "onboarding_current_step";
+
+const getSavedStep = (): Step => {
+  if (typeof window === "undefined") return 1;
+  const saved = sessionStorage.getItem(ONBOARDING_STORAGE_KEY);
+  if (saved) {
+    const step = parseInt(saved, 10);
+    if (step >= 1 && step <= 5) return step as Step;
+  }
+  return 1;
+};
+
+const saveStep = (step: Step) => {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(ONBOARDING_STORAGE_KEY, step.toString());
+};
+
+const clearSavedStep = () => {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(ONBOARDING_STORAGE_KEY);
+};
+
+// For detecting client-side rendering
+const emptySubscribe = () => () => {};
 
 interface FormData {
   // Step 1: Personal Information
@@ -68,7 +99,34 @@ interface FormData {
 
 function OnboardingPage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState<Step>(1);
+
+  // Use useSyncExternalStore to safely detect client-side mounting
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+
+  // Initialize with saved step
+  const [currentStep, setCurrentStep] = useState<Step>(() =>
+    mounted ? getSavedStep() : 1,
+  );
+
+  // Restore step from sessionStorage after hydration
+  useLayoutEffect(() => {
+    if (mounted) {
+      const savedStep = getSavedStep();
+      if (savedStep > 1) {
+        setCurrentStep((prev) => {
+          if (prev !== savedStep) {
+            return savedStep;
+          }
+          return prev;
+        });
+      }
+    }
+  }, [mounted]);
+
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
@@ -245,7 +303,9 @@ function OnboardingPage() {
           zip_code: step1Data.zipCode,
         }).unwrap();
 
-        setCurrentStep(2);
+        const nextStep = 2;
+        saveStep(nextStep);
+        setCurrentStep(nextStep);
       } else if (currentStep === 2) {
         // Step 2: Create service information
         const step2Data = stepData as z.infer<typeof onboardingStep2Schema>;
@@ -268,7 +328,9 @@ function OnboardingPage() {
             ],
           }).unwrap();
 
-          setCurrentStep(3);
+          const nextStep = 3;
+          saveStep(nextStep);
+          setCurrentStep(nextStep);
         }
       } else if (currentStep === 3) {
         // Step 3: Create availability
@@ -322,7 +384,9 @@ function OnboardingPage() {
 
         await createAvailability({ days, slots }).unwrap();
 
-        setCurrentStep(4);
+        const nextStep = 4;
+        saveStep(nextStep);
+        setCurrentStep(nextStep);
       } else if (currentStep === 4) {
         // Step 4: Create W-9 information
         const step4Data = stepData as z.infer<typeof onboardingStep4Schema>;
@@ -337,13 +401,18 @@ function OnboardingPage() {
           zip_code: step4Data.w9ZipCode,
         }).unwrap();
 
-        setCurrentStep(5);
+        const nextStep = 5 as Step;
+        saveStep(nextStep);
+        setCurrentStep(nextStep);
       } else if (currentStep === 5) {
         // Step 5: Submit onboarding
         const step5Data = stepData as z.infer<typeof onboardingStep5Schema>;
         await submitOnboarding({
           is_agreed: step5Data.acknowledged,
         }).unwrap();
+
+        // Clear saved step when onboarding is completed
+        clearSavedStep();
 
         // Navigate to home page after successful submission
         router.push("/");
@@ -417,45 +486,59 @@ function OnboardingPage() {
               title:
                 currentStep === 5 ? "Confirmation" : "Review & Confirmation",
             },
-          ].map((step, index) => (
-            <div key={step.number} className="flex items-start">
-              <div className="flex flex-col items-center">
-                <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-semibold text-sm lg:text-base transition-colors ${
-                    currentStep > step.number
-                      ? "bg-primary text-white"
-                      : currentStep === step.number
-                        ? "bg-primary text-white ring-4 ring-primary/20"
-                        : "bg-primary/20 text-slate-400"
-                  }`}
-                >
-                  {currentStep > step.number ? (
-                    <Check className="w-4 h-4 lg:w-5 lg:h-5" />
-                  ) : (
-                    step.number
+          ].map((step, index) => {
+            const isCompleted = currentStep > step.number;
+            const isCurrent = currentStep === step.number;
+            const isAccessible = step.number <= currentStep;
+
+            return (
+              <button
+                key={step.number}
+                type="button"
+                onClick={() => {
+                  if (isAccessible) {
+                    setCurrentStep(step.number as Step);
+                  }
+                }}
+                disabled={!isAccessible}
+                className="flex items-start w-full text-left transition-opacity hover:opacity-80 disabled:cursor-not-allowed"
+              >
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-semibold text-sm lg:text-base transition-colors ${
+                      isCompleted
+                        ? "bg-primary text-white"
+                        : isCurrent
+                          ? "bg-primary text-white ring-4 ring-primary/20"
+                          : "bg-primary/20 text-slate-400"
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <Check className="w-4 h-4 lg:w-5 lg:h-5" />
+                    ) : (
+                      step.number
+                    )}
+                  </div>
+                  {index < 4 && (
+                    <div
+                      className={`w-0.5 h-12 lg:h-16 my-1 ${
+                        isCompleted ? "bg-primary" : "bg-primary/20"
+                      }`}
+                    />
                   )}
                 </div>
-                {index < 4 && (
-                  <div
-                    className={`w-0.5 h-12 lg:h-16 my-1 ${
-                      currentStep > step.number ? "bg-primary" : "bg-primary/20"
+                <div className="ml-3 lg:ml-4 mt-2">
+                  <p
+                    className={`font-medium text-xs lg:text-sm ${
+                      isAccessible ? "text-slate-700" : "text-slate-400"
                     }`}
-                  />
-                )}
-              </div>
-              <div className="ml-3 lg:ml-4 mt-2">
-                <p
-                  className={`font-medium text-xs lg:text-sm ${
-                    currentStep >= step.number
-                      ? "text-slate-700"
-                      : "text-slate-400"
-                  }`}
-                >
-                  {step.title}
-                </p>
-              </div>
-            </div>
-          ))}
+                  >
+                    {step.title}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
         </nav>
       </aside>
 

@@ -64,7 +64,7 @@ export const onboardingStep1Schema = z.object({
     .string()
     .min(5, { message: "Please enter a valid street address" }),
   city: z.string().min(2, { message: "Please enter a valid city" }),
-  state: z.string().min(1, { message: "Please select a state" }),
+  state: z.string().min(1, { message: "Please enter a state" }),
   zipCode: z.string().min(4, { message: "Please enter a valid ZIP code" }),
 });
 

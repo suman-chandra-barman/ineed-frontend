@@ -167,24 +167,12 @@ export function Step4LegalInfo({ form }: Step4LegalInfoProps) {
           >
             State
           </Label>
-          <Select
-            value={form.watch("w9State")}
-            onValueChange={(value) =>
-              form.setValue("w9State", value, {
-                shouldValidate: true,
-              })
-            }
-          >
-            <SelectTrigger className="bg-white">
-              <SelectValue placeholder="United States" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ny">New York</SelectItem>
-              <SelectItem value="ca">California</SelectItem>
-              <SelectItem value="tx">Texas</SelectItem>
-              <SelectItem value="fl">Florida</SelectItem>
-            </SelectContent>
-          </Select>
+          <Input
+            id="w9State"
+            placeholder="New York"
+            {...form.register("w9State")}
+            className="bg-white"
+          />
           {form.formState.errors.w9State && (
             <p className="text-red-500 text-sm mt-1">
               {form.formState.errors.w9State.message}
