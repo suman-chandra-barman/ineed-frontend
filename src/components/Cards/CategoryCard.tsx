@@ -9,7 +9,7 @@ interface CategoryCardProps {
   id: number;
   title: string;
   description: string;
-  icon?: string; // Optional icon URL
+  icon?: string;
   onClick?: () => void;
 }
 

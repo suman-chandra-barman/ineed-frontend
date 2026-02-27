@@ -1,51 +1,14 @@
 "use client";
 
 import { CategoryCard } from "@/components/Cards/CategoryCard";
+import { ErrorDisplay } from "@/components/Shared/ErrorDisplay";
+import { CategoryGridSkeleton } from "@/components/Skeleton/CategoryGridSkeleton";
+import { useGetCategoriesQuery } from "@/redux/features/category/categoryApi";
+import { Category } from "@/types/category";
 import { ChevronRight, Home } from "lucide-react";
 
 function CategoriesPage() {
-  const categories = [
-    {
-      title: "Residential Services",
-      description:
-        "From regular housekeeping to deep cleaning, we ensure your home is always welcoming and pristine.",
-    },
-    {
-      title: "Commercial Services",
-      description:
-        "Keep your workplace clean and pristine with our comprehensive commercial cleaning services.",
-    },
-    {
-      title: "Specialize Cleaning",
-      description:
-        "We Offer specialized services, including carpet cleaning, window washing, and address specific cleaning needs.",
-    },
-    {
-      title: "Commercial Services",
-      description:
-        "Keep your workplace clean and pristine with our comprehensive commercial cleaning services.",
-    },
-    {
-      title: "Specialize Cleaning",
-      description:
-        "We Offer specialized services, including carpet cleaning, window washing, and address specific cleaning needs.",
-    },
-    {
-      title: "Office Cleaning",
-      description:
-        "Keep your workplace clean and pristine with our comprehensive commercial cleaning services.",
-    },
-    {
-      title: "Commercial Services",
-      description:
-        "Keep your workplace clean and pristine with our comprehensive commercial cleaning services.",
-    },
-    {
-      title: "Residential Services",
-      description:
-        "From regular housekeeping to deep cleaning, we ensure your home is always welcoming and pristine.",
-    },
-  ];
+  const { data: categoriesData, isLoading, error } = useGetCategoriesQuery({});
 
   return (
     <main className="bg-[#FBFBFB]">
@@ -60,16 +23,27 @@ function CategoriesPage() {
         </div>
       </div>
       <div className="mx-auto container px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {categories.map((category, index) => (
-            <div key={index} className="flex justify-center">
+        {isLoading ? (
+          <CategoryGridSkeleton count={4} />
+        ) : error ? (
+          <ErrorDisplay
+            title="Failed to Load Categories"
+            message="We couldn't load the categories. Please try again later."
+            onRetry={() => window.location.reload()}
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {categoriesData?.data.map((category: Category) => (
               <CategoryCard
-                title={category.title}
-                description={category.description}
+                key={category.id}
+                id={category.id}
+                title={category.category_name}
+                description={category.subtitle}
+                icon={category.category_icon_upload}
               />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );
