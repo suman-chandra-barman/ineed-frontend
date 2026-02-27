@@ -199,26 +199,22 @@ export interface PaymentDetailsAddon {
   image: string | null;
 }
 
-export interface PaymentDetailsPricing {
+export interface PaymentDetailsBreakdown {
   service_fee: string;
-  addons_total: string;
-  tax_amount: string;
-  total_amount: string;
-}
-
-export interface PaymentDetailsPayment {
-  method: string;
-  status: string | null;
-  transaction_id: string | null;
+  additional_service: string;
+  tax: string;
+  total: string;
 }
 
 export interface PaymentDetailsResponse {
   booking_id: number;
   booking_code: string;
   service: PaymentDetailsService;
-  addons: PaymentDetailsAddon[];
-  pricing: PaymentDetailsPricing;
-  payment: PaymentDetailsPayment;
+  available_addons: PaymentDetailsAddon[];
+  breakdown: PaymentDetailsBreakdown;
+  currency: string;
+  method: string;
+  payment_status: string;
 }
 
 export interface PaymentInfo {
