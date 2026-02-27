@@ -22,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${dmSans.variable} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${dmSans.variable} antialiased`} suppressHydrationWarning>
         <Toaster position="top-right" richColors />
         <StoreProvider>
           <AuthProvider>{children}</AuthProvider>

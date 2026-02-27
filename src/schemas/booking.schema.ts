@@ -8,9 +8,9 @@ export const servicingInformationSchema = z.object({
     .min(10, "Contact number must be at least 10 digits"),
   state: z.string().min(1, "Please select a state"),
   zipCode: z.string().min(4, "Zip code must be at least 4 characters"),
-  notes: z.string().optional(),
-  numberOfBedrooms: z.string().optional(),
-  approximateSquareFootage: z.string().optional(),
+  notes: z.string().min(10, "Notes must be at least 10 characters"),
+  numberOfBedrooms: z.string().min(1, "Number of bedrooms must be at least 1"),
+  approximateSquareFootage: z.string().min(1, "Approximate square footage must be at least 1"),
 });
 
 export const dateTimeSchema = z.object({

@@ -338,7 +338,6 @@ export default function DateTimeStep({
           Previous
         </Button>
         <div className="flex items-center gap-4">
-          <p className="text-sm text-gray-600">You&apos;re 15% complete</p>
           <Button
             onClick={handleSubmit}
             disabled={!canProceed || isLoading}

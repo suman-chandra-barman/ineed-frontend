@@ -94,19 +94,6 @@ export default function AdditionalFeaturesStep({
         </p>
       </div>
 
-      {/* Service Info */}
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 className="font-semibold text-gray-900 mb-2">
-          {bookingData.service.name}
-        </h3>
-        <p className="text-sm text-gray-600">
-          {bookingData.service.description}
-        </p>
-        <p className="text-lg font-bold text-primary mt-2">
-          ${bookingData.service.base_price}
-        </p>
-      </div>
-
       {/* Service List */}
       <div className="space-y-4">
         {availableAddons.map((addon) => {

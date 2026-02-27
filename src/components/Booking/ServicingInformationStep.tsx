@@ -1,15 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -27,59 +21,6 @@ interface ServicingInformationStepProps {
   onNext: (data: ServicingInformationFormData) => void;
   onBack: () => void;
 }
-
-const US_STATES = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",
-];
 
 export default function ServicingInformationStep({
   bookingId,
@@ -100,15 +41,8 @@ export default function ServicingInformationStep({
     defaultValues: data,
   });
 
-  const selectedState = watch("state");
-
   const onSubmit = async (formData: ServicingInformationFormData) => {
     try {
-      // Split full name into first and last name
-      const nameParts = formData.fullName.trim().split(" ");
-      const firstName = nameParts[0] || "";
-      const lastName = nameParts.slice(1).join(" ") || "";
-
       await updateServicingInfo({
         bookingId,
         full_name: formData.fullName,
@@ -198,21 +132,12 @@ export default function ServicingInformationStep({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="state">State</Label>
-            <Select
-              value={selectedState}
-              onValueChange={(value) => setValue("state", value)}
-            >
-              <SelectTrigger className={errors.state ? "border-red-500" : ""}>
-                <SelectValue placeholder="Select state..." />
-              </SelectTrigger>
-              <SelectContent>
-                {US_STATES.map((state) => (
-                  <SelectItem key={state} value={state}>
-                    {state}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input
+              id="state"
+              placeholder="Enter state..."
+              {...register("state")}
+              className={errors.state ? "border-red-500" : ""}
+            />
             {errors.state && (
               <p className="text-sm text-red-500 mt-1">
                 {errors.state.message}
@@ -245,6 +170,9 @@ export default function ServicingInformationStep({
             rows={3}
             {...register("notes")}
           />
+          {errors.notes && (
+            <p className="text-sm text-red-500 mt-1">{errors.notes.message}</p>
+          )}
         </div>
 
         {/* Number of Bedrooms and Square Footage */}
@@ -256,6 +184,11 @@ export default function ServicingInformationStep({
               placeholder="Enter number of bedrooms"
               {...register("numberOfBedrooms")}
             />
+            {errors.numberOfBedrooms && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.numberOfBedrooms.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -267,6 +200,11 @@ export default function ServicingInformationStep({
               placeholder="enter square footage"
               {...register("approximateSquareFootage")}
             />
+            {errors.approximateSquareFootage && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.approximateSquareFootage.message}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -277,7 +215,6 @@ export default function ServicingInformationStep({
           Previous
         </Button>
         <div className="flex items-center gap-4">
-          <p className="text-sm text-gray-600">You&apos;re 15% complete</p>
           <Button type="submit" size="lg" disabled={isLoading}>
             {isLoading ? (
               <>

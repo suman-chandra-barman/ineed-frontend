@@ -1,46 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { AdditionalService, ServiceImage } from "@/types/booking.type";
-import { useCreatePaymentMutation } from "@/redux/features/booking/bookingApi";
+import {
+  useGetPaymentDetailsQuery,
+  useCreatePaymentMutation,
+} from "@/redux/features/booking/bookingApi";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
 interface PaymentStepProps {
   bookingId: number;
-  serviceName: string;
-  servicePrice: number;
-  serviceImage: ServiceImage;
-  additionalServices: AdditionalService[];
-  selectedServiceIds: string[];
   onNext: () => void;
   onBack: () => void;
 }
 
 export default function PaymentStep({
   bookingId,
-  serviceName,
-  servicePrice,
-  serviceImage,
-  additionalServices,
-  selectedServiceIds,
   onNext,
   onBack,
 }: PaymentStepProps) {
-  const [createPayment, { isLoading }] = useCreatePaymentMutation();
-
-  const selectedServices = additionalServices.filter((s) =>
-    selectedServiceIds.includes(s.id),
-  );
-
-  const serviceFee = servicePrice;
-  const additionalServiceFee = selectedServices.reduce(
-    (sum, service) => sum + service.price,
-    0,
-  );
-  const tax = (serviceFee + additionalServiceFee) * 0.1; // 10% tax
-  const total = serviceFee + additionalServiceFee + tax;
+  const {
+    data: paymentDetails,
+    isLoading: isLoadingDetails,
+    error,
+  } = useGetPaymentDetailsQuery(bookingId);
+  const [createPayment, { isLoading: isProcessing }] =
+    useCreatePaymentMutation();
 
   const handlePayment = async () => {
     try {
@@ -58,13 +45,40 @@ export default function PaymentStep({
     }
   };
 
+  if (isLoadingDetails) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+          <p className="mt-4 text-gray-600">Loading payment details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !paymentDetails || !paymentDetails.service) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <p className="text-red-600">Failed to load payment details</p>
+          <Button onClick={onBack} variant="outline" className="mt-4">
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const { service, available_addons, breakdown, } = paymentDetails;
+
+  console.log("Payment Details:", paymentDetails);
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment</h2>
         <p className="text-gray-600">
-          Choose your preferred service date and time slot.
+          Review your order and proceed to payment.
         </p>
       </div>
 
@@ -107,9 +121,9 @@ export default function PaymentStep({
             className="w-full mt-6"
             size="lg"
             onClick={handlePayment}
-            disabled={isLoading}
+            disabled={isProcessing}
           >
-            {isLoading ? (
+            {isProcessing ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Processing...
@@ -124,39 +138,51 @@ export default function PaymentStep({
         <div className="bg-gray-50 rounded-lg p-6">
           {/* Main Service */}
           <div className="flex items-start gap-3 pb-4 mb-4 border-b border-gray-200">
-            <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden">
+            <div className="shrink-0 w-16 h-16 rounded-lg overflow-hidden">
               <Image
-                src={serviceImage}
-                alt={serviceName}
+                src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${service.image}`}
+                alt={service.name}
                 width={64}
                 height={64}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-900">{serviceName}</h3>
-              <p className="text-sm text-gray-500 mt-1">Starting From</p>
+              <h3 className="font-semibold text-gray-900">{service.name}</h3>
+              <p className="text-sm text-gray-500 mt-1">{`${service.description.slice(0, 100)}...`}</p>
             </div>
             <div className="text-right">
-              <p className="font-bold text-yellow-600">${servicePrice}</p>
+              <p className="font-semibold text-yellow-600">${service.base_price}</p>
             </div>
           </div>
 
-          {/* Additional Services */}
-          {selectedServices.length > 0 && (
+          {/* Addons */}
+          {available_addons?.length > 0 && (
             <div className="space-y-3 pb-4 mb-4 border-b border-gray-200">
-              {selectedServices.map((service) => (
+              <h4 className="font-medium text-gray-900">Additional Services</h4>
+              {available_addons.map((addon:any) => (
                 <div
-                  key={service.id}
+                  key={addon.id}
                   className="flex justify-between items-start"
                 >
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">{service.name}</p>
-                    <p className="text-sm text-gray-500">
-                      {service.duration} min
-                    </p>
+                  <div className="flex items-start gap-3 flex-1">
+                    {addon.image && (
+                      <div className="shrink-0 w-10 h-10 rounded-lg overflow-hidden">
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${addon.image}`}
+                          alt={addon.title}
+                          width={40}
+                          height={40}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium text-gray-900">{addon.title}</p>
+                      <p className="text-sm text-gray-500">{addon.subtitle}</p>
+                    </div>
                   </div>
-                  <p className="font-bold text-yellow-600">${service.price}</p>
+                  <p className="font-bold text-yellow-600">${addon.price}</p>
                 </div>
               ))}
             </div>
@@ -166,26 +192,22 @@ export default function PaymentStep({
           <div className="space-y-3 pb-4 mb-4 border-b border-gray-200">
             <div className="flex justify-between text-gray-700">
               <span>Service fee</span>
-              <span className="font-semibold">${serviceFee.toFixed(2)}</span>
+              <span className="font-semibold">${breakdown.service_fee}</span>
             </div>
-            {additionalServiceFee > 0 && (
-              <div className="flex justify-between text-gray-700">
-                <span>Additional Service</span>
-                <span className="font-semibold">
-                  ${additionalServiceFee.toFixed(2)}
-                </span>
-              </div>
-            )}
+            <div className="flex justify-between text-gray-700">
+              <span>Additional Service</span>
+              <span className="font-semibold">${breakdown.additional_service}</span>
+            </div>
             <div className="flex justify-between text-gray-700">
               <span>Tax</span>
-              <span className="font-semibold">${tax.toFixed(2)}</span>
+              <span className="font-semibold">${breakdown.tax}</span>
             </div>
           </div>
 
           {/* Total */}
           <div className="flex justify-between items-center text-lg font-bold">
             <span className="text-gray-900">Total</span>
-            <span className="text-gray-900">${total.toFixed(2)}</span>
+            <span className="text-gray-900">${breakdown.total}</span>
           </div>
         </div>
       </div>
@@ -196,7 +218,6 @@ export default function PaymentStep({
           Previous
         </Button>
         <div className="flex items-center gap-4">
-          <p className="text-sm text-gray-600">You&apos;re 15% complete</p>
           <Button onClick={onNext} size="lg">
             Continue
           </Button>

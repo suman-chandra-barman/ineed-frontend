@@ -9,6 +9,7 @@ interface Step {
 interface BookingSidebarProps {
   serviceName: string;
   servicePrice: number;
+  serviceDescription: string;
   serviceImage: StaticImageData | string;
   currentStep: number;
   steps: Step[];
@@ -19,6 +20,7 @@ export default function BookingSidebar({
   serviceName,
   servicePrice,
   serviceImage,
+  serviceDescription,
   currentStep,
   steps,
   onStepClick,
@@ -42,12 +44,14 @@ export default function BookingSidebar({
               {serviceName}
             </h3>
             <p className="text-xs text-gray-500 mt-1">
-              A reliable repair service...
+              {serviceDescription.length > 60
+                ? serviceDescription.substring(0, 57) + "..."
+                : serviceDescription}
             </p>
           </div>
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-3xl font-bold text-primary">
+          <span className="text-xl font-bold text-primary">
             ${servicePrice}
           </span>
           <span className="text-xs text-gray-500">Starting From</span>

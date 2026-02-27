@@ -6,6 +6,7 @@ import {
   UpdateServicingInfoRequest,
   UpdateScheduleRequest,
   PaymentResponse,
+  PaymentDetailsResponse,
   BookingConfirmationResponse,
 } from "@/types/booking.type";
 
@@ -61,6 +62,11 @@ const bookingApi = baseApi.injectEndpoints({
       invalidatesTags: ["Booking"],
     }),
 
+    getPaymentDetails: builder.query<PaymentDetailsResponse, number>({
+      query: (bookingId) => `/bookings/${bookingId}/pay/`,
+      providesTags: ["Booking"],
+    }),
+
     createPayment: builder.mutation<PaymentResponse, number>({
       query: (bookingId) => ({
         url: `/bookings/${bookingId}/pay/`,
@@ -82,6 +88,7 @@ export const {
   useUpdateBookingAddonsMutation,
   useUpdateServicingInfoMutation,
   useUpdateScheduleMutation,
+  useGetPaymentDetailsQuery,
   useCreatePaymentMutation,
   useGetBookingConfirmationQuery,
 } = bookingApi;

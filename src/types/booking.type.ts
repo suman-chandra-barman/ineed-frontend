@@ -183,6 +183,44 @@ export interface PaymentResponse {
   session_id: string;
 }
 
+export interface PaymentDetailsService {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  base_price: string;
+}
+
+export interface PaymentDetailsAddon {
+  id: number;
+  title: string;
+  subtitle: string;
+  price: string;
+  image: string | null;
+}
+
+export interface PaymentDetailsPricing {
+  service_fee: string;
+  addons_total: string;
+  tax_amount: string;
+  total_amount: string;
+}
+
+export interface PaymentDetailsPayment {
+  method: string;
+  status: string | null;
+  transaction_id: string | null;
+}
+
+export interface PaymentDetailsResponse {
+  booking_id: number;
+  booking_code: string;
+  service: PaymentDetailsService;
+  addons: PaymentDetailsAddon[];
+  pricing: PaymentDetailsPricing;
+  payment: PaymentDetailsPayment;
+}
+
 export interface PaymentInfo {
   amount: string;
   currency: string;

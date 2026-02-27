@@ -126,6 +126,7 @@ export default function BookingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           <BookingSidebar
             serviceName={bookingData.service.name}
+            serviceDescription={bookingData.service.description}
             servicePrice={parseFloat(bookingData.service.base_price)}
             serviceImage={bookingData.service.image}
             currentStep={bookingState.currentStep}
@@ -183,11 +184,6 @@ export default function BookingPage() {
             {bookingState.currentStep === 4 && (
               <PaymentStep
                 bookingId={bookingId}
-                serviceName={bookingData.service.name}
-                servicePrice={parseFloat(bookingData.service.base_price)}
-                serviceImage={bookingData.service.image}
-                additionalServices={[]}
-                selectedServiceIds={bookingState.additionalServices}
                 onNext={handleNext}
                 onBack={handleBack}
               />
