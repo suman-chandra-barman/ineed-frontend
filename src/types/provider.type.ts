@@ -142,3 +142,100 @@ export interface GetProviderDashboardOverviewResponse {
   message: string;
   data: DashboardOverviewData;
 }
+
+// Provider Job Details Types
+
+export interface JobInformation {
+  job_id: string;
+  job_category: string;
+  booking_date: string;
+}
+
+export interface JobScheduleLocations {
+  customer_name: string;
+  contact_number: string;
+  date: string;
+  time: string;
+  city_state: string;
+  zip_code: string;
+}
+
+export interface JobNotes {
+  text: string;
+}
+
+export interface JobAdditionalFeature {
+  id: number;
+  name: string;
+  duration: string;
+  price: number;
+}
+
+export interface JobService {
+  service_id: number;
+  service_name: string;
+  service_image: string;
+  starting_from: number;
+  quantity: number;
+  additional_features: JobAdditionalFeature[];
+}
+
+export interface JobServiceInformation {
+  services: JobService[];
+}
+
+export interface JobImage {
+  id: number;
+  image: string;
+}
+
+export interface JobImageUploadSection {
+  before_images: JobImage[];
+  after_images: JobImage[];
+}
+
+export interface JobDetailsData {
+  job_information: JobInformation;
+  job_schedule_locations: JobScheduleLocations;
+  job_notes: JobNotes;
+  service_information: JobServiceInformation;
+  image_upload_section: JobImageUploadSection;
+}
+
+export interface GetJobDetailsResponse {
+  success: boolean;
+  message: string;
+  data: JobDetailsData;
+}
+
+export interface StartJobResponse {
+  success: boolean;
+  message: string;
+  data: {
+    booking_id: number;
+    status: string;
+  };
+}
+
+export interface CompleteJobResponse {
+  success: boolean;
+  message: string;
+  data: {
+    booking_id: number;
+    status: string;
+  };
+}
+
+export interface UploadedJobImage {
+  id: number;
+  image_type: string;
+  image: string;
+}
+
+export interface UploadJobImagesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    items: UploadedJobImage[];
+  };
+}

@@ -20,10 +20,6 @@ export default function JobScheduleLocation({
   customer,
   schedule,
 }: JobScheduleLocationProps) {
-  const handleMapClick = () => {
-    // Handle map navigation
-    console.log("Open map");
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
@@ -56,7 +52,7 @@ export default function JobScheduleLocation({
         <div className="flex justify-between items-center pb-3 border-b border-gray-100">
           <span className="text-sm text-gray-600">Time :</span>
           <span className="text-sm font-medium text-gray-500">
-            {schedule.time}
+            {schedule.time === "morning" ? "Morning (9:00 AM - 12:00 PM)" : schedule.time === "afternoon" ? "Afternoon (12:00 PM - 4:00 PM)" : "Evening (4:00 PM - 7:00 PM)"}
           </span>
         </div>
 
@@ -67,22 +63,11 @@ export default function JobScheduleLocation({
           </span>
         </div>
 
-        <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+        <div className="flex justify-between items-center pb-3 border-gray-100">
           <span className="text-sm text-gray-600">Zip Code :</span>
           <span className="text-sm font-medium text-gray-500">
             {schedule.location.zipCode}
           </span>
-        </div>
-
-        <div className="flex justify-between items-center pt-2">
-          <span className="text-sm text-gray-600">Pin Location :</span>
-          <button
-            onClick={handleMapClick}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <FiMap className="w-4 h-4" />
-            Map
-          </button>
         </div>
       </div>
     </div>

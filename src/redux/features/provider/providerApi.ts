@@ -9,6 +9,10 @@ import type {
   UpdateProviderServiceInformationResponse,
   GetLegalW9InformationResponse,
   GetProviderDashboardOverviewResponse,
+  GetJobDetailsResponse,
+  StartJobResponse,
+  CompleteJobResponse,
+  UploadJobImagesResponse,
 } from "@/types/provider.type";
 import type {
   AvailabilityResponse,
@@ -167,6 +171,83 @@ export const providerApi = baseApi.injectEndpoints({
       }),
       providesTags: ["ProviderDashboard"],
     }),
+    getJobDetails: builder.query<GetJobDetailsResponse, number>({
+      query: (bookingId) => ({
+        url: `/provider/dashboard/job-details/${bookingId}/`,
+        method: "GET",
+      }),
+      providesTags: (_result, _error, bookingId) => [
+        { type: "ProviderJob", id: bookingId },
+      ],
+    }),
+    startJob: builder.mutation<StartJobResponse, number>({
+      query: (bookingId) => ({
+        url: `/provider/dashboard/jobs/${bookingId}/start/`,
+        method: "POST",
+      }),
+      invalidatesTags: (_result, _error, bookingId) => [
+        { type: "ProviderJob", id: bookingId },
+        "ProviderDashboard",
+      ],
+    }),
+    completeJob: builder.mutation<CompleteJobResponse, number>({
+      query: (bookingId) => ({
+        url: `/provider/dashboard/jobs/${bookingId}/complete/`,
+        method: "POST",
+      }),
+      invalidatesTags: (_result, _error, bookingId) => [
+        { type: "ProviderJob", id: bookingId },
+        "ProviderDashboard",
+      ],
+    }),
+    uploadJobImages: builder.mutation<
+      UploadJobImagesResponse,
+      { bookingId: number; formData: FormData }
+    >({
+      queryFn: async ({ bookingId, formData }, { getState }) => {
+        try {
+          const state = getState() as RootState;
+          const token = state.auth.token;
+          const headers: HeadersInit = {};
+
+          if (token) {
+            const headerValue = token.startsWith("Bearer ")
+              ? token
+              : `Bearer ${token}`;
+            headers["Authorization"] = headerValue;
+          }
+
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/provider/dashboard/jobs/${bookingId}/images/`,
+            {
+              method: "POST",
+              body: formData,
+              headers,
+              credentials: "include",
+            },
+          );
+
+          const responseData = await response.json();
+
+          if (!response.ok) {
+            return { error: { status: response.status, data: responseData } };
+          }
+
+          return { data: responseData as UploadJobImagesResponse };
+        } catch (error) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              data: error,
+              error: String(error),
+            },
+          };
+        }
+      },
+      invalidatesTags: (_result, _error, { bookingId }) => [
+        { type: "ProviderJob", id: bookingId },
+      ],
+    }),
   }),
 });
 
@@ -179,4 +260,8 @@ export const {
   useUpdateProviderAvailabilityMutation,
   useGetLegalW9InformationQuery,
   useGetProviderDashboardOverviewQuery,
+  useGetJobDetailsQuery,
+  useStartJobMutation,
+  useCompleteJobMutation,
+  useUploadJobImagesMutation,
 } = providerApi;

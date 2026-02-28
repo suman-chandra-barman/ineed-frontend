@@ -1,20 +1,14 @@
 import React from "react";
 import Image from "next/image";
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  duration: string;
-  price: number;
-  image: string;
-}
+import type { JobService } from "@/types/provider.type";
 
 interface JobServiceInfoProps {
-  services: Service[];
+  services: JobService[];
 }
 
 export default function JobServiceInfo({ services }: JobServiceInfoProps) {
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "";
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -24,7 +18,7 @@ export default function JobServiceInfo({ services }: JobServiceInfoProps) {
       <div className="space-y-4">
         {services.map((service) => (
           <div
-            key={service.id}
+            key={service.service_id}
             className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
           >
             <div className="flex items-start justify-between gap-4">
@@ -32,8 +26,12 @@ export default function JobServiceInfo({ services }: JobServiceInfoProps) {
               <div className="flex items-start gap-3 flex-1">
                 <div className="w-12 h-12 rounded-lg bg-gray-100 shrink-0 overflow-hidden">
                   <Image
-                    src={service.image}
-                    alt={service.name}
+                    src={
+                      service.service_image
+                        ? `${baseUrl}${service.service_image}`
+                        : "/service-placeholder.jpg"
+                    }
+                    alt={service.service_name}
                     width={48}
                     height={48}
                     className="w-full h-full object-cover"
@@ -42,10 +40,10 @@ export default function JobServiceInfo({ services }: JobServiceInfoProps) {
 
                 <div className="flex-1">
                   <h4 className="text-sm font-semibold text-gray-900">
-                    {service.name}
+                    {service.service_name}
                   </h4>
                   <p className="text-xs text-gray-500 mt-1">
-                    {service.description}
+                    Qty: {service.quantity}
                   </p>
                 </div>
               </div>
@@ -53,26 +51,36 @@ export default function JobServiceInfo({ services }: JobServiceInfoProps) {
               {/* Price */}
               <div className="text-right shrink-0">
                 <div className="text-2xl font-bold text-blue-600">
-                  ${service.price}
+                  ${service.starting_from}
                 </div>
                 <div className="text-xs text-gray-500">Starting From</div>
               </div>
             </div>
 
-            {/* Duration */}
-            <div className="mt-3 pt-3 border-t border-gray-100">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">
-                  {service.name}
-                </span>
-                <span className="text-sm font-bold text-yellow-500">
-                  ${service.price}
-                </span>
-              </div>
-              <div className="text-xs text-gray-500 mt-1">
-                {service.duration}
-              </div>
-            </div>
+            {/* Additional Features */}
+            {service.additional_features &&
+              service.additional_features.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
+                  {service.additional_features.map((feature) => (
+                    <div
+                      key={feature.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div>
+                        <span className="text-sm font-medium text-gray-900">
+                          {feature.name}
+                        </span>
+                        <span className="text-xs text-gray-500 ml-2">
+                          ({feature.duration})
+                        </span>
+                      </div>
+                      <span className="text-sm font-bold text-yellow-500">
+                        ${feature.price}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
           </div>
         ))}
       </div>
