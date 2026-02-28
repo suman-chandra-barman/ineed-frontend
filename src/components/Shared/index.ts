@@ -8,3 +8,6 @@ export {
 
 // Error and Empty State Components
 export { ErrorDisplay, EmptyState } from "./ErrorDisplay";
+
+// Loading Component
+export { LoadingSpinner } from "./LoadingSpinner";

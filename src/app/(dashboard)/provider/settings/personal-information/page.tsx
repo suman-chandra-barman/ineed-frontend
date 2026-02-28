@@ -2,41 +2,31 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Pencil, Loader2 } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import EditProviderPersonalInfoModal from "@/components/Dashboard/EditProviderPersonalInfoModal";
+import { LoadingSpinner, ErrorDisplay } from "@/components/Shared";
 import { useGetProviderPersonalInformationQuery } from "@/redux/features/provider/providerApi";
 
 function PersonalInformationPage() {
-  const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
+  
   const { data, isLoading, isError } = useGetProviderPersonalInformationQuery();
+  
+  const router = useRouter();
 
-  if (isLoading) {
-    return (
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-gray-600">Loading personal information...</p>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingSpinner message="Loading personal information..." fullPage />;
 
   if (isError || !data?.data) {
     return (
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">
-            Failed to load personal information
-          </p>
-          <Button onClick={() => window.location.reload()}>Retry</Button>
-        </div>
-      </div>
+      <ErrorDisplay
+        message="Failed to load personal information"
+        onRetry={() => window.location.reload()}
+        fullPage
+      />
     );
   }
 

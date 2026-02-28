@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import EditAvailabilityModal from "@/components/Dashboard/EditAvailabilityModal";
@@ -14,6 +14,8 @@ import type {
   SlotType,
   UpdateAvailabilityRequest,
 } from "@/types/availability.type";
+import { ErrorDisplay } from "@/components/Shared/ErrorDisplay";
+import { LoadingSpinner } from "@/components/Shared/LoadingSpinner";
 
 const DAY_LABELS: Record<number, string> = {
   0: "Monday",
@@ -68,26 +70,16 @@ export default function AvailabilityPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
-            <p className="text-gray-600">Loading availability...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading)
+    return <LoadingSpinner message="Loading availability..." fullPage />;
 
   if (isError) {
     return (
-      <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-full">
-        <div className="text-red-500">
-          Failed to load availability. Please try again.
-        </div>
-      </div>
+      <ErrorDisplay
+        message="Failed to load availability information"
+        onRetry={() => window.location.reload()}
+        fullPage
+      />
     );
   }
 

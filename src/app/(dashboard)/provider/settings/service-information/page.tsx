@@ -14,13 +14,15 @@ import {
   useUpdateProviderServiceInformationMutation,
 } from "@/redux/features/provider/providerApi";
 import { toast } from "sonner";
+import { ErrorDisplay } from "@/components/Shared/ErrorDisplay";
+import { LoadingSpinner } from "@/components/Shared/LoadingSpinner";
 
 function ServiceInformationPage() {
   const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // API hooks
-  const { data, isLoading, isError, error } =
+  const { data, isLoading, isError } =
     useGetProviderServiceInformationQuery();
   const [updateServiceInformation, { isLoading: isUpdating }] =
     useUpdateProviderServiceInformationMutation();
@@ -38,35 +40,16 @@ function ServiceInformationPage() {
     }
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
-            <p className="text-gray-600">Loading service information...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading)
+    return <LoadingSpinner message="Loading service information..." fullPage />;
 
-  // Error state
   if (isError || !data?.success) {
     return (
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <p className="text-red-600 mb-4">
-              Failed to load service information
-            </p>
-            <p className="text-gray-600 text-sm">
-              {(error as any)?.data?.message || "Please try again later"}
-            </p>
-          </div>
-        </div>
-      </div>
+      <ErrorDisplay
+        message="Failed to load service information"
+        onRetry={() => window.location.reload()}
+        fullPage
+      />
     );
   }
 

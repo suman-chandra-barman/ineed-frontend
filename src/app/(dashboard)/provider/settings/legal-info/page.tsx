@@ -5,12 +5,29 @@ import { ArrowLeft, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetLegalW9InformationQuery } from "@/redux/features/provider/providerApi";
+import { ErrorDisplay } from "@/components/Shared/ErrorDisplay";
+import { LoadingSpinner } from "@/components/Shared/LoadingSpinner";
 
 function LegalInfoPage() {
   const { data, isLoading, isError } = useGetLegalW9InformationQuery();
-  
+
   const router = useRouter();
   const legalData = data?.data;
+
+  if (isLoading)
+    return (
+      <LoadingSpinner message="Loading legal information..." fullPage />
+    );
+
+  if (isError || !data?.data) {
+    return (
+      <ErrorDisplay
+        message="Failed to load legal information"
+        onRetry={() => window.location.reload()}
+        fullPage
+      />
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-gray-50 min-h-full">
@@ -26,25 +43,6 @@ function LegalInfoPage() {
           <h1 className="text-2xl font-semibold text-gray-900">Legal Info</h1>
         </div>
       </div>
-
-      {isLoading && (
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 animate-pulse space-y-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="h-10 bg-gray-200 rounded-md" />
-              <div className="h-10 bg-gray-200 rounded-md" />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {isError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-          <p className="text-sm text-red-600">
-            Failed to load legal information. Please try again later.
-          </p>
-        </div>
-      )}
 
       {!isLoading && !isError && legalData && (
         <>
