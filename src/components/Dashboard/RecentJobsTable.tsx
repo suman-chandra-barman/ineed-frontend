@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -39,9 +40,22 @@ const formatStatus = (status: string) => {
 interface RecentJobsTableProps {
   title: string;
   jobs?: DashboardRecentJobResult[];
+  onSearch?: (value: string) => void;
 }
 
-export function RecentJobsTable({ title, jobs = [] }: RecentJobsTableProps) {
+export function RecentJobsTable({
+  title,
+  jobs = [],
+  onSearch,
+}: RecentJobsTableProps) {
+  const [inputValue, setInputValue] = useState("");
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      onSearch?.(inputValue.trim());
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       {/* Header */}
@@ -53,6 +67,9 @@ export function RecentJobsTable({ title, jobs = [] }: RecentJobsTableProps) {
             <Input
               type="text"
               placeholder="Search"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="pl-10 pr-4 py-2 w-full sm:w-64 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>

@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { StatusCards } from "@/components/Dashboard/StatusCards";
 import { RecentJobsTable } from "@/components/Dashboard/RecentJobsTable";
 import { useGetProviderDashboardOverviewQuery } from "@/redux/features/provider/providerApi";
 import { ErrorDisplay, LoadingSpinner } from "@/components/Shared";
 
 const ProviderOverviewPage = () => {
+  const [search, setSearch] = useState("");
+
   const { data, isLoading, isError } = useGetProviderDashboardOverviewQuery({
-    search: "home",
+    search: search || undefined,
   });
 
   if (isLoading) {
@@ -31,6 +34,7 @@ const ProviderOverviewPage = () => {
         <RecentJobsTable
           title="Recent Jobs"
           jobs={data?.data.recent_jobs.results}
+          onSearch={setSearch}
         />
       </div>
     </main>
