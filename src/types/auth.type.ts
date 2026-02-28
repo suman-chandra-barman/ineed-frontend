@@ -140,5 +140,23 @@ export interface ResetPasswordResponse {
   };
 }
 
+// Change Password Types
+export interface ChangePasswordRequest {
+  new_password: string;
+  confirm_password: string;
+}
+
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+  accessToken: string;
+  refreshToken: string;
+  user: {
+    email: string;
+    full_name: string;
+    role: string;
+  };
+}
+
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;

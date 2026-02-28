@@ -1,4 +1,3 @@
-
 import { baseApi } from "@/redux/api/baseApi";
 import type {
   SignupRequest,
@@ -15,6 +14,8 @@ import type {
   VerifyResetOtpResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
 } from "@/types/auth.type";
 
 export const authApi = baseApi.injectEndpoints({
@@ -80,6 +81,17 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    changePassword: builder.mutation<
+      ChangePasswordResponse,
+      ChangePasswordRequest
+    >({
+      query: (data) => ({
+        url: "/auth/change-password/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -91,4 +103,5 @@ export const {
   useForgotPasswordMutation,
   useVerifyResetOtpMutation,
   useResetPasswordMutation,
+  useChangePasswordMutation,
 } = authApi;

@@ -6,58 +6,47 @@ import { ArrowLeft, Eye, EyeOff, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useChangePasswordMutation } from "@/redux/features/auth/authApi";
+import { updateTokens } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hooks";
 
 function PasswordChangePage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [changePassword, { isLoading }] = useChangePasswordMutation();
+
   const [showPasswords, setShowPasswords] = useState({
-    current: false,
     new: false,
     confirm: false,
   });
 
   const [formData, setFormData] = useState({
-    currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
   const [errors, setErrors] = useState<{
-    currentPassword?: string;
     newPassword?: string;
     confirmPassword?: string;
+    general?: string;
   }>({});
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Clear error for this field when user starts typing
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name as keyof typeof errors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
-  const togglePasswordVisibility = (field: "current" | "new" | "confirm") => {
-    setShowPasswords((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
+  const togglePasswordVisibility = (field: "new" | "confirm") => {
+    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
-
-    if (!formData.currentPassword.trim()) {
-      newErrors.currentPassword = "Current password is required";
-    }
 
     if (!formData.newPassword.trim()) {
       newErrors.newPassword = "New password is required";
@@ -71,48 +60,40 @@ function PasswordChangePage() {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
-    if (formData.currentPassword === formData.newPassword) {
-      newErrors.newPassword =
-        "New password must be different from current password";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
+    if (!validateForm()) return;
 
     try {
-      // TODO: Make API call to change password
-      // const response = await api.changePassword(formData);
+      const result = await changePassword({
+        new_password: formData.newPassword,
+        confirm_password: formData.confirmPassword,
+      }).unwrap();
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Update tokens in Redux store and localStorage
+      dispatch(
+        updateTokens({
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        }),
+      );
 
       setSuccessMessage("Password changed successfully!");
-      setFormData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
+      setFormData({ newPassword: "", confirmPassword: "" });
 
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 3000);
-    } catch (error) {
-      setErrors({
-        currentPassword: "Failed to change password. Please try again.",
-      });
-    } finally {
-      setIsSubmitting(false);
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (err: unknown) {
+      const error = err as {
+        data?: { message?: string };
+        status?: number;
+      };
+      const message =
+        error?.data?.message || "Failed to change password. Please try again.";
+      setErrors({ general: message });
     }
   };
 
@@ -151,47 +132,15 @@ function PasswordChangePage() {
             </div>
           )}
 
+          {/* General Error */}
+          {errors.general && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800">{errors.general}</p>
+            </div>
+          )}
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Current Password */}
-            <div>
-              <Label
-                htmlFor="currentPassword"
-                className="text-gray-700 text-sm font-medium block mb-2"
-              >
-                Current Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="currentPassword"
-                  name="currentPassword"
-                  type={showPasswords.current ? "text" : "password"}
-                  value={formData.currentPassword}
-                  onChange={handleInputChange}
-                  placeholder="Enter your current password"
-                  className={`pr-10 ${
-                    errors.currentPassword ? "border-red-500" : ""
-                  }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => togglePasswordVisibility("current")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPasswords.current ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-              {errors.currentPassword && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.currentPassword}
-                </p>
-              )}
-            </div>
-
             {/* New Password */}
             <div>
               <Label
@@ -208,9 +157,7 @@ function PasswordChangePage() {
                   value={formData.newPassword}
                   onChange={handleInputChange}
                   placeholder="Enter your new password"
-                  className={`pr-10 ${
-                    errors.newPassword ? "border-red-500" : ""
-                  }`}
+                  className={`pr-10 ${errors.newPassword ? "border-red-500" : ""}`}
                 />
                 <button
                   type="button"
@@ -250,9 +197,7 @@ function PasswordChangePage() {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   placeholder="Confirm your new password"
-                  className={`pr-10 ${
-                    errors.confirmPassword ? "border-red-500" : ""
-                  }`}
+                  className={`pr-10 ${errors.confirmPassword ? "border-red-500" : ""}`}
                 />
                 <button
                   type="button"
@@ -273,32 +218,18 @@ function PasswordChangePage() {
               )}
             </div>
 
-            {/* Password Requirements */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-xs font-semibold text-blue-900 mb-2">
-                Password Requirements:
-              </p>
-              <ul className="text-xs text-blue-800 space-y-1">
-                <li>✓ At least 8 characters long</li>
-                <li>✓ Must contain uppercase and lowercase letters</li>
-                <li>✓ Must contain at least one number</li>
-                <li>
-                  ✓ Must contain at least one special character (@, #, etc.)
-                </li>
-              </ul>
-            </div>
-
             {/* Action Buttons */}
             <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
+                disabled={isLoading}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Changing Password..." : "Change Password"}
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Changing Password..." : "Change Password"}
               </Button>
             </div>
           </form>
