@@ -3,6 +3,7 @@
 import { StatusCards } from "@/components/Dashboard/StatusCards";
 import { RecentJobsTable } from "@/components/Dashboard/RecentJobsTable";
 import { useGetProviderDashboardOverviewQuery } from "@/redux/features/provider/providerApi";
+import { ErrorDisplay, LoadingSpinner } from "@/components/Shared";
 
 const ProviderOverviewPage = () => {
   const { data, isLoading, isError } = useGetProviderDashboardOverviewQuery({
@@ -10,22 +11,16 @@ const ProviderOverviewPage = () => {
   });
 
   if (isLoading) {
-    return (
-      <main className="h-full">
-        <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-full flex items-center justify-center">
-          <p className="text-gray-500">Loading dashboard...</p>
-        </div>
-      </main>
-    );
+    return <LoadingSpinner message="Loading dashboard overview..." fullPage />;
   }
 
   if (isError) {
     return (
-      <main className="h-full">
-        <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-full flex items-center justify-center">
-          <p className="text-red-500">Failed to load dashboard data.</p>
-        </div>
-      </main>
+      <ErrorDisplay
+        message="Failed to load dashboard overview"
+        onRetry={() => window.location.reload()}
+        fullPage
+      />
     );
   }
 
