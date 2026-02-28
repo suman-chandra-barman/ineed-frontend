@@ -1,130 +1,152 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
+import type {
+  AvailabilityDay,
+  AvailabilitySlot,
+  SlotType,
+  UpdateAvailabilityRequest,
+} from "@/types/availability.type";
 
-interface AvailabilityData {
-  days: {
-    monday: boolean;
-    tuesday: boolean;
-    wednesday: boolean;
-    thursday: boolean;
-    friday: boolean;
-    saturday: boolean;
-    sunday: boolean;
-  };
-  timeSlots: {
-    morning: boolean;
-    afternoon: boolean;
-    evening: boolean;
-  };
-}
+// Fixed time ranges per slot_type (matches API)
+const SLOT_CONFIG: Record<
+  SlotType,
+  { from_time: string; to_time: string; label: string; time: string }
+> = {
+  morning: {
+    from_time: "09:00:00",
+    to_time: "12:00:00",
+    label: "Morning",
+    time: "9:00 AM â€“ 12:00 PM",
+  },
+  evening: {
+    from_time: "12:00:00",
+    to_time: "16:00:00",
+    label: "Afternoon",
+    time: "12:00 PM â€“ 4:00 PM",
+  },
+  afternoon: {
+    from_time: "16:00:00",
+    to_time: "19:00:00",
+    label: "Evening",
+    time: "4:00 PM â€“ 7:00 PM",
+  },
+};
+
+const SLOT_TYPES: SlotType[] = ["morning", "evening", "afternoon"];
+
+const DAYS = [
+  { day_of_week: 0, label: "Monday" },
+  { day_of_week: 1, label: "Tuesday" },
+  { day_of_week: 2, label: "Wednesday" },
+  { day_of_week: 3, label: "Thursday" },
+  { day_of_week: 4, label: "Friday" },
+  { day_of_week: 5, label: "Saturday" },
+  { day_of_week: 6, label: "Sunday" },
+];
 
 interface EditAvailabilityModalProps {
   isOpen: boolean;
   onClose: () => void;
-  availability: AvailabilityData;
-  onSave: (data: AvailabilityData) => void;
+  days: AvailabilityDay[];
+  slots: AvailabilitySlot[];
+  onSave: (data: UpdateAvailabilityRequest) => void;
+  isSaving?: boolean;
 }
-
-const DAYS = [
-  { id: "monday", label: "Monday" },
-  { id: "tuesday", label: "Tuesday" },
-  { id: "wednesday", label: "Wednesday" },
-  { id: "thursday", label: "Thursday" },
-  { id: "friday", label: "Friday" },
-  { id: "saturday", label: "Saturday" },
-  { id: "sunday", label: "Sunday" },
-];
-
-const TIME_SLOTS = [
-  { id: "morning", label: "Morning", time: "8:00 AM – 12:00 PM" },
-  { id: "afternoon", label: "Afternoon", time: "12:00 PM – 4:00 PM" },
-  { id: "evening", label: "Evening", time: "4:00 PM – 8:00 PM" },
-];
 
 export default function EditAvailabilityModal({
   isOpen,
   onClose,
-  availability,
+  days,
+  slots,
   onSave,
+  isSaving = false,
 }: EditAvailabilityModalProps) {
-  const [formData, setFormData] = useState<AvailabilityData>(availability);
+  // activeDays: which day_of_week values are active
+  const [activeDays, setActiveDays] = useState<Set<number>>(new Set());
+  // activeSlots: which slot types are active (applies globally across days)
+  const [activeSlotTypes, setActiveSlotTypes] = useState<Set<SlotType>>(
+    new Set(),
+  );
+
+  // Sync state when modal opens or props change
+  useEffect(() => {
+    if (isOpen) {
+      setActiveDays(
+        new Set(days.filter((d) => d.is_active).map((d) => d.day_of_week)),
+      );
+      // A slot type is active if any slot of that type is active
+      const activeTypes = new Set<SlotType>(
+        slots.filter((s) => s.is_active).map((s) => s.slot_type),
+      );
+      setActiveSlotTypes(activeTypes);
+    }
+  }, [isOpen, days, slots]);
 
   if (!isOpen) return null;
 
-  const handleDayChange = (dayId: string) => {
-    const dayKey = dayId as keyof typeof formData.days;
-    setFormData({
-      ...formData,
-      days: {
-        ...formData.days,
-        [dayKey]: !formData.days[dayKey],
-      },
+  const toggleDay = (dayOfWeek: number) => {
+    setActiveDays((prev) => {
+      const next = new Set(prev);
+      if (next.has(dayOfWeek)) next.delete(dayOfWeek);
+      else next.add(dayOfWeek);
+      return next;
     });
   };
 
-  const handleSlotChange = (slotId: string) => {
-    const slotKey = slotId as keyof typeof formData.timeSlots;
-    setFormData({
-      ...formData,
-      timeSlots: {
-        ...formData.timeSlots,
-        [slotKey]: !formData.timeSlots[slotKey],
-      },
+  const toggleSlot = (slotType: SlotType) => {
+    setActiveSlotTypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(slotType)) next.delete(slotType);
+      else next.add(slotType);
+      return next;
     });
+  };
+
+  const handleSelectAllDays = () => {
+    if (activeDays.size === 7) {
+      setActiveDays(new Set());
+    } else {
+      setActiveDays(new Set([0, 1, 2, 3, 4, 5, 6]));
+    }
+  };
+
+  const handleSelectAllSlots = () => {
+    if (activeSlotTypes.size === SLOT_TYPES.length) {
+      setActiveSlotTypes(new Set());
+    } else {
+      setActiveSlotTypes(new Set(SLOT_TYPES));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
-    onClose();
+
+    const daysPayload = DAYS.map((d) => ({
+      day_of_week: d.day_of_week,
+      is_active: activeDays.has(d.day_of_week),
+    }));
+
+    const slotsPayload = DAYS.flatMap((d) =>
+      SLOT_TYPES.map((slotType) => ({
+        day_of_week: d.day_of_week,
+        slot_type: slotType,
+        from_time: SLOT_CONFIG[slotType].from_time,
+        to_time: SLOT_CONFIG[slotType].to_time,
+        is_active:
+          activeDays.has(d.day_of_week) && activeSlotTypes.has(slotType),
+      })),
+    );
+
+    onSave({ days: daysPayload, slots: slotsPayload });
   };
 
   const handleCancel = () => {
-    setFormData(availability);
     onClose();
   };
-
-  const handleSelectAllDays = () => {
-    const allSelected = Object.values(formData.days).every(Boolean);
-    const newDaysState = Object.keys(formData.days).reduce((acc, day) => {
-      return {
-        ...acc,
-        [day]: !allSelected,
-      };
-    }, {});
-
-    setFormData({
-      ...formData,
-      days: newDaysState as typeof formData.days,
-    });
-  };
-
-  const handleSelectAllSlots = () => {
-    const allSelected = Object.values(formData.timeSlots).every(Boolean);
-    const newSlotsState = Object.keys(formData.timeSlots).reduce(
-      (acc, slot) => {
-        return {
-          ...acc,
-          [slot]: !allSelected,
-        };
-      },
-      {},
-    );
-
-    setFormData({
-      ...formData,
-      timeSlots: newSlotsState as typeof formData.timeSlots,
-    });
-  };
-
-  const selectedDaysCount = Object.values(formData.days).filter(Boolean).length;
-  const selectedSlotsCount = Object.values(formData.timeSlots).filter(
-    Boolean,
-  ).length;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -147,42 +169,37 @@ export default function EditAvailabilityModal({
           <div>
             <div className="flex items-center justify-between mb-4">
               <label className="text-base font-semibold text-gray-900">
-                Available Days ({selectedDaysCount}/7)
+                Available Days ({activeDays.size}/7)
               </label>
               <button
                 type="button"
                 onClick={handleSelectAllDays}
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
               >
-                {Object.values(formData.days).every(Boolean)
-                  ? "Deselect All"
-                  : "Select All"}
+                {activeDays.size === 7 ? "Deselect All" : "Select All"}
               </button>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {DAYS.map((day) => {
-                const dayKey = day.id as keyof typeof formData.days;
-                return (
-                  <div
-                    key={day.id}
-                    className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+              {DAYS.map((day) => (
+                <div
+                  key={day.day_of_week}
+                  className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                >
+                  <Checkbox
+                    id={`day-${day.day_of_week}`}
+                    checked={activeDays.has(day.day_of_week)}
+                    onCheckedChange={() => toggleDay(day.day_of_week)}
+                    className="w-5 h-5"
+                  />
+                  <label
+                    htmlFor={`day-${day.day_of_week}`}
+                    className="text-sm font-medium text-gray-700 cursor-pointer"
                   >
-                    <Checkbox
-                      id={`day-${day.id}`}
-                      checked={formData.days[dayKey]}
-                      onCheckedChange={() => handleDayChange(day.id)}
-                      className="w-5 h-5"
-                    />
-                    <label
-                      htmlFor={`day-${day.id}`}
-                      className="text-sm font-medium text-gray-700 cursor-pointer"
-                    >
-                      {day.label}
-                    </label>
-                  </div>
-                );
-              })}
+                    {day.label}
+                  </label>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -190,28 +207,27 @@ export default function EditAvailabilityModal({
           <div>
             <div className="flex items-center justify-between mb-4">
               <label className="text-base font-semibold text-gray-900">
-                Available Time Slots ({selectedSlotsCount}/3)
+                Available Time Slots ({activeSlotTypes.size}/3)
               </label>
               <button
                 type="button"
                 onClick={handleSelectAllSlots}
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
               >
-                {Object.values(formData.timeSlots).every(Boolean)
+                {activeSlotTypes.size === SLOT_TYPES.length
                   ? "Deselect All"
                   : "Select All"}
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {TIME_SLOTS.map((slot) => {
-                const slotKey = slot.id as keyof typeof formData.timeSlots;
-                const isSelected = formData.timeSlots[slotKey];
-
+              {SLOT_TYPES.map((slotType) => {
+                const config = SLOT_CONFIG[slotType];
+                const isSelected = activeSlotTypes.has(slotType);
                 return (
                   <label
-                    key={slot.id}
-                    htmlFor={`slot-${slot.id}`}
+                    key={slotType}
+                    htmlFor={`slot-${slotType}`}
                     className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all ${
                       isSelected
                         ? "border-blue-500 bg-blue-50"
@@ -220,16 +236,18 @@ export default function EditAvailabilityModal({
                   >
                     <div className="flex items-start gap-3">
                       <Checkbox
-                        id={`slot-${slot.id}`}
+                        id={`slot-${slotType}`}
                         checked={isSelected}
-                        onCheckedChange={() => handleSlotChange(slot.id)}
+                        onCheckedChange={() => toggleSlot(slotType)}
                         className="w-5 h-5 mt-1"
                       />
                       <div className="flex-1">
                         <div className="font-semibold text-gray-900">
-                          {slot.label}
+                          {config.label}
                         </div>
-                        <div className="text-sm text-gray-600">{slot.time}</div>
+                        <div className="text-sm text-gray-600">
+                          {config.time}
+                        </div>
                       </div>
                     </div>
                   </label>
@@ -253,11 +271,12 @@ export default function EditAvailabilityModal({
               onClick={handleCancel}
               variant="outline"
               className="px-6"
+              disabled={isSaving}
             >
               Cancel
             </Button>
-            <Button type="submit" className="px-6">
-              Save Changes
+            <Button type="submit" className="px-6" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>

@@ -8,6 +8,10 @@ import type {
   UpdateProviderServiceInformationRequest,
   UpdateProviderServiceInformationResponse,
 } from "@/types/provider.type";
+import type {
+  AvailabilityResponse,
+  UpdateAvailabilityRequest,
+} from "@/types/availability.type";
 
 export const providerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -125,6 +129,24 @@ export const providerApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Service"],
     }),
+    getProviderAvailability: builder.query<AvailabilityResponse, void>({
+      query: () => ({
+        url: "/provider/settings/availability/",
+        method: "GET",
+      }),
+      providesTags: ["Availability"],
+    }),
+    updateProviderAvailability: builder.mutation<
+      AvailabilityResponse,
+      UpdateAvailabilityRequest
+    >({
+      query: (data) => ({
+        url: "/provider/settings/availability/",
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Availability"],
+    }),
   }),
 });
 
@@ -133,4 +155,6 @@ export const {
   useUpdateProviderPersonalInformationMutation,
   useGetProviderServiceInformationQuery,
   useUpdateProviderServiceInformationMutation,
+  useGetProviderAvailabilityQuery,
+  useUpdateProviderAvailabilityMutation,
 } = providerApi;
