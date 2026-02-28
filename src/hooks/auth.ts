@@ -18,4 +18,5 @@ export {
   selectCurrentToken,
   setCredentials,
   logout,
+  updateUser,
 } from "@/redux/features/auth/authSlice";

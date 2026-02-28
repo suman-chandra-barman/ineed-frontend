@@ -67,10 +67,20 @@ const authSlice = createSlice({
         localStorage.setItem("refreshToken", action.payload.refreshToken);
       }
     },
+    updateUser: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(state.user));
+        }
+      }
+    },
   },
 });
 
-export const { setCredentials, logout, updateTokens } = authSlice.actions;
+export const { setCredentials, logout, updateTokens, updateUser } =
+  authSlice.actions;
 
 export default authSlice.reducer;
 

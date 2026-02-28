@@ -9,6 +9,8 @@ import Image from "next/image";
 import { useUpdateProviderPersonalInformationMutation } from "@/redux/features/provider/providerApi";
 import { ProviderPersonalInformation } from "@/types/provider.type";
 import { toast } from "sonner";
+import { useAppDispatch } from "@/redux/hooks";
+import { updateUser } from "@/redux/features/auth/authSlice";
 
 interface EditProviderPersonalInfoModalProps {
   isOpen: boolean;
@@ -23,6 +25,7 @@ export default function EditProviderPersonalInfoModal({
 }: EditProviderPersonalInfoModalProps) {
   const [updatePersonalInfo, { isLoading }] =
     useUpdateProviderPersonalInformationMutation();
+  const dispatch = useAppDispatch();
 
   const [formData, setFormData] = useState({
     full_name: userData.full_name || "",
@@ -91,6 +94,13 @@ export default function EditProviderPersonalInfoModal({
       const result = await updatePersonalInfo(updateData).unwrap();
 
       if (result.success) {
+        // Update Redux state and localStorage with new user info
+        dispatch(
+          updateUser({
+            full_name: result.data.full_name,
+            profile_image: result.data.image,
+          }),
+        );
         toast.success(
           result.message || "Personal information updated successfully",
         );

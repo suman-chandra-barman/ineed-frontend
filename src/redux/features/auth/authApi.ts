@@ -1,4 +1,5 @@
 import { baseApi } from "@/redux/api/baseApi";
+import { updateUser } from "@/redux/features/auth/authSlice";
 import type {
   SignupRequest,
   SignupResponse,
@@ -92,6 +93,38 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    getMe: builder.query<
+      {
+        success: boolean;
+        message: string;
+        data: {
+          user: {
+            id: string;
+            full_name: string;
+            email_address: string;
+            role: string;
+            profile_image: string | null;
+          };
+        };
+      },
+      void
+    >({
+      query: () => ({
+        url: "/auth/me/",
+        method: "GET",
+      }),
+      providesTags: ["User"],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data.success) {
+            dispatch(updateUser(data.data.user));
+          }
+        } catch {
+          // silently ignore
+        }
+      },
+    }),
   }),
 });
 
@@ -104,4 +137,5 @@ export const {
   useVerifyResetOtpMutation,
   useResetPasswordMutation,
   useChangePasswordMutation,
+  useGetMeQuery,
 } = authApi;

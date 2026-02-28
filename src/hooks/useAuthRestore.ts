@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/hooks";
 import { setCredentials } from "@/redux/features/auth/authSlice";
+import { useGetMeQuery } from "@/redux/features/auth/authApi";
 
 /**
  * Hook to restore authentication state from localStorage on app initialization
@@ -11,6 +12,11 @@ import { setCredentials } from "@/redux/features/auth/authSlice";
 export function useAuthRestore() {
   const dispatch = useAppDispatch();
   const [isRestoring, setIsRestoring] = useState(true);
+  const [hasToken, setHasToken] = useState(false);
+
+  // Once credentials are restored from localStorage, call /auth/me/ to get
+  // fresh user info (profile_image, full_name, etc.) and keep Redux in sync.
+  useGetMeQuery(undefined, { skip: !hasToken });
 
   useEffect(() => {
     const restoreAuth = () => {
@@ -39,6 +45,9 @@ export function useAuthRestore() {
               },
             }),
           );
+
+          // Trigger /auth/me/ to fetch fresh user data from the server
+          setHasToken(true);
         }
       } catch (error) {
         console.error("Failed to restore auth state:", error);
