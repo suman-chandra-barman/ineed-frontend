@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -20,19 +20,19 @@ const SLOT_CONFIG: Record<
     from_time: "09:00:00",
     to_time: "12:00:00",
     label: "Morning",
-    time: "9:00 AM â€“ 12:00 PM",
+    time: "9:00 AM - 12:00 PM",
   },
   evening: {
     from_time: "12:00:00",
     to_time: "16:00:00",
     label: "Afternoon",
-    time: "12:00 PM â€“ 4:00 PM",
+    time: "12:00 PM - 4:00 PM",
   },
   afternoon: {
     from_time: "16:00:00",
     to_time: "19:00:00",
     label: "Evening",
-    time: "4:00 PM â€“ 7:00 PM",
+    time: "4:00 PM - 7:00 PM",
   },
 };
 
@@ -72,19 +72,21 @@ export default function EditAvailabilityModal({
     new Set(),
   );
 
-  // Sync state when modal opens or props change
-  useEffect(() => {
+  // Sync state when modal transitions to open — derived state during render
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setActiveDays(
         new Set(days.filter((d) => d.is_active).map((d) => d.day_of_week)),
       );
-      // A slot type is active if any slot of that type is active
-      const activeTypes = new Set<SlotType>(
-        slots.filter((s) => s.is_active).map((s) => s.slot_type),
+      setActiveSlotTypes(
+        new Set<SlotType>(
+          slots.filter((s) => s.is_active).map((s) => s.slot_type),
+        ),
       );
-      setActiveSlotTypes(activeTypes);
     }
-  }, [isOpen, days, slots]);
+  }
 
   if (!isOpen) return null;
 
