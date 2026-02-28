@@ -8,6 +8,7 @@ import type {
   UpdateProviderServiceInformationRequest,
   UpdateProviderServiceInformationResponse,
   GetLegalW9InformationResponse,
+  GetProviderDashboardOverviewResponse,
 } from "@/types/provider.type";
 import type {
   AvailabilityResponse,
@@ -155,6 +156,17 @@ export const providerApi = baseApi.injectEndpoints({
       }),
       providesTags: ["LegalInfo"],
     }),
+    getProviderDashboardOverview: builder.query<
+      GetProviderDashboardOverviewResponse,
+      { search?: string }
+    >({
+      query: ({ search = "home" } = {}) => ({
+        url: "/provider/dashboard/overview/",
+        method: "GET",
+        params: { search },
+      }),
+      providesTags: ["ProviderDashboard"],
+    }),
   }),
 });
 
@@ -166,4 +178,5 @@ export const {
   useGetProviderAvailabilityQuery,
   useUpdateProviderAvailabilityMutation,
   useGetLegalW9InformationQuery,
+  useGetProviderDashboardOverviewQuery,
 } = providerApi;

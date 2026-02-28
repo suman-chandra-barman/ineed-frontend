@@ -93,3 +93,52 @@ export interface GetLegalW9InformationResponse {
   message: string;
   data: LegalW9Information;
 }
+
+// Provider Dashboard Overview Types
+
+export interface DashboardCardStat {
+  count: number;
+  percent: number;
+  direction: "up" | "down";
+  text: string;
+}
+
+export interface DashboardCards {
+  todays_jobs: DashboardCardStat;
+  completed_work: DashboardCardStat;
+  pending_jobs: DashboardCardStat;
+  total_jobs: DashboardCardStat;
+}
+
+export interface DashboardRecentJobResult {
+  booking_id: number;
+  job_id: string;
+  job_category: string;
+  client_name: string;
+  contact_number: string | null;
+  booking_by_time: string;
+  status: string;
+}
+
+export interface DashboardRecentJobsMeta {
+  count: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface DashboardRecentJobs {
+  meta: DashboardRecentJobsMeta;
+  results: DashboardRecentJobResult[];
+}
+
+export interface DashboardOverviewData {
+  cards: DashboardCards;
+  recent_jobs: DashboardRecentJobs;
+}
+
+export interface GetProviderDashboardOverviewResponse {
+  success: boolean;
+  message: string;
+  data: DashboardOverviewData;
+}

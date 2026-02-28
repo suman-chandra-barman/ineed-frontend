@@ -29,5 +29,6 @@ export const baseApi = createApi({
     "Service",
     "Booking",
     "LegalInfo",
+    "ProviderDashboard",
   ],
 });

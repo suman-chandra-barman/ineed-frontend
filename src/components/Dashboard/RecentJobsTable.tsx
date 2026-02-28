@@ -4,97 +4,44 @@ import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import Link from "next/link";
-
-interface Job {
-  id: string;
-  category: string;
-  clientName: string;
-  contactNumber: string;
-  bookingTime: string;
-  status: "Pending" | "In Progress" | "Complete";
-}
-
-const jobs: Job[] = [
-  {
-    id: "CD1002",
-    category: "Home Cleaning",
-    clientName: "Zara Khan",
-    contactNumber: "1235 021500 54 22",
-    bookingTime: "Dec 10, 2024-10:30 am",
-    status: "Pending",
-  },
-  {
-    id: "CD1002",
-    category: "Commercial Cleaning",
-    clientName: "Zara Khan",
-    contactNumber: "1235 021500 54 22",
-    bookingTime: "Dec 10, 2024-10:30 am",
-    status: "In Progress",
-  },
-  {
-    id: "CD1002",
-    category: "Maintenance",
-    clientName: "Zara Khan",
-    contactNumber: "1235 021500 54 22",
-    bookingTime: "Dec 10, 2024-10:30 am",
-    status: "Complete",
-  },
-  {
-    id: "CD1002",
-    category: "Maintenance",
-    clientName: "Zara Khan",
-    contactNumber: "1235 021500 54 22",
-    bookingTime: "Dec 10, 2024-10:30 am",
-    status: "Pending",
-  },
-  {
-    id: "CD1002",
-    category: "Repairing",
-    clientName: "Zara Khan",
-    contactNumber: "1235 021500 54 22",
-    bookingTime: "Dec 10, 2024-10:30 am",
-    status: "In Progress",
-  },
-  {
-    id: "CD1002",
-    category: "Maintenance",
-    clientName: "Zara Khan",
-    contactNumber: "1235 021500 54 22",
-    bookingTime: "Dec 10, 2024-10:30 am",
-    status: "Complete",
-  },
-  {
-    id: "CD1002",
-    category: "Maintenance",
-    clientName: "Zara Khan",
-    contactNumber: "1235 021500 54 22",
-    bookingTime: "Dec 10, 2024-10:30 am",
-    status: "Complete",
-  },
-  {
-    id: "CD1002",
-    category: "Repairing",
-    clientName: "Zara Khan",
-    contactNumber: "1235 021500 54 22",
-    bookingTime: "Dec 10, 2024-10:30 am",
-    status: "In Progress",
-  },
-];
+import type { DashboardRecentJobResult } from "@/types/provider.type";
 
 const getStatusStyle = (status: string) => {
-  switch (status) {
-    case "Pending":
+  switch (status.toLowerCase()) {
+    case "pending":
       return "bg-yellow-100 text-yellow-700";
-    case "In Progress":
+    case "in_progress":
+    case "in progress":
       return "bg-blue-100 text-blue-700";
-    case "Complete":
+    case "complete":
+    case "completed":
       return "bg-green-100 text-green-700";
     default:
       return "bg-gray-100 text-gray-700";
   }
 };
 
-export function RecentJobsTable({title}: {title: string}) {
+const formatStatus = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "pending":
+      return "Pending";
+    case "in_progress":
+    case "in progress":
+      return "In Progress";
+    case "complete":
+    case "completed":
+      return "Complete";
+    default:
+      return status;
+  }
+};
+
+interface RecentJobsTableProps {
+  title: string;
+  jobs?: DashboardRecentJobResult[];
+}
+
+export function RecentJobsTable({ title, jobs = [] }: RecentJobsTableProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       {/* Header */}
@@ -141,91 +88,122 @@ export function RecentJobsTable({title}: {title: string}) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {jobs.map((job, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {job.id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {job.category}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {job.clientName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {job.contactNumber}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {job.bookingTime}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle(
-                      job.status,
-                    )}`}
-                  >
-                    {job.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <Button
-                    variant="link"
-                    asChild
-                    className="text-blue-600 hover:text-blue-700 p-0"
-                  >
-                   <Link href={`/provider/jobs/${job.id}`}> [ Job View ] </Link>
-                  </Button>
+            {jobs.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-6 py-10 text-center text-sm text-gray-500"
+                >
+                  No recent jobs found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              jobs.map((job) => (
+                <tr
+                  key={job.booking_id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {job.job_id}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {job.job_category}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {job.client_name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {job.contact_number ?? "—"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {job.booking_by_time}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle(
+                        job.status,
+                      )}`}
+                    >
+                      {formatStatus(job.status)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <Button
+                      variant="link"
+                      asChild
+                      className="text-blue-600 hover:text-blue-700 p-0"
+                    >
+                      <Link href={`/provider/jobs/${job.booking_id}`}>
+                        [ Job View ]
+                      </Link>
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Cards - Mobile */}
       <div className="md:hidden divide-y divide-gray-100">
-        {jobs.map((job, index) => (
-          <div key={index} className="p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-gray-900">
-                {job.id}
-              </span>
-              <span
-                className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle(
-                  job.status,
-                )}`}
-              >
-                {job.status}
-              </span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Category:</span>
-                <span className="text-sm text-gray-900">{job.category}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Client:</span>
-                <span className="text-sm text-gray-900">{job.clientName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Contact:</span>
-                <span className="text-sm text-gray-900">
-                  {job.contactNumber}
+        {jobs.length === 0 ? (
+          <div className="p-6 text-center text-sm text-gray-500">
+            No recent jobs found.
+          </div>
+        ) : (
+          jobs.map((job) => (
+            <div key={job.booking_id} className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-900">
+                  {job.job_id}
+                </span>
+                <span
+                  className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle(
+                    job.status,
+                  )}`}
+                >
+                  {formatStatus(job.status)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Booking:</span>
-                <span className="text-sm text-gray-900">{job.bookingTime}</span>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-500">Category:</span>
+                  <span className="text-sm text-gray-900">
+                    {job.job_category}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-500">Client:</span>
+                  <span className="text-sm text-gray-900">
+                    {job.client_name}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-500">Contact:</span>
+                  <span className="text-sm text-gray-900">
+                    {job.contact_number ?? "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-500">Booking:</span>
+                  <span className="text-sm text-gray-900">
+                    {job.booking_by_time}
+                  </span>
+                </div>
               </div>
+              <Button
+                variant="link"
+                asChild
+                className="text-blue-600 hover:text-blue-700 p-0 w-full justify-center"
+              >
+                <Link href={`/provider/jobs/${job.booking_id}`}>
+                  [ Job View ]
+                </Link>
+              </Button>
             </div>
-            <Button
-              variant="link"
-              className="text-blue-600 hover:text-blue-700 p-0 w-full justify-center"
-            >
-              [ Job View ]
-            </Button>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

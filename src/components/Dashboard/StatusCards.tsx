@@ -6,6 +6,7 @@ import { FiClipboard } from "react-icons/fi";
 import { BsCheckCircle } from "react-icons/bs";
 import { MdPendingActions } from "react-icons/md";
 import { FaBriefcase } from "react-icons/fa";
+import type { DashboardCards } from "@/types/provider.type";
 
 interface StatCardProps {
   title: string;
@@ -58,48 +59,52 @@ const StatCard: React.FC<StatCardProps> = ({
   );
 };
 
-export function StatusCards() {
+interface StatusCardsProps {
+  cards?: DashboardCards;
+}
+
+export function StatusCards({ cards }: StatusCardsProps) {
   const stats = [
     {
       title: "Today's Jobs",
-      value: "10293",
+      value: cards?.todays_jobs.count ?? 0,
       trend: {
-        value: "13%",
-        isPositive: true,
-        label: "Up from past week",
+        value: `${cards?.todays_jobs.percent ?? 0}%`,
+        isPositive: (cards?.todays_jobs.direction ?? "up") === "up",
+        label: cards?.todays_jobs.text ?? "Up from past week",
       },
       icon: <FiClipboard className="w-7 h-7 text-green-600" />,
       iconBgColor: "bg-green-100",
     },
     {
       title: "Completed Work",
-      value: "10293",
+      value: cards?.completed_work.count ?? 0,
       trend: {
-        value: "4.3%",
-        isPositive: false,
-        label: "Down from yesterday",
+        value: `${cards?.completed_work.percent ?? 0}%`,
+        isPositive: (cards?.completed_work.direction ?? "up") === "up",
+        label: cards?.completed_work.text ?? "Up from yesterday",
       },
       icon: <BsCheckCircle className="w-7 h-7 text-purple-600" />,
       iconBgColor: "bg-purple-100",
     },
     {
       title: "Pending Jobs",
-      value: "10293",
+      value: cards?.pending_jobs.count ?? 0,
       trend: {
-        value: "13%",
-        isPositive: true,
-        label: "Up from past week",
+        value: `${cards?.pending_jobs.percent ?? 0}%`,
+        isPositive: (cards?.pending_jobs.direction ?? "up") === "up",
+        label: cards?.pending_jobs.text ?? "Up from past week",
       },
       icon: <MdPendingActions className="w-7 h-7 text-orange-600" />,
       iconBgColor: "bg-orange-100",
     },
     {
       title: "Total Jobs",
-      value: "4",
+      value: cards?.total_jobs.count ?? 0,
       trend: {
-        value: "13%",
-        isPositive: true,
-        label: "Up from past week",
+        value: `${cards?.total_jobs.percent ?? 0}%`,
+        isPositive: (cards?.total_jobs.direction ?? "up") === "up",
+        label: cards?.total_jobs.text ?? "Up from past week",
       },
       icon: <FaBriefcase className="w-7 h-7 text-pink-600" />,
       iconBgColor: "bg-pink-100",
