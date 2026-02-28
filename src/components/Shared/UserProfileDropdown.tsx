@@ -31,10 +31,10 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 hover:bg-gray-50 rounded-full transition-colors">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
-            {user.profile_image ? (
+            {user?.profile_image ? (
               <Image
                 src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${user.profile_image}`}
-                alt={user.full_name}
+                alt={user?.full_name ?? ""}
                 className="w-full h-full object-cover"
                 width={40}
                 height={40}
@@ -55,7 +55,7 @@ export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={`${user.role}/settings`} className="cursor-pointer">
+          <Link href={`${user?.role}/settings`} className="cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </Link>
