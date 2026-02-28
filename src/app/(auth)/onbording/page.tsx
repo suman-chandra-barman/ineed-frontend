@@ -309,19 +309,13 @@ function OnboardingPage() {
       } else if (currentStep === 2) {
         // Step 2: Create service information
         const step2Data = stepData as z.infer<typeof onboardingStep2Schema>;
-        // Need to get the selected service ID from the category options
-        const selectedCategory = serviceOptions?.data.find(
-          (cat: {
-            category: { id: number; name: string; is_active: boolean };
-            services: Array<{ id: number; name: string; is_active: boolean }>;
-          }) => cat.category.name === step2Data.serviceType,
-        );
+        const serviceId = parseInt(step2Data.serviceType, 10);
 
-        if (selectedCategory && selectedCategory.services.length > 0) {
+        if (serviceId) {
           await createServiceInfo({
             services: [
               {
-                service_id: selectedCategory.services[0].id,
+                service_id: serviceId,
                 experience_level: step2Data.experienceLevel,
                 short_description: step2Data.shortDescription || "",
               },

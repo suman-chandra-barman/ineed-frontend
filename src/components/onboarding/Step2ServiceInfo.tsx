@@ -56,8 +56,10 @@ export function Step2ServiceInfo({
   form,
   serviceOptions,
 }: Step2ServiceInfoProps) {
-  // Extract active categories from service options
-  const categories = serviceOptions?.data || [];
+  // Flatten all services from all categories into a single list
+  const allServices = (serviceOptions?.data || []).flatMap(
+    (categoryItem) => categoryItem.services,
+  );
 
   return (
     <div className="space-y-6">
@@ -80,12 +82,9 @@ export function Step2ServiceInfo({
             <SelectValue placeholder="Select a service type..." />
           </SelectTrigger>
           <SelectContent>
-            {categories.map((categoryItem) => (
-              <SelectItem
-                key={categoryItem.category.id}
-                value={categoryItem.category.name}
-              >
-                {categoryItem.category.name}
+            {allServices.map((service) => (
+              <SelectItem key={service.id} value={String(service.id)}>
+                {service.name}
               </SelectItem>
             ))}
           </SelectContent>
