@@ -70,3 +70,26 @@ export interface UpdateProviderServiceInformationResponse {
   message: string;
   data: ServiceInformation;
 }
+
+// Provider Legal W9 Information Types
+
+export interface LegalW9Information {
+  id: number;
+  legal_name: string;
+  business_name: string;
+  tax_type: string;
+  ssn_or_ein: string;
+  street_address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  created_at: string;
+  updated_at: string;
+  image: string;
+}
+
+export interface GetLegalW9InformationResponse {
+  success: boolean;
+  message: string;
+  data: LegalW9Information;
+}

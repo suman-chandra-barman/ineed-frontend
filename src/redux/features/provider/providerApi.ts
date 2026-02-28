@@ -7,6 +7,7 @@ import type {
   GetProviderServiceInformationResponse,
   UpdateProviderServiceInformationRequest,
   UpdateProviderServiceInformationResponse,
+  GetLegalW9InformationResponse,
 } from "@/types/provider.type";
 import type {
   AvailabilityResponse,
@@ -147,6 +148,13 @@ export const providerApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Availability"],
     }),
+    getLegalW9Information: builder.query<GetLegalW9InformationResponse, void>({
+      query: () => ({
+        url: "/provider/settings/legal-w9-information/",
+        method: "GET",
+      }),
+      providesTags: ["LegalInfo"],
+    }),
   }),
 });
 
@@ -157,4 +165,5 @@ export const {
   useUpdateProviderServiceInformationMutation,
   useGetProviderAvailabilityQuery,
   useUpdateProviderAvailabilityMutation,
+  useGetLegalW9InformationQuery,
 } = providerApi;
