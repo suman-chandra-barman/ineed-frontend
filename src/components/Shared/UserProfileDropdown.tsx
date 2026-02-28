@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
@@ -11,66 +12,50 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
+import { useState } from "react";
+import { LogoutModal } from "../Modals/LogoutModal";
 
 interface UserProfileDropdownProps {
-  userName?: string;
-  userAvatar?: string;
-  homeLink?: string;
-  settingsLink?: string;
-  onLogout?: () => void;
-  showName?: boolean;
+  user: any;
 }
 
-export function UserProfileDropdown({
-  userName = "User",
-  userAvatar,
-  homeLink = "/",
-  settingsLink = "/user/settings",
-  onLogout,
-  showName = true,
-}: UserProfileDropdownProps) {
+export function UserProfileDropdown({ user }: UserProfileDropdownProps) {
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+
   const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    } else {
-      // Default logout behavior
-      console.log("Logout clicked");
-    }
+    setLogoutModalOpen(true);
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 hover:bg-gray-50 rounded-full pr-3 pl-1 py-1 transition-colors">
+        <button className="flex items-center gap-2 hover:bg-gray-50 rounded-full transition-colors">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
-            {userAvatar ? (
+            {user.profile_image ? (
               <Image
-                src={userAvatar}
-                alt={userName}
+                src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${user.profile_image}`}
+                alt={user.full_name}
                 className="w-full h-full object-cover"
+                width={40}
+                height={40}
               />
             ) : (
               <User className="w-5 h-5 text-primary" />
             )}
           </div>
-          {showName && (
-            <div className="hidden sm:block text-left">
-              <p className="text-sm font-medium text-gray-900">{userName}</p>
-            </div>
-          )}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={homeLink} className="cursor-pointer">
+          <Link href="/" className="cursor-pointer">
             <Home className="mr-2 h-4 w-4" />
             <span>Home</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={settingsLink} className="cursor-pointer">
+          <Link href={`${user.role}/settings`} className="cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </Link>
@@ -84,6 +69,7 @@ export function UserProfileDropdown({
           <span>Log Out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
+      <LogoutModal open={logoutModalOpen} onOpenChange={setLogoutModalOpen} />
     </DropdownMenu>
   );
 }

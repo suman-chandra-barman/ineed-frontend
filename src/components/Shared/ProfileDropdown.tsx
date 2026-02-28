@@ -31,11 +31,13 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2 hover:bg-gray-50 rounded-full p-1 transition-colors cursor-pointer">
           <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
-            {user.image ? (
+            {user.profile_image ? (
               <Image
-                src={user.image}
+                src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${user.profile_image}`}
                 alt={"User Avatar"}
                 className="w-full h-full object-cover"
+                width={48}
+                height={48}
               />
             ) : (
               <User className="w-5 h-5 text-primary" />
