@@ -317,7 +317,7 @@ function OnboardingPage() {
               {
                 service_id: serviceId,
                 experience_level: step2Data.experienceLevel,
-                short_description: step2Data.shortDescription || "",
+                short_description: step2Data.shortDescription,
               },
             ],
           }).unwrap();

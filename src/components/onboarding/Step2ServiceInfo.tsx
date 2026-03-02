@@ -49,7 +49,7 @@ interface Step2ServiceInfoProps {
 const EXPERIENCE_LEVELS = [
   { value: "beginner", label: "Beginner (0-1 years)" },
   { value: "intermediate", label: "Intermediate (1-3 years)" },
-  { value: "experienced", label: "Experienced (3+ years)" },
+  { value: "expert", label: "Experienced (3+ years)" },
 ];
 
 export function Step2ServiceInfo({
@@ -134,7 +134,7 @@ export function Step2ServiceInfo({
           htmlFor="shortDescription"
           className="text-slate-700 font-medium mb-2 block"
         >
-          Short Description (optional)
+          Short Description
         </Label>
         <Textarea
           id="shortDescription"
@@ -142,6 +142,11 @@ export function Step2ServiceInfo({
           {...form.register("shortDescription")}
           className="bg-white min-h-30"
         />
+        {form.formState.errors.shortDescription && (
+          <p className="text-red-500 text-sm mt-1">
+            {form.formState.errors.shortDescription.message}
+          </p>
+        )}
       </div>
     </div>
   );

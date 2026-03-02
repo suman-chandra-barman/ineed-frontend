@@ -74,7 +74,7 @@ export const onboardingStep2Schema = z.object({
   experienceLevel: z
     .string()
     .min(1, { message: "Please select your experience level" }),
-  shortDescription: z.string().optional(),
+  shortDescription: z.string().min(10, { message: "Please enter a short description (at least 10 characters)" }),
 });
 
 // Onboarding Step 3: Availability
