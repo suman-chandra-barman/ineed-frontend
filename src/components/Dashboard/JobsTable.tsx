@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -37,24 +37,27 @@ const formatStatus = (status: string) => {
   }
 };
 
-interface RecentJobsTableProps {
+interface JobsTableProps {
   title: string;
   jobs?: DashboardRecentJobResult[];
+  isLoading?: boolean;
   onSearch?: (value: string) => void;
 }
 
-export function RecentJobsTable({
+export function JobsTable({
   title,
   jobs = [],
+  isLoading = false,
   onSearch,
-}: RecentJobsTableProps) {
+}: JobsTableProps) {
   const [inputValue, setInputValue] = useState("");
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+  useEffect(() => {
+    const timer = setTimeout(() => {
       onSearch?.(inputValue.trim());
-    }
-  };
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [inputValue, onSearch]);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -69,7 +72,6 @@ export function RecentJobsTable({
               placeholder="Search"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
               className="pl-10 pr-4 py-2 w-full sm:w-64 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -105,7 +107,16 @@ export function RecentJobsTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {jobs.length === 0 ? (
+            {isLoading ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-6 py-10 text-center text-sm text-gray-500"
+                >
+                  Loading...
+                </td>
+              </tr>
+            ) : jobs.length === 0 ? (
               <tr>
                 <td
                   colSpan={7}
@@ -164,7 +175,11 @@ export function RecentJobsTable({
 
       {/* Cards - Mobile */}
       <div className="md:hidden divide-y divide-gray-100">
-        {jobs.length === 0 ? (
+        {isLoading ? (
+          <div className="p-6 text-center text-sm text-gray-500">
+            Loading...
+          </div>
+        ) : jobs.length === 0 ? (
           <div className="p-6 text-center text-sm text-gray-500">
             No recent jobs found.
           </div>

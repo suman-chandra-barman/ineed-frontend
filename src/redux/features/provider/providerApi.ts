@@ -9,6 +9,9 @@ import type {
   UpdateProviderServiceInformationResponse,
   GetLegalW9InformationResponse,
   GetProviderDashboardOverviewResponse,
+  GetTodaysJobsResponse,
+  GetAllJobsResponse,
+  GetEarningsResponse,
   GetJobDetailsResponse,
   StartJobResponse,
   CompleteJobResponse,
@@ -171,6 +174,29 @@ export const providerApi = baseApi.injectEndpoints({
       }),
       providesTags: ["ProviderDashboard"],
     }),
+    getTodaysJobs: builder.query<GetTodaysJobsResponse, { search?: string }>({
+      query: ({ search } = {}) => ({
+        url: "/provider/dashboard/todays-jobs/",
+        method: "GET",
+        params: search ? { search } : undefined,
+      }),
+      providesTags: ["ProviderDashboard"],
+    }),
+    getAllJobs: builder.query<GetAllJobsResponse, { search?: string }>({
+      query: ({ search } = {}) => ({
+        url: "/provider/dashboard/all-jobs/",
+        method: "GET",
+        params: search ? { search } : undefined,
+      }),
+      providesTags: ["ProviderDashboard"],
+    }),
+    getEarnings: builder.query<GetEarningsResponse, void>({
+      query: () => ({
+        url: "/provider/dashboard/earnings/",
+        method: "GET",
+      }),
+      providesTags: ["ProviderDashboard"],
+    }),
     getJobDetails: builder.query<GetJobDetailsResponse, number>({
       query: (bookingId) => ({
         url: `/provider/dashboard/job-details/${bookingId}/`,
@@ -260,6 +286,9 @@ export const {
   useUpdateProviderAvailabilityMutation,
   useGetLegalW9InformationQuery,
   useGetProviderDashboardOverviewQuery,
+  useGetTodaysJobsQuery,
+  useGetAllJobsQuery,
+  useGetEarningsQuery,
   useGetJobDetailsQuery,
   useStartJobMutation,
   useCompleteJobMutation,

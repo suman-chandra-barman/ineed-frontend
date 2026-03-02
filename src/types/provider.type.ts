@@ -143,6 +143,39 @@ export interface GetProviderDashboardOverviewResponse {
   data: DashboardOverviewData;
 }
 
+export interface GetTodaysJobsResponse {
+  success: boolean;
+  message: string;
+  data: DashboardRecentJobs;
+}
+
+export interface GetAllJobsResponse {
+  success: boolean;
+  message: string;
+  data: DashboardRecentJobs;
+}
+
+// Provider Earnings Types
+
+export interface EarningResult {
+  job_id: string;
+  booking_date: string;
+  complete_date: string | null;
+  amount: number;
+  status: string;
+}
+
+export interface EarningsData {
+  meta: DashboardRecentJobsMeta;
+  results: EarningResult[];
+}
+
+export interface GetEarningsResponse {
+  success: boolean;
+  message: string;
+  data: EarningsData;
+}
+
 // Provider Job Details Types
 
 export interface JobInformation {
