@@ -6,6 +6,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import type { DashboardRecentJobResult } from "@/types/provider.type";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
@@ -108,14 +109,31 @@ export function JobsTable({
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="px-6 py-10 text-center text-sm text-gray-500"
-                >
-                  Loading...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="animate-pulse">
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-20" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-32" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-28" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-24" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-24" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-16" />
+                  </td>
+                </tr>
+              ))
             ) : jobs.length === 0 ? (
               <tr>
                 <td
@@ -176,9 +194,33 @@ export function JobsTable({
       {/* Cards - Mobile */}
       <div className="md:hidden divide-y divide-gray-100">
         {isLoading ? (
-          <div className="p-6 text-center text-sm text-gray-500">
-            Loading...
-          </div>
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="p-4 space-y-3 animate-pulse">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-6 w-20 rounded-full" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+                <div className="flex justify-between">
+                  <Skeleton className="h-3 w-12" />
+                  <Skeleton className="h-3 w-28" />
+                </div>
+                <div className="flex justify-between">
+                  <Skeleton className="h-3 w-14" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <div className="flex justify-between">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </div>
+              <Skeleton className="h-4 w-24 mx-auto" />
+            </div>
+          ))
         ) : jobs.length === 0 ? (
           <div className="p-6 text-center text-sm text-gray-500">
             No recent jobs found.

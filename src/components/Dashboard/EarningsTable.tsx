@@ -1,6 +1,7 @@
 "use client";
 
 import type { EarningResult } from "@/types/provider.type";
+import { Skeleton } from "../ui/skeleton";
 
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
@@ -61,14 +62,31 @@ export function EarningsTable({
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
-              <tr>
-                <td
-                  colSpan={5}
-                  className="px-6 py-10 text-center text-sm text-gray-500"
-                >
-                  Loading...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="animate-pulse">
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-20" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-32" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-28" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-24" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-24" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                  </td>
+                  <td className="px-6 py-4">
+                    <Skeleton className="h-4 w-16" />
+                  </td>
+                </tr>
+              ))
             ) : earnings.length === 0 ? (
               <tr>
                 <td
