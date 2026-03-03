@@ -7,6 +7,8 @@ interface User {
   email_address: string;
   role: string;
   profile_image: string | null;
+  contact_number?: string;
+  address?: string;
 }
 
 interface AuthState {

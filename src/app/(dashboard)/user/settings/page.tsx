@@ -7,39 +7,51 @@ import ChangePasswordModal from "@/components/Dashboard/ChangePasswordModal";
 import { Button } from "@/components/ui/button";
 import { Lock, Pencil } from "lucide-react";
 import Image from "next/image";
+import { useAppSelector } from "@/redux/hooks";
+import {
+  useUpdateUserAccountMutation,
+  useGetUserAccountSettingsQuery,
+} from "@/redux/features/auth/authApi";
+import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/Shared";
 
 function AccountSettingsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
-  // Mock user data - replace with actual data from your auth system
-  const [userData, setUserData] = useState({
-    fullName: "Suman Barman",
-    email: "name@gmail.com",
-    contactNumber: "+1 345 824 9384",
-    address: "24 New Street, Los Angeles",
-    avatar: "", // Add user avatar URL here
-  });
+  const user = useAppSelector((state) => state.auth.user);
+  const { data: accountSettings, isLoading: isFetching } =
+    useGetUserAccountSettingsQuery();
+  const [updateUserAccount, { isLoading }] = useUpdateUserAccountMutation();
 
-  const handleSaveProfile = (data: {
-    fullName: string;
-    contactNumber: string;
-    address: string;
-    avatar?: string;
-  }) => {
-    setUserData({ ...userData, ...data });
-    // TODO: Add API call to update user profile
-    console.log("Profile updated:", data);
+  const handleSaveProfile = async (formData: FormData) => {
+    try {
+      const result = await updateUserAccount(formData).unwrap();
+      toast.success(result.message || "Profile updated successfully!");
+      setIsEditModalOpen(false);
+    } catch (err: unknown) {
+      const error = err as {
+        data?: { message?: string };
+        status?: number;
+      };
+      const message =
+        error?.data?.message || "Failed to update profile. Please try again.";
+      toast.error(message);
+    }
   };
 
-  const handleChangePassword = (data: {
-    currentPassword: string;
-    newPassword: string;
-    confirmPassword: string;
-  }) => {
-    // TODO: Add API call to change password
-    console.log("Password change requested:", data);
+  // Prepare user data for display - use accountSettings if available, fallback to user from Redux
+  const userData = {
+    fullName: accountSettings?.data.full_name || user?.full_name || "",
+    email: accountSettings?.data.email_address || user?.email_address || "",
+    contactNumber: accountSettings?.data.contact_number || "",
+    address: accountSettings?.data.address || "",
+    avatar: accountSettings?.data.profile_image || user?.profile_image || "",
   };
+
+  if (isFetching) {
+    return <LoadingSpinner message="Loading account settings..." fullPage />;
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8">
@@ -54,7 +66,7 @@ function AccountSettingsPage() {
               <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-md">
                 {userData.avatar ? (
                   <Image
-                    src={userData.avatar}
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${userData.avatar}`}
                     alt={userData.fullName}
                     fill
                     className="object-cover"
@@ -85,7 +97,6 @@ function AccountSettingsPage() {
               <Button
                 onClick={() => setIsPasswordModalOpen(true)}
                 variant="outline"
-               
               >
                 Change Password
               </Button>
@@ -102,7 +113,7 @@ function AccountSettingsPage() {
                 Full Name
               </label>
               <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-                {userData.fullName}
+                {userData.fullName || "Not set"}
               </div>
             </div>
 
@@ -112,7 +123,7 @@ function AccountSettingsPage() {
                 Email Address
               </label>
               <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 flex items-center justify-between">
-                <span>{userData.email}</span>
+                <span>{userData.email || "Not set"}</span>
                 <Lock className="w-4 h-4 text-gray-400" />
               </div>
             </div>
@@ -123,7 +134,7 @@ function AccountSettingsPage() {
                 Contact Number
               </label>
               <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-                {userData.contactNumber}
+                {userData.contactNumber || "Not set"}
               </div>
             </div>
 
@@ -133,7 +144,7 @@ function AccountSettingsPage() {
                 Address
               </label>
               <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900">
-                {userData.address}
+                {userData.address || "Not set"}
               </div>
             </div>
           </div>
@@ -146,12 +157,12 @@ function AccountSettingsPage() {
         onClose={() => setIsEditModalOpen(false)}
         userData={userData}
         onSave={handleSaveProfile}
+        isLoading={isLoading}
       />
 
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
-        onSave={handleChangePassword}
       />
     </div>
   );

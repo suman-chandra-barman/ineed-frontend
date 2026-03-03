@@ -161,3 +161,32 @@ export interface ChangePasswordResponse {
 
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+
+// User Account Settings Types
+export interface UserAccountSettingsData {
+  full_name: string;
+  email_address: string;
+  contact_number: string;
+  address: string;
+  profile_image: string;
+}
+
+export interface GetUserAccountSettingsResponse {
+  success: boolean;
+  message: string;
+  data: UserAccountSettingsData;
+}
+
+// Update User Account Types
+export interface UpdateUserAccountRequest {
+  full_name?: string;
+  profile_image?: File | string;
+  contact_number?: string;
+  address?: string;
+}
+
+export interface UpdateUserAccountResponse {
+  success: boolean;
+  message: string;
+  data: UserAccountSettingsData;
+}

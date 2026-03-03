@@ -17,12 +17,8 @@ interface EditProfileModalProps {
     address: string;
     avatar?: string;
   };
-  onSave: (data: {
-    fullName: string;
-    contactNumber: string;
-    address: string;
-    avatar?: string;
-  }) => void;
+  onSave: (formData: FormData) => Promise<void>;
+  isLoading?: boolean;
 }
 
 export default function EditProfileModal({
@@ -30,20 +26,43 @@ export default function EditProfileModal({
   onClose,
   userData,
   onSave,
+  isLoading = false,
 }: EditProfileModalProps) {
   const [formData, setFormData] = useState({
     fullName: userData.fullName,
     contactNumber: userData.contactNumber,
     address: userData.address,
-    avatar: userData.avatar,
   });
+
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
+    userData.avatar,
+  );
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
-    onClose();
+
+    const formDataToSend = new FormData();
+
+    if (formData.fullName !== userData.fullName) {
+      formDataToSend.append("full_name", formData.fullName);
+    }
+
+    if (avatarFile) {
+      formDataToSend.append("profile_image", avatarFile);
+    }
+
+    if (formData.contactNumber) {
+      formDataToSend.append("contact_number", formData.contactNumber);
+    }
+
+    if (formData.address) {
+      formDataToSend.append("address", formData.address);
+    }
+
+    await onSave(formDataToSend);
   };
 
   const handleCancel = () => {
@@ -51,17 +70,19 @@ export default function EditProfileModal({
       fullName: userData.fullName,
       contactNumber: userData.contactNumber,
       address: userData.address,
-      avatar: userData.avatar,
     });
+    setAvatarFile(null);
+    setAvatarPreview(userData.avatar);
     onClose();
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ ...formData, avatar: reader.result as string });
+        setAvatarPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -72,8 +93,9 @@ export default function EditProfileModal({
       <div className="bg-white rounded-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
-          onClick={onClose}
+          onClick={handleCancel}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
+          disabled={isLoading}
         >
           <X className="w-5 h-5" />
         </button>
@@ -90,9 +112,9 @@ export default function EditProfileModal({
           {/* Avatar */}
           <div className="flex flex-col items-center mb-6">
             <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-100 mb-3">
-              {formData.avatar ? (
+              {avatarPreview ? (
                 <Image
-                  src={formData.avatar}
+                  src={avatarPreview}
                   alt="Profile"
                   fill
                   className="object-cover"
@@ -100,7 +122,7 @@ export default function EditProfileModal({
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-200">
                   <span className="text-gray-400 text-2xl">
-                    {formData.fullName.charAt(0).toUpperCase()}
+                    {userData.fullName.charAt(0).toUpperCase()}
                   </span>
                 </div>
               )}
@@ -116,6 +138,7 @@ export default function EditProfileModal({
                 accept="image/*"
                 className="hidden"
                 onChange={handleImageChange}
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -132,7 +155,8 @@ export default function EditProfileModal({
               onChange={(e) =>
                 setFormData({ ...formData, fullName: e.target.value })
               }
-              placeholder="Your First Name"
+              placeholder="Your Full Name"
+              disabled={isLoading}
               required
             />
           </div>
@@ -150,6 +174,7 @@ export default function EditProfileModal({
                 setFormData({ ...formData, contactNumber: e.target.value })
               }
               placeholder="+1 345 824 9384"
+              disabled={isLoading}
               required
             />
           </div>
@@ -167,6 +192,7 @@ export default function EditProfileModal({
                 setFormData({ ...formData, address: e.target.value })
               }
               placeholder="24 New Street, Los Angeles"
+              disabled={isLoading}
               required
             />
           </div>
@@ -178,11 +204,12 @@ export default function EditProfileModal({
               onClick={handleCancel}
               variant="outline"
               className="flex-1"
+              disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button type="submit" className="flex-1">
-              Save Changes
+            <Button type="submit" className="flex-1" disabled={isLoading}>
+              {isLoading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>

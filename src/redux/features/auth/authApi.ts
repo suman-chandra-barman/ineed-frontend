@@ -17,6 +17,9 @@ import type {
   ResetPasswordResponse,
   ChangePasswordRequest,
   ChangePasswordResponse,
+  GetUserAccountSettingsResponse,
+  UpdateUserAccountRequest,
+  UpdateUserAccountResponse,
 } from "@/types/auth.type";
 
 export const authApi = baseApi.injectEndpoints({
@@ -125,6 +128,43 @@ export const authApi = baseApi.injectEndpoints({
         }
       },
     }),
+    getUserAccountSettings: builder.query<GetUserAccountSettingsResponse, void>(
+      {
+        query: () => ({
+          url: "/auth/user/account-settings/",
+          method: "GET",
+        }),
+        providesTags: ["User"],
+        async onQueryStarted(_, { dispatch, queryFulfilled }) {
+          try {
+            const { data } = await queryFulfilled;
+            if (data.success) {
+              dispatch(updateUser(data.data));
+            }
+          } catch {
+            // silently ignore
+          }
+        },
+      },
+    ),
+    updateUserAccount: builder.mutation<UpdateUserAccountResponse, FormData>({
+      query: (formData) => ({
+        url: "/auth/user/account-settings/update/",
+        method: "PATCH",
+        body: formData,
+      }),
+      invalidatesTags: ["User"],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data.success) {
+            dispatch(updateUser(data.data));
+          }
+        } catch {
+          // silently ignore
+        }
+      },
+    }),
   }),
 });
 
@@ -138,4 +178,6 @@ export const {
   useResetPasswordMutation,
   useChangePasswordMutation,
   useGetMeQuery,
+  useGetUserAccountSettingsQuery,
+  useUpdateUserAccountMutation,
 } = authApi;
