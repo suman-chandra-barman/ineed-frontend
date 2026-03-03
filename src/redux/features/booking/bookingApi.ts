@@ -8,6 +8,10 @@ import {
   PaymentResponse,
   PaymentDetailsResponse,
   BookingConfirmationResponse,
+  UserBookingListResponse,
+  UserBookingDetailsResponse,
+  BookingReviewResponse,
+  CreateReviewRequest,
 } from "@/types/booking.type";
 
 const bookingApi = baseApi.injectEndpoints({
@@ -79,6 +83,35 @@ const bookingApi = baseApi.injectEndpoints({
       query: (bookingId) => `/bookings/${bookingId}/confirmation/`,
       providesTags: ["Booking"],
     }),
+
+    // ─── User booking list & details ──────────────────────────────────────────
+    getUserBookings: builder.query<UserBookingListResponse, void>({
+      query: () => "/bookings/user/booking-list/",
+      providesTags: ["Booking"],
+    }),
+
+    getUserBookingDetails: builder.query<UserBookingDetailsResponse, number>({
+      query: (bookingId) => `/bookings/user/booking-details/${bookingId}/`,
+      providesTags: ["Booking"],
+    }),
+
+    getUserBookingReview: builder.query<BookingReviewResponse, number>({
+      query: (bookingId) =>
+        `/bookings/user/booking-details/${bookingId}/review/`,
+      providesTags: ["Booking"],
+    }),
+
+    createUserBookingReview: builder.mutation<
+      BookingReviewResponse,
+      CreateReviewRequest
+    >({
+      query: ({ bookingId, ...body }) => ({
+        url: `/bookings/user/booking-details/${bookingId}/review/`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Booking"],
+    }),
   }),
 });
 
@@ -91,4 +124,8 @@ export const {
   useGetPaymentDetailsQuery,
   useCreatePaymentMutation,
   useGetBookingConfirmationQuery,
+  useGetUserBookingsQuery,
+  useGetUserBookingDetailsQuery,
+  useGetUserBookingReviewQuery,
+  useCreateUserBookingReviewMutation,
 } = bookingApi;

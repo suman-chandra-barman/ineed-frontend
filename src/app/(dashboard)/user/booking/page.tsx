@@ -3,104 +3,78 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/Dashboard/PageHeader";
-import BookingCard, { BookingCardProps } from "@/components/Cards/BookingCard";
+import BookingCard from "@/components/Cards/BookingCard";
+import { BookingStatus } from "@/components/Cards/BookingCard";
 import ReviewModal from "@/components/Dashboard/ReviewModal";
-import cleanningServiceImage from "@/assets/service-1.jpg";
+import { useGetUserBookingsQuery } from "@/redux/features/booking/bookingApi";
+import { UserBookingListItem } from "@/types/booking.type";
+import { ErrorDisplay, LoadingSpinner } from "@/components/Shared";
 
-// Sample booking data - Replace with actual data from your API
-const bookings: BookingCardProps[] = [
-  {
-    id: "1",
-    serviceImage: cleanningServiceImage,
-    serviceTitle: "Inside Refrigerator Cleaning",
-    bookingDate: "27 Sep",
-    bookingTime: "Afternoon- 12:00 PM - 4:00 PM",
-    amount: 265,
-    location: "Alabama, USA",
-    providerName: "Rahim Hossain",
-    providerContact: "+10 321236 212",
-    status: "pending",
-  },
-  {
-    id: "2",
-    serviceImage: cleanningServiceImage,
-    serviceTitle: "Inside Refrigerator Cleaning",
-    bookingDate: "27 Sep",
-    bookingTime: "Afternoon- 12:00 PM - 4:00 PM",
-    amount: 265,
-    location: "Alabama, USA",
-    providerName: "Rahim Hossain",
-    providerContact: "+10 321236 212",
-    status: "assign",
-  },
-  {
-    id: "3",
-    serviceImage: cleanningServiceImage,
-    serviceTitle: "Inside Refrigerator Cleaning",
-    bookingDate: "27 Sep",
-    bookingTime: "Afternoon- 12:00 PM - 4:00 PM",
-    amount: 265,
-    location: "Alabama, USA",
-    providerName: "Rahim Hossain",
-    providerContact: "+10 321236 212",
-    status: "in-progress",
-  },
-  {
-    id: "4",
-    serviceImage: cleanningServiceImage,
-    serviceTitle: "Inside Refrigerator Cleaning",
-    bookingDate: "27 Sep",
-    bookingTime: "Afternoon- 12:00 PM - 4:00 PM",
-    amount: 265,
-    location: "Alabama, USA",
-    providerName: "Rahim Hossain",
-    providerContact: "+10 321236 212",
-    status: "complete",
-  },
-];
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL ?? "";
 
 function BookingPage() {
   const router = useRouter();
+  const { data, isLoading, isError } = useGetUserBookingsQuery();
+
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] =
-    useState<BookingCardProps | null>(null);
+    useState<UserBookingListItem | null>(null);
 
-  const handleBookingClick = (bookingId: string) => {
+  const bookings = data?.data ?? [];
+
+  const handleNavigate = (bookingId: number) => {
     router.push(`/user/booking/${bookingId}`);
   };
 
-  const handleChatClick = (bookingId: string) => {
-    console.log("Chat clicked for booking:", bookingId);
-    // Navigate to chat or open chat modal
+  const handleChatClick = (bookingId: number) => {
+    router.push(`/user/chat?booking=${bookingId}`);
   };
 
-  const handleReviewClick = (booking: BookingCardProps) => {
+  const handleReviewClick = (booking: UserBookingListItem) => {
     setSelectedBooking(booking);
     setIsReviewModalOpen(true);
   };
 
-  const handleSubmitReview = (rating: number, review: string) => {
-    console.log("Review submitted:", {
-      bookingId: selectedBooking?.id,
-      rating,
-      review,
-    });
-    // Submit review to your API
-  };
+  // loadin and error states
+  if (isLoading) {
+    return <LoadingSpinner message="Loading Bookings..." fullPage />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorDisplay
+        message="Failed to load bookings"
+        onRetry={() => window.location.reload()}
+        fullPage
+      />
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8">
-      {/* Page Header */}
       <PageHeader title="Bookings" />
 
       {/* Booking Cards */}
       <div className="space-y-4 mt-6">
         {bookings.map((booking) => (
           <BookingCard
-            key={booking.id}
-            {...booking}
-            onClick={() => handleBookingClick(booking.id)}
-            onChatClick={() => handleChatClick(booking.id)}
+            key={booking.booking_id}
+            id={String(booking.booking_id)}
+            serviceImage={
+              booking.service_image
+                ? `${BASE_URL}/media/${booking.service_image}`
+                : "/placeholder-service.jpg"
+            }
+            serviceTitle={booking.service_name}
+            bookingDate={booking.booking_date ?? "—"}
+            bookingTime={booking.time_slot ?? "—"}
+            amount={booking.amount}
+            location={booking.location || "—"}
+            providerName={booking.provider_name ?? "Not assigned"}
+            providerContact={booking.provider_phone ?? "—"}
+            status={booking.status as BookingStatus}
+            onNavigate={() => handleNavigate(booking.booking_id)}
+            onChatClick={() => handleChatClick(booking.booking_id)}
             onReviewClick={() => handleReviewClick(booking)}
           />
         ))}
@@ -111,11 +85,14 @@ function BookingPage() {
         <ReviewModal
           isOpen={isReviewModalOpen}
           onClose={() => setIsReviewModalOpen(false)}
-          serviceImage={selectedBooking.serviceImage}
-          serviceTitle={selectedBooking.serviceTitle}
-          serviceDescription="A minute repair service..."
-          amount={selectedBooking.amount}
-          onSubmit={handleSubmitReview}
+          bookingId={selectedBooking.booking_id}
+          serviceImage={
+            selectedBooking.service_image
+              ? `${BASE_URL}/media/${selectedBooking.service_image}`
+              : "/placeholder-service.jpg"
+          }
+          serviceTitle={selectedBooking.service_name}
+          amount={Number(selectedBooking.amount)}
         />
       )}
 

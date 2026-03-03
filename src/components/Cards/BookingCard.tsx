@@ -2,7 +2,16 @@ import Image, { StaticImageData } from "next/image";
 import { MessageCircle, Star } from "lucide-react";
 import { Button } from "../ui/button";
 
-export type BookingStatus = "pending" | "assign" | "in-progress" | "complete";
+export type BookingStatus =
+  | "pending"
+  | "assign"
+  | "assigned"
+  | "in-progress"
+  | "in_progress"
+  | "complete"
+  | "completed"
+  | "cancelled"
+  | "draft";
 
 export interface BookingCardProps {
   id: string;
@@ -10,12 +19,12 @@ export interface BookingCardProps {
   serviceTitle: string;
   bookingDate: string;
   bookingTime: string;
-  amount: number;
+  amount: string | number;
   location: string;
   providerName: string;
   providerContact: string;
   status: BookingStatus;
-  onClick?: () => void;
+  onNavigate?: () => void;
   onChatClick?: () => void;
   onReviewClick?: () => void;
 }
@@ -30,12 +39,22 @@ const statusConfig: Record<
     textColor: "text-amber-700",
   },
   assign: {
-    label: "Assign",
+    label: "Assigned",
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-700",
+  },
+  assigned: {
+    label: "Assigned",
     bgColor: "bg-purple-100",
     textColor: "text-purple-700",
   },
   "in-progress": {
-    label: "In progress",
+    label: "In Progress",
+    bgColor: "bg-blue-100",
+    textColor: "text-blue-700",
+  },
+  in_progress: {
+    label: "In Progress",
     bgColor: "bg-blue-100",
     textColor: "text-blue-700",
   },
@@ -43,6 +62,21 @@ const statusConfig: Record<
     label: "Complete",
     bgColor: "bg-emerald-100",
     textColor: "text-emerald-700",
+  },
+  completed: {
+    label: "Completed",
+    bgColor: "bg-emerald-100",
+    textColor: "text-emerald-700",
+  },
+  cancelled: {
+    label: "Cancelled",
+    bgColor: "bg-red-100",
+    textColor: "text-red-700",
+  },
+  draft: {
+    label: "Draft",
+    bgColor: "bg-gray-100",
+    textColor: "text-gray-600",
   },
 };
 
@@ -56,32 +90,35 @@ export default function BookingCard({
   providerName,
   providerContact,
   status,
-  onClick,
+  onNavigate,
   onChatClick,
   onReviewClick,
 }: BookingCardProps) {
   const statusStyle = statusConfig[status];
 
   return (
-    <div
-      onClick={onClick}
-      className="bg-white rounded-2xl border border-gray-200 p-2 sm:p-4 hover:shadow-md transition-shadow cursor-pointer"
-    >
+    <div className="bg-white rounded-2xl border border-gray-200 p-2 sm:p-4 hover:shadow-md transition-shadow">
       <div className="flex flex-col sm:flex-row gap-4">
-        {/* Service Image */}
-        <div className="relative w-full sm:w-28 h-40 sm:h-28 rounded-xl overflow-hidden shrink-0">
+        {/* Service Image — clickable */}
+        <div
+          onClick={onNavigate}
+          className="relative w-full sm:w-28 h-40 sm:h-28 rounded-xl overflow-hidden shrink-0 cursor-pointer"
+        >
           <Image
             src={serviceImage}
             alt={serviceTitle}
             fill
-            className="object-cover"
+            className="object-cover hover:scale-105 transition-transform duration-200"
           />
         </div>
 
         {/* Content */}
         <div className="flex-1 space-y-3">
-          {/* Title */}
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+          {/* Title — clickable */}
+          <h3
+            onClick={onNavigate}
+            className="text-lg sm:text-xl font-semibold text-gray-900 cursor-pointer hover:text-primary hover:underline transition-colors"
+          >
             {serviceTitle}
           </h3>
 
@@ -102,7 +139,9 @@ export default function BookingCard({
                 Amount
               </span>
               <span className="text-gray-500">:</span>
-              <span className="text-gray-700 font-semibold">${amount}</span>
+              <span className="text-gray-700 font-semibold">
+                ${Number(amount).toLocaleString()}
+              </span>
             </div>
 
             <div className="flex items-start gap-2">
@@ -151,7 +190,7 @@ export default function BookingCard({
           </div>
 
           {/* Review Button - Only show for completed bookings */}
-          {status === "complete" && (
+          {(status === "complete" || status === "completed") && (
             <Button
               size="sm"
               onClick={(e) => {

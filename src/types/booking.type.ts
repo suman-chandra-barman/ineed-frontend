@@ -227,6 +227,113 @@ export interface PaymentInfo {
   created_at: string;
 }
 
+// ─── User Booking List ────────────────────────────────────────────────────────
+export interface UserBookingListItem {
+  booking_id: number;
+  order_id: string;
+  status: string;
+  service_name: string;
+  service_image: string;
+  booking_date: string | null;
+  time_slot: string | null;
+  amount: string;
+  location: string;
+  provider_name: string | null;
+  provider_email: string | null;
+  provider_image: string | null;
+  provider_phone: string | null;
+}
+
+export interface UserBookingListMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPage: number;
+}
+
+export interface UserBookingListResponse {
+  success: boolean;
+  message: string;
+  meta: UserBookingListMeta;
+  data: UserBookingListItem[];
+}
+
+// ─── User Booking Details ─────────────────────────────────────────────────────
+export interface BookingTrackStep {
+  step: number;
+  label: string;
+  done: boolean;
+  active: boolean;
+}
+
+export interface UserBookingDetailsData {
+  header: {
+    title: string;
+    booking_id: string;
+    booking_date: string;
+    location: string;
+    status: string;
+    can_reschedule: boolean;
+  };
+  booking_details: {
+    service_name: string;
+    service_image: string;
+    price_badge: string | null;
+    booking_date_time: string;
+    pricing: {
+      main_service: number;
+      additional_service: number;
+      tax: number;
+      total: number;
+    };
+  };
+  service_images: {
+    before: string[];
+    after: string[];
+  };
+  provider_details: {
+    provider_name: string;
+    email: string;
+    contact_number: string;
+    address: string;
+    image: string;
+    chat_enabled: boolean;
+  };
+  booking_track: BookingTrackStep[];
+}
+
+export interface UserBookingDetailsResponse {
+  success: boolean;
+  message: string;
+  data: UserBookingDetailsData;
+}
+
+// ─── Booking Review ───────────────────────────────────────────────────────────
+export interface BookingReviewData {
+  booking_id: number;
+  booking_code: string;
+  service_name: string;
+  service_image: string;
+  starting_from: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BookingReviewResponse {
+  success: boolean;
+  message: string;
+  data: BookingReviewData;
+}
+
+export interface CreateReviewRequest {
+  bookingId: number;
+  rating: number;
+  comment: string;
+}
+
+// ─── (existing) ───────────────────────────────────────────────────────────────
 export interface BookingConfirmationResponse {
   id: number;
   booking_code: string;
