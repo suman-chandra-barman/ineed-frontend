@@ -15,6 +15,7 @@ export type Service = {
   image: string | null;
   images: ServiceImage[];
   is_active: boolean;
+  is_favorite?: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -60,4 +61,38 @@ export type ServiceDetailResponse = {
   success: boolean;
   message: string;
   data: ServiceDetail;
+};
+
+export type FavoriteService = {
+  favorite_id: number;
+  service_id: number;
+  category_id: number;
+  service_name: string;
+  service_description: string;
+  man_price: string;
+  offer_price: string;
+  discount: string;
+  service_image: string | null;
+  is_favorite: boolean;
+};
+
+export type FavoriteServicesResponse = {
+  success: boolean;
+  message: string;
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPage: number;
+  };
+  data: FavoriteService[];
+};
+
+export type ToggleFavoriteResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    service_id: number;
+    is_favorite: boolean;
+  };
 };

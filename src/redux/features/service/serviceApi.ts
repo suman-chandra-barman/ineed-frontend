@@ -1,5 +1,10 @@
 import { baseApi } from "@/redux/api/baseApi";
-import { ServicesResponse, ServiceDetailResponse } from "@/types/service.type";
+import {
+  ServicesResponse,
+  ServiceDetailResponse,
+  FavoriteServicesResponse,
+  ToggleFavoriteResponse,
+} from "@/types/service.type";
 
 const serviceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -26,7 +31,36 @@ const serviceApi = baseApi.injectEndpoints({
       query: (id) => `/services/${id}/`,
       providesTags: ["Service"],
     }),
+    getFavorites: builder.query<
+      FavoriteServicesResponse,
+      { page?: number; limit?: number }
+    >({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.page) {
+          searchParams.append("page", params.page.toString());
+        }
+        if (params.limit) {
+          searchParams.append("limit", params.limit.toString());
+        }
+        const query = searchParams.toString();
+        return `/services/user/favorites/${query ? `?${query}` : ""}`;
+      },
+      providesTags: ["Service"],
+    }),
+    toggleFavorite: builder.mutation<ToggleFavoriteResponse, number>({
+      query: (serviceId) => ({
+        url: `/services/user/favorites/toggle/${serviceId}/`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Service"],
+    }),
   }),
 });
 
-export const { useGetServicesQuery, useGetServiceDetailQuery } = serviceApi;
+export const {
+  useGetServicesQuery,
+  useGetServiceDetailQuery,
+  useGetFavoritesQuery,
+  useToggleFavoriteMutation,
+} = serviceApi;
