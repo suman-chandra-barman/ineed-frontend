@@ -16,7 +16,7 @@ import { useState } from "react";
 import { LogoutModal } from "../Modals/LogoutModal";
 
 interface UserProfileDropdownProps {
-  user: any;
+  user: any; 
 }
 
 export function UserProfileDropdown({ user }: UserProfileDropdownProps) {

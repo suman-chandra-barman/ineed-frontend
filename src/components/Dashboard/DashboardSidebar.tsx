@@ -10,9 +10,10 @@ import {
   MessageSquare,
   Settings,
   LogOut,
-  User,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import Image from "next/image";
+import logo from "@/assets/logo.svg"
 
 interface NavLink {
   href: string;
@@ -37,12 +38,17 @@ export function DashboardSidebar() {
         {/* User Profile Card */}
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
-              <User className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-900">Suman</p>
-            </div>
+            <Link href="/" className="flex items-center">
+              <div className="relative w-20 sm:w-24 h-8">
+                <Image
+                  src={logo}
+                  alt="iNeed Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </Link>
           </div>
         </div>
 
