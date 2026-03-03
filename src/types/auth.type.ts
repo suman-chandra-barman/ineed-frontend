@@ -50,6 +50,7 @@ export interface VerifyEmailResponse {
       full_name: string;
       email_address: string;
       role: string;
+      profile_image: string | null;
     };
     tokens: {
       access: string;
