@@ -12,6 +12,7 @@ import { Button } from "../ui/button";
 import { useCreateBookingMutation } from "@/redux/features/booking/bookingApi";
 import { useToggleFavoriteMutation } from "@/redux/features/service/serviceApi";
 import { toast } from "sonner";
+import placeholderImage from "@/assets/service-1.jpg";
 
 interface ServiceCardProps {
   service: StaticService | ApiService;
@@ -39,7 +40,9 @@ const ServiceCard = memo(
           id: service.id,
           title: service.name,
           description: service.description,
-          image: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${service.image}`,
+          image: service.image
+            ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${service.image}`
+            : placeholderImage,
           price: `$${service.offer_price}`,
           originalPrice:
             service.man_price !== service.offer_price
