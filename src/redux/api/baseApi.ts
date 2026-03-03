@@ -31,5 +31,6 @@ export const baseApi = createApi({
     "LegalInfo",
     "ProviderDashboard",
     "ProviderJob",
+    "UserDashboard",
   ],
 });

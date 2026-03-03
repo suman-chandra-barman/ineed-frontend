@@ -34,6 +34,7 @@ interface ServiceOptionsResponse {
   message: string;
   meta: {
     category_total: number;
+    
     service_total: number;
     category_active: number;
     service_active: number;
