@@ -44,7 +44,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
   ]);
   const [selectedRatings, setSelectedRatings] = useState<number[]>([5]);
   const [isCategoryOpen, setIsCategoryOpen] = useState(true);
-  const [isLocationOpen, setIsLocationOpen] = useState(true);
+  // const [isLocationOpen, setIsLocationOpen] = useState(true);
   const [isRatingOpen, setIsRatingOpen] = useState(true);
   const [showAllCategories, setShowAllCategories] = useState(false);
 
@@ -184,7 +184,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
       </div>
 
       {/* Location */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <button
           onClick={() => setIsLocationOpen(!isLocationOpen)}
           className="flex items-center justify-between w-full mb-3"
@@ -209,7 +209,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Ratings */}
       <div className="mb-6">
