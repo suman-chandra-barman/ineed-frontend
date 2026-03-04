@@ -9,6 +9,8 @@ import { ServiceGridSkeleton } from "@/components/Skeleton";
 import { ErrorDisplay, EmptyState } from "@/components/Shared/ErrorDisplay";
 import { ChevronDown, ChevronRight, Home, PackageX } from "lucide-react";
 import { useGetServicesQuery } from "@/redux/features/service/serviceApi";
+import { useGetCategoriesQuery } from "@/redux/features/category/categoryApi";
+import { Category } from "@/types/category";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,17 +26,46 @@ function ServicesPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("price-low-to-high");
+  const [filters, setFilters] = useState<FilterState>({
+    searchKeyword: "",
+    categoryIds: categoryId ? [parseInt(categoryId)] : [],
+    ratings: [],
+  });
+
+  // Fetch categories for the filter sidebar
+  const { data: categoriesData, isLoading: isCategoriesLoading } =
+    useGetCategoriesQuery({});
+
+  const categories = (categoriesData?.data as Category[]) || [];
+
+  // Build API query params from filter state
+  const queryParams: {
+    category_id?: string;
+    search?: string;
+    rating?: string;
+    page: number;
+    limit: number;
+  } = {
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+  };
+
+  if (filters.categoryIds.length > 0) {
+    queryParams.category_id = filters.categoryIds.join(",");
+  }
+  if (filters.searchKeyword) {
+    queryParams.search = filters.searchKeyword;
+  }
+  if (filters.ratings.length > 0) {
+    queryParams.rating = filters.ratings.join(",");
+  }
 
   // Fetch services from API
   const {
     data: servicesData,
     isLoading,
     error,
-  } = useGetServicesQuery({
-    category_id: categoryId ? parseInt(categoryId) : undefined,
-    page: currentPage,
-    limit: ITEMS_PER_PAGE,
-  });
+  } = useGetServicesQuery(queryParams);
 
   // Calculate pagination
   const totalPages = servicesData?.meta?.totalPage || 1;
@@ -42,8 +73,7 @@ function ServicesPage() {
 
   const handleFilterChange = (newFilters: FilterState) => {
     setCurrentPage(1); // Reset to first page when filters change
-    console.log("Filters applied:", newFilters);
-    // TODO: Apply filters to API query
+    setFilters(newFilters);
   };
 
   const handlePageChange = (page: number) => {
@@ -68,7 +98,11 @@ function ServicesPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filter Sidebar */}
           <aside className="lg:shrink-0">
-            <FilterSidebar onFilterChange={handleFilterChange} />
+            <FilterSidebar
+              categories={categories}
+              isCategoriesLoading={isCategoriesLoading}
+              onFilterChange={handleFilterChange}
+            />
           </aside>
 
           {/* Main Content */}

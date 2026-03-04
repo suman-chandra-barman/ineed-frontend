@@ -1,87 +1,94 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, ChevronDown, ChevronUp, X, Filter } from "lucide-react";
+import { ChevronDown, ChevronUp, Filter } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
+import { Category } from "@/types/category";
 
 interface FilterSidebarProps {
+  categories?: Category[];
+  isCategoriesLoading?: boolean;
   onFilterChange?: (filters: FilterState) => void;
 }
 
 export interface FilterState {
   searchKeyword: string;
-  categories: string[];
-  location: string;
+  categoryIds: number[];
   ratings: number[];
 }
 
-const categories = [
-  { id: "all", label: "All Categories" },
-  { id: "residential", label: "Residential Services" },
-  { id: "apartment", label: "Apartment / Condo" },
-  { id: "single-family", label: "Single-Family Home / Townhouse" },
-  { id: "corporate", label: "Corporate and commercial cleaning" },
-  { id: "move-in", label: "Move-in / move-out cleaning" },
-  { id: "short-term", label: "Short-term rental" },
-  { id: "specialty", label: "Specialty services" },
+const ratingOptions = [
+  { stars: 5 },
+  { stars: 4 },
+  { stars: 3 },
+  { stars: 2 },
+  { stars: 1 },
 ];
 
-const ratings = [
-  { stars: 5, count: 156 },
-  { stars: 4, count: 103 },
-  { stars: 3, count: 59 },
-  { stars: 2, count: 32 },
-  { stars: 1, count: 120 },
-];
-
-export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
+export default function FilterSidebar({
+  categories = [],
+  isCategoriesLoading = false,
+  onFilterChange,
+}: FilterSidebarProps) {
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [locationSearch, setLocationSearch] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([
-    "all",
-  ]);
-  const [selectedRatings, setSelectedRatings] = useState<number[]>([5]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
   const [isCategoryOpen, setIsCategoryOpen] = useState(true);
-  // const [isLocationOpen, setIsLocationOpen] = useState(true);
   const [isRatingOpen, setIsRatingOpen] = useState(true);
   const [showAllCategories, setShowAllCategories] = useState(false);
 
-  const handleCategoryChange = (categoryId: string) => {
-    if (categoryId === "all") {
-      setSelectedCategories(["all"]);
-    } else {
-      const newCategories = selectedCategories.includes(categoryId)
-        ? selectedCategories.filter((id) => id !== categoryId)
-        : [...selectedCategories.filter((id) => id !== "all"), categoryId];
-
-      setSelectedCategories(newCategories.length > 0 ? newCategories : ["all"]);
+  const applyFilters = (
+    overrides: Partial<{
+      searchKeyword: string;
+      categoryIds: number[];
+      ratings: number[];
+    }> = {},
+  ) => {
+    if (onFilterChange) {
+      onFilterChange({
+        searchKeyword: overrides.searchKeyword ?? searchKeyword,
+        categoryIds: overrides.categoryIds ?? selectedCategoryIds,
+        ratings: overrides.ratings ?? selectedRatings,
+      });
     }
   };
 
+  const handleCategoryChange = (categoryId: number | "all") => {
+    if (categoryId === "all") {
+      // "All" clears category filter
+      setSelectedCategoryIds([]);
+      applyFilters({ categoryIds: [] });
+      return;
+    }
+
+    const newIds = selectedCategoryIds.includes(categoryId)
+      ? selectedCategoryIds.filter((id) => id !== categoryId)
+      : [...selectedCategoryIds, categoryId];
+
+    setSelectedCategoryIds(newIds);
+    applyFilters({ categoryIds: newIds });
+  };
+
   const handleRatingChange = (stars: number) => {
-    setSelectedRatings((prev) =>
-      prev.includes(stars) ? prev.filter((r) => r !== stars) : [...prev, stars],
-    );
+    const newRatings = selectedRatings.includes(stars)
+      ? selectedRatings.filter((r) => r !== stars)
+      : [...selectedRatings, stars];
+
+    setSelectedRatings(newRatings);
+    applyFilters({ ratings: newRatings });
   };
 
   const handleResetFilter = () => {
     setSearchKeyword("");
-    setLocationSearch("");
-    setSelectedCategories(["all"]);
-    setSelectedRatings([5]);
+    setSelectedCategoryIds([]);
+    setSelectedRatings([]);
+    applyFilters({ searchKeyword: "", categoryIds: [], ratings: [] });
   };
 
   const handleSearch = () => {
-    if (onFilterChange) {
-      onFilterChange({
-        searchKeyword,
-        categories: selectedCategories,
-        location: locationSearch,
-        ratings: selectedRatings,
-      });
-    }
+    applyFilters();
   };
 
   const renderStars = (count: number) => {
@@ -131,6 +138,9 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
           placeholder="what are you looking for?"
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSearch();
+          }}
           className="w-full"
         />
       </div>
@@ -151,65 +161,67 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
 
         {isCategoryOpen && (
           <div className="space-y-3">
-            {visibleCategories.map((category) => (
-              <div key={category.id} className="flex items-center gap-3">
-                <Checkbox
-                  id={category.id}
-                  checked={selectedCategories.includes(category.id)}
-                  onCheckedChange={() => handleCategoryChange(category.id)}
-                />
-                <label
-                  htmlFor={category.id}
-                  className="text-sm text-gray-600 cursor-pointer flex-1"
-                >
-                  {category.label}
-                </label>
-              </div>
-            ))}
-            {categories.length > 8 && (
-              <Button
-                onClick={() => setShowAllCategories(!showAllCategories)}
-                className="text-sm font-medium flex items-center gap-1"
-              >
-                {showAllCategories ? "See less" : "See more"}
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform ${
-                    showAllCategories ? "rotate-180" : ""
-                  }`}
-                />
-              </Button>
+            {isCategoriesLoading ? (
+              <>
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <div
+                    key={`cat-skeleton-${index}`}
+                    className="flex items-center gap-3"
+                  >
+                    <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                {/* All Categories option */}
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="category-all"
+                    checked={selectedCategoryIds.length === 0}
+                    onCheckedChange={() => handleCategoryChange("all")}
+                  />
+                  <label
+                    htmlFor="category-all"
+                    className="text-sm text-gray-600 cursor-pointer flex-1"
+                  >
+                    All
+                  </label>
+                </div>
+                {visibleCategories.map((category) => (
+                  <div key={category.id} className="flex items-center gap-3">
+                    <Checkbox
+                      id={`category-${category.id}`}
+                      checked={selectedCategoryIds.includes(category.id)}
+                      onCheckedChange={() => handleCategoryChange(category.id)}
+                    />
+                    <label
+                      htmlFor={`category-${category.id}`}
+                      className="text-sm text-gray-600 cursor-pointer flex-1"
+                    >
+                      {category.category_name}
+                    </label>
+                  </div>
+                ))}
+                {categories.length > 8 && (
+                  <Button
+                    onClick={() => setShowAllCategories(!showAllCategories)}
+                    className="text-sm font-medium flex items-center gap-1"
+                  >
+                    {showAllCategories ? "See less" : "See more"}
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${
+                        showAllCategories ? "rotate-180" : ""
+                      }`}
+                    />
+                  </Button>
+                )}
+              </>
             )}
           </div>
         )}
       </div>
-
-      {/* Location */}
-      {/* <div className="mb-6">
-        <button
-          onClick={() => setIsLocationOpen(!isLocationOpen)}
-          className="flex items-center justify-between w-full mb-3"
-        >
-          <h3 className="text-sm font-medium text-gray-900">Location</h3>
-          {isLocationOpen ? (
-            <ChevronUp className="w-5 h-5 text-gray-500" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-gray-500" />
-          )}
-        </button>
-
-        {isLocationOpen && (
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="what are you looking for?"
-              value={locationSearch}
-              onChange={(e) => setLocationSearch(e.target.value)}
-              className="w-full pr-10"
-            />
-            <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          </div>
-        )}
-      </div> */}
 
       {/* Ratings */}
       <div className="mb-6">
@@ -227,7 +239,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
 
         {isRatingOpen && (
           <div className="space-y-3">
-            {ratings.map((rating) => (
+            {ratingOptions.map((rating) => (
               <div key={rating.stars} className="flex items-center gap-3">
                 <Checkbox
                   id={`rating-${rating.stars}`}
@@ -239,9 +251,6 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
                   className="flex items-center justify-between flex-1 cursor-pointer"
                 >
                   {renderStars(rating.stars)}
-                  <span className="text-sm text-gray-500">
-                    ({rating.count})
-                  </span>
                 </label>
               </div>
             ))}
@@ -250,10 +259,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
       </div>
 
       {/* Search Button */}
-      <Button
-        onClick={handleSearch}
-        className="w-full"
-      >
+      <Button onClick={handleSearch} className="w-full">
         Search
       </Button>
     </div>

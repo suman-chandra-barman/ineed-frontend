@@ -10,12 +10,24 @@ const serviceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getServices: builder.query<
       ServicesResponse,
-      { category_id?: number; page?: number; limit?: number }
+      {
+        category_id?: number | string;
+        search?: string;
+        rating?: string;
+        page?: number;
+        limit?: number;
+      }
     >({
       query: (params) => {
         const searchParams = new URLSearchParams();
         if (params.category_id) {
           searchParams.append("category_id", params.category_id.toString());
+        }
+        if (params.search) {
+          searchParams.append("search", params.search);
+        }
+        if (params.rating) {
+          searchParams.append("rating", params.rating);
         }
         if (params.page) {
           searchParams.append("page", params.page.toString());
