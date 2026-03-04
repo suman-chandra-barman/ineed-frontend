@@ -119,6 +119,25 @@ export interface BookingResponse {
   updated_at: string;
 }
 
+export interface TestimonialItem {
+  id: number;
+  comment: string;
+  user_name: string;
+  user_image: string;
+  created_at: string;
+}
+
+export interface TestimonialsResponse {
+  success: boolean;
+  message: string;
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPage: number;
+  };
+  data: TestimonialItem[];
+}
 export interface AvailableAddon {
   id: number;
   title: string;
