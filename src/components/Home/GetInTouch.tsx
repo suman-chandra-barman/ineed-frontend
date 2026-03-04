@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { useSendContactMessageMutation } from "@/redux/features/contact/contactApi";
 
 const GetInTouch = () => {
   const [formData, setFormData] = useState({
@@ -12,10 +14,27 @@ const GetInTouch = () => {
     agreeToTerms: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sendContactMessage, { isLoading }] = useSendContactMessageMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
+    try {
+      await sendContactMessage({
+        full_name: formData.fullName,
+        email_address: formData.email,
+        message: formData.message,
+        is_agreed: formData.agreeToTerms,
+      }).unwrap();
+      toast.success("Message sent successfully!");
+      setFormData({
+        fullName: "",
+        email: "",
+        message: "",
+        agreeToTerms: false,
+      });
+    } catch {
+      toast.error("Failed to send message. Please try again.");
+    }
   };
 
   const handleChange = (
@@ -154,9 +173,10 @@ const GetInTouch = () => {
                   {/* Submit Button */}
                   <Button
                     type="submit"
+                    disabled={isLoading}
                     className="w-full font-semibold py-3 px-6 rounded-lg"
                   >
-                    Send Messages
+                    {isLoading ? "Sending..." : "Send Messages"}
                   </Button>
                 </form>
               </div>
