@@ -2,16 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin } from "lucide-react";
 import logo from "@/assets/logo.svg"
 
 export default function Footer() {
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle newsletter subscription
-  };
 
   return (
     <footer className="w-full bg-primary/5">
@@ -39,7 +33,8 @@ export default function Footer() {
             </div>
 
             {/* Newsletter Subscription */}
-            <form onSubmit={handleSubscribe} className="flex gap-2">
+
+            {/* <form onSubmit={handleSubscribe} className="flex gap-2">
               <Input
                 type="email"
                 placeholder="Enter your email address"
@@ -52,7 +47,7 @@ export default function Footer() {
               >
                 Join
               </Button>
-            </form>
+            </form> */}
           </div>
 
           {/* Company Links */}
