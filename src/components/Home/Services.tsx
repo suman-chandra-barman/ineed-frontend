@@ -2,10 +2,6 @@
 
 import { useState } from "react";
 import { StaticImageData } from "next/image";
-import sercice1 from "@/assets/service-1.jpg";
-import sercice2 from "@/assets/service-2.jpg";
-import sercice3 from "@/assets/service-3.jpg";
-import sercice4 from "@/assets/service-4.jpg";
 import ServiceCard from "../Cards/ServiceCard";
 import { useGetCategoriesQuery } from "@/redux/features/category/categoryApi";
 import { useGetServicesQuery } from "@/redux/features/service/serviceApi";
@@ -21,89 +17,87 @@ export interface Service {
   rating: number;
   category: string[];
 }
-
-export const services: Service[] = [
-  {
-    id: 1,
-    title: "Home Maintenance Service",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    image: sercice1,
-    price: "From $50",
-    rating: 4.5,
-    category: ["all", "residential"],
-  },
-  {
-    id: 2,
-    title: "General Repair Service",
-    description:
-      "Everyday electronic and device repairs by skilled professionals. Safe, reliable, and hassle-free servic...",
-    image: sercice2,
-    price: "From $50",
-    rating: 4.5,
-    category: ["all", "commercial"],
-  },
-  {
-    id: 3,
-    title: "Cleaning & Surface Maintenance",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    image: sercice3,
-    price: "From $50",
-    rating: 4.5,
-    category: ["all", "move"],
-  },
-  {
-    id: 4,
-    title: "Cleaning & Surface Maintenance",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    image: sercice4,
-    price: "From $50",
-    rating: 4.5,
-    category: ["all", "specialty"],
-  },
-  {
-    id: 5,
-    title: "Home Maintenance Service",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    image: sercice2,
-    price: "From $50",
-    rating: 4.5,
-    category: ["all", "residential"],
-  },
-  {
-    id: 6,
-    title: "General Repair Service",
-    description:
-      "Everyday electronic and device repairs by skilled professionals. Safe, reliable, and hassle-free servic...",
-    image: sercice4,
-    price: "From $50",
-    rating: 4.5,
-    category: ["all", "commercial"],
-  },
-  {
-    id: 7,
-    title: "Cleaning & Surface Maintenance",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    image: sercice1,
-    price: "From $50",
-    rating: 4.5,
-    category: ["all", "move"],
-  },
-  {
-    id: 8,
-    title: "Cleaning & Surface Maintenance",
-    description:
-      "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
-    image: sercice3,
-    price: "From $50",
-    rating: 4.5,
-    category: ["all", "specialty"],
-  },
-];
+//   {
+//     id: 1,
+//     title: "Home Maintenance Service",
+//     description:
+//       "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
+//     image: sercice1,
+//     price: "From $50",
+//     rating: 4.5,
+//     category: ["all", "residential"],
+//   },
+//   {
+//     id: 2,
+//     title: "General Repair Service",
+//     description:
+//       "Everyday electronic and device repairs by skilled professionals. Safe, reliable, and hassle-free servic...",
+//     image: sercice2,
+//     price: "From $50",
+//     rating: 4.5,
+//     category: ["all", "commercial"],
+//   },
+//   {
+//     id: 3,
+//     title: "Cleaning & Surface Maintenance",
+//     description:
+//       "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
+//     image: sercice3,
+//     price: "From $50",
+//     rating: 4.5,
+//     category: ["all", "move"],
+//   },
+//   {
+//     id: 4,
+//     title: "Cleaning & Surface Maintenance",
+//     description:
+//       "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
+//     image: sercice4,
+//     price: "From $50",
+//     rating: 4.5,
+//     category: ["all", "specialty"],
+//   },
+//   {
+//     id: 5,
+//     title: "Home Maintenance Service",
+//     description:
+//       "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
+//     image: sercice2,
+//     price: "From $50",
+//     rating: 4.5,
+//     category: ["all", "residential"],
+//   },
+//   {
+//     id: 6,
+//     title: "General Repair Service",
+//     description:
+//       "Everyday electronic and device repairs by skilled professionals. Safe, reliable, and hassle-free servic...",
+//     image: sercice4,
+//     price: "From $50",
+//     rating: 4.5,
+//     category: ["all", "commercial"],
+//   },
+//   {
+//     id: 7,
+//     title: "Cleaning & Surface Maintenance",
+//     description:
+//       "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
+//     image: sercice1,
+//     price: "From $50",
+//     rating: 4.5,
+//     category: ["all", "move"],
+//   },
+//   {
+//     id: 8,
+//     title: "Cleaning & Surface Maintenance",
+//     description:
+//       "A reliable repair service for everyday maintenance needs, managed and verified by our platform.",
+//     image: sercice3,
+//     price: "From $50",
+//     rating: 4.5,
+//     category: ["all", "specialty"],
+//   },
+// ];
 
 export default function Services() {
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);

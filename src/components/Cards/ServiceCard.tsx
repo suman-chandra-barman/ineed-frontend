@@ -1,212 +1,251 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { memo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Service as StaticService } from "../Home/Services";
-import { Service as ApiService } from "@/types/service.type";
-import { Star, Heart, Loader2 } from "lucide-react";
-import { Button } from "../ui/button";
+import { Heart, Loader2, Star } from "lucide-react";
+import { toast } from "sonner";
+
+import type { Service } from "@/types/service.type";
 import { useCreateBookingMutation } from "@/redux/features/booking/bookingApi";
 import { useToggleFavoriteMutation } from "@/redux/features/service/serviceApi";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 import placeholderImage from "@/assets/service-1.jpg";
 
+// Types
 interface ServiceCardProps {
-  service: StaticService | ApiService;
+  service: Service;
   priority?: boolean;
   isFavorite?: boolean;
 }
 
-// Type guard to check if service is from API
-const isApiService = (
-  service: StaticService | ApiService,
-): service is ApiService => {
-  return "category_id" in service;
+interface ApiError {
+  data?: {
+    message?: string;
+    detail?: string;
+  };
+}
+
+// Utils
+const getImageUrl = (
+  imagePath: string | null,
+): string | typeof placeholderImage => {
+  if (!imagePath) return placeholderImage;
+  return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${imagePath}`;
 };
 
-const ServiceCard = memo(
-  ({ service, priority = false, isFavorite = false }: ServiceCardProps) => {
-    const router = useRouter();
-    const [createBooking, { isLoading }] = useCreateBookingMutation();
-    const [toggleFavorite, { isLoading: isFavoriteLoading }] =
-      useToggleFavoriteMutation();
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  const apiError = error as ApiError;
+  return apiError?.data?.message || apiError?.data?.detail || fallback;
+};
 
-    // Extract data based on service type
-    const serviceData = isApiService(service)
-      ? {
-          id: service.id,
-          title: service.name,
-          description: service.description,
-          image: service.image
-            ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${service.image}`
-            : placeholderImage,
-          price: `$${service.offer_price}`,
-          originalPrice:
-            service.man_price !== service.offer_price
-              ? `$${service.man_price}`
-              : null,
-          rating: 4.5, // Default rating since API doesn't provide it yet
-          isFavorited: service.is_favorite ?? isFavorite,
-        }
-      : {
-          id: service.id,
-          title: service.title,
-          description: service.description,
-          image: service.image,
-          price: service.price,
-          originalPrice: null,
-          rating: service.rating,
-          isFavorited: isFavorite,
-        };
+const ServiceCard = memo(function ServiceCard({
+  service,
+  priority = false,
+  isFavorite = false,
+}: ServiceCardProps) {
+  const router = useRouter();
+  const [createBooking, { isLoading: isBookingLoading }] =
+    useCreateBookingMutation();
+  const [toggleFavorite, { isLoading: isFavoriteLoading }] =
+    useToggleFavoriteMutation();
 
-    const handleBookNow = async (e: React.MouseEvent) => {
+  // Memoized derived data
+  const serviceData = useMemo(() => {
+    const hasDiscount = service.man_price !== service.offer_price;
+
+    return {
+      id: service.id,
+      title: service.name,
+      description: service.description,
+      image: getImageUrl(service.image),
+      price: `$${service.offer_price}`,
+      originalPrice: hasDiscount ? `$${service.man_price}` : null,
+      rating: service.rating,
+      isFavorited: service.is_favorite ?? isFavorite,
+    };
+  }, [service, isFavorite]);
+
+  const serviceUrl = `/services/${serviceData.id}`;
+
+  const handleBookNow = useCallback(
+    async (e: React.MouseEvent) => {
       e.preventDefault();
+
       try {
         const result = await createBooking({
           service_id: serviceData.id,
         }).unwrap();
-
-        // Navigate to booking page with booking ID
         router.push(`/booking/${result.id}`);
-      } catch (error: any) {
+      } catch (error) {
         console.error("Failed to create booking:", error);
         toast.error(
-          error?.data?.message ||
-            error?.data?.detail ||
-            "Failed to create booking. Please try again.",
+          getErrorMessage(error, "Failed to create booking. Please try again."),
         );
       }
-    };
+    },
+    [createBooking, serviceData.id, router],
+  );
 
-    const handleFavoriteClick = async (e: React.MouseEvent) => {
+  const handleFavoriteClick = useCallback(
+    async (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
+
       try {
         const result = await toggleFavorite(serviceData.id).unwrap();
-        toast.success(
-          result.data.is_favorite
-            ? "Added to favorites"
-            : "Removed from favorites",
-        );
-      } catch (error: any) {
+        const message = result.data.is_favorite
+          ? "Added to favorites"
+          : "Removed from favorites";
+        toast.success(message);
+      } catch (error) {
         console.error("Failed to toggle favorite:", error);
         toast.error(
-          error?.data?.message ||
-            error?.data?.detail ||
+          getErrorMessage(
+            error,
             "Failed to update favorite. Please try again.",
+          ),
         );
       }
-    };
+    },
+    [toggleFavorite, serviceData.id],
+  );
 
-    return (
-      <article className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 group">
-        {/* Image */}
-        <Link
-          href={`/services/${serviceData.id}`}
-          className="relative h-48 sm:h-56 bg-gray-200 overflow-hidden block focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          aria-label={`View ${serviceData.title} service details`}
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg">
+      {/* Image Section */}
+      <Link
+        href={serviceUrl}
+        className="relative block h-48 overflow-hidden bg-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 sm:h-56"
+        aria-label={`View ${serviceData.title} service details`}
+      >
+        <Image
+          src={serviceData.image}
+          alt={`${serviceData.title} service thumbnail`}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          priority={priority}
+          loading={priority ? undefined : "lazy"}
+        />
+
+        {/* Favorite Button */}
+        <button
+          type="button"
+          onClick={handleFavoriteClick}
+          disabled={isFavoriteLoading}
+          className="absolute right-3 top-3 z-10 rounded-full bg-white p-2 shadow-md transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label={
+            serviceData.isFavorited
+              ? "Remove from favorites"
+              : "Add to favorites"
+          }
         >
-          <Image
-            src={serviceData.image}
-            alt={`${serviceData.title} service thumbnail`}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            priority={priority}
-            loading={priority ? undefined : "lazy"}
-          />
+          {isFavoriteLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          ) : (
+            <Heart
+              className={cn(
+                "h-5 w-5 transition-colors duration-200",
+                serviceData.isFavorited
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-400 hover:text-red-500",
+              )}
+            />
+          )}
+        </button>
+      </Link>
 
-          {/* Favorite Icon */}
-          <button
-            onClick={handleFavoriteClick}
-            disabled={isFavoriteLoading}
-            className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label={
-              serviceData.isFavorited
-                ? "Remove from favorites"
-                : "Add to favorites"
-            }
-          >
-            {isFavoriteLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin text-primary" />
-            ) : (
-              <Heart
-                className={`w-5 h-5 transition-colors duration-200 ${
-                  serviceData.isFavorited
-                    ? "fill-red-500 text-red-500"
-                    : "text-gray-400 hover:text-red-500"
-                }`}
-              />
-            )}
-          </button>
+      {/* Content Section */}
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <Link
+          href={serviceUrl}
+          className="rounded focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        >
+          <h3 className="mb-2 line-clamp-2 text-base font-semibold text-gray-900 sm:text-lg">
+            {serviceData.title}
+          </h3>
         </Link>
 
-        {/* Content */}
-        <div className="p-5 sm:p-6 flex flex-col flex-1">
-          <Link
-            href={`/services/${serviceData.id}`}
-            className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-          >
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-              {serviceData.title}
-            </h3>
-          </Link>
-          <p className="text-xs sm:text-sm text-gray-600 mb-4 line-clamp-2 grow">
-            {serviceData.description}
-          </p>
+        <p className="mb-4 line-clamp-2 grow text-xs text-gray-600 sm:text-sm">
+          {serviceData.description}
+        </p>
 
-          {/* Price and Rating */}
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <span className="text-xs sm:text-sm text-gray-600">Price: </span>
-              {serviceData.originalPrice && (
-                <span className="text-xs sm:text-sm text-gray-400 line-through mr-2">
-                  {serviceData.originalPrice}
-                </span>
-              )}
-              <span className="text-sm sm:text-base font-bold text-gray-900">
-                {serviceData.price}
-              </span>
-            </div>
-            <div
-              className="flex items-center gap-1"
-              aria-label={`Rated ${serviceData.rating} out of 5 stars`}
-            >
-              <Star
-                className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400 text-amber-400"
-                aria-hidden="true"
-              />
-              <span className="text-sm sm:text-base font-semibold text-gray-900">
-                {serviceData.rating}
-              </span>
-            </div>
-          </div>
-
-          {/* Book Now Button */}
-          <Button
-            onClick={handleBookNow}
-            disabled={isLoading}
-            className="w-full py-2.5 sm:py-3 text-sm sm:text-base"
-            aria-label={`Book ${serviceData.title} now`}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              "Book Now"
-            )}
-          </Button>
+        {/* Price and Rating */}
+        <div className="mb-4 flex items-center justify-between">
+          <PriceDisplay
+            price={serviceData.price}
+            originalPrice={serviceData.originalPrice}
+          />
+          {serviceData.rating > 0 && (
+            <RatingDisplay rating={serviceData.rating} />
+          )}
         </div>
-      </article>
-    );
-  },
-);
 
-ServiceCard.displayName = "ServiceCard";
+        {/* Book Now Button */}
+        <Button
+          onClick={handleBookNow}
+          disabled={isBookingLoading}
+          className="w-full py-2.5 text-sm sm:py-3 sm:text-base"
+          aria-label={`Book ${serviceData.title} now`}
+        >
+          {isBookingLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating...
+            </>
+          ) : (
+            "Book Now"
+          )}
+        </Button>
+      </div>
+    </article>
+  );
+});
+
+// Sub-components
+interface PriceDisplayProps {
+  price: string;
+  originalPrice: string | null;
+}
+
+function PriceDisplay({ price, originalPrice }: PriceDisplayProps) {
+  return (
+    <div>
+      <span className="text-xs text-gray-600 sm:text-sm">Price: </span>
+      {originalPrice && (
+        <span className="mr-2 text-xs text-gray-400 line-through sm:text-sm">
+          {originalPrice}
+        </span>
+      )}
+      <span className="text-sm font-bold text-gray-900 sm:text-base">
+        {price}
+      </span>
+    </div>
+  );
+}
+
+interface RatingDisplayProps {
+  rating: number;
+}
+
+function RatingDisplay({ rating }: RatingDisplayProps) {
+  return (
+    <div
+      className="flex items-center gap-1"
+      aria-label={`Rated ${rating} out of 5 stars`}
+    >
+      <Star
+        className="h-4 w-4 fill-amber-400 text-amber-400 sm:h-5 sm:w-5"
+        aria-hidden="true"
+      />
+      <span className="text-sm font-semibold text-gray-900 sm:text-base">
+        {rating}
+      </span>
+    </div>
+  );
+}
 
 export default ServiceCard;

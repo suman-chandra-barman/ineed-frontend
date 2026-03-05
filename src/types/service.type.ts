@@ -18,6 +18,7 @@ export type Service = {
   is_favorite?: boolean;
   created_at: string;
   updated_at: string;
+  rating: number;
 };
 
 export type ServiceHour = {
