@@ -190,7 +190,7 @@ export default function BookingDetailsView({
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-primary text-white text-3xl font-bold">
-                    {providerName.charAt(0).toUpperCase()}
+                    {providerName?.charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>

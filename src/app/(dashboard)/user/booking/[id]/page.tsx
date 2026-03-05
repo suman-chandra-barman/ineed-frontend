@@ -65,16 +65,16 @@ export default function BookingDetailsPage({
       additionalService={booking_details.pricing.additional_service}
       tax={booking_details.pricing.tax}
       total={booking_details.pricing.total}
-      providerName={provider_details.provider_name}
-      providerEmail={provider_details.email}
-      providerContact={provider_details.contact_number}
-      providerAddress={provider_details.address}
+      providerName={provider_details?.provider_name}
+      providerEmail={provider_details?.email}
+      providerContact={provider_details?.contact_number}
+      providerAddress={provider_details?.address}
       providerImage={
-        provider_details.image
+        provider_details?.image
           ? `${BASE_URL}${provider_details.image}`
           : undefined
       }
-      chatEnabled={provider_details.chat_enabled}
+      chatEnabled={provider_details?.chat_enabled}
       beforeImages={service_images.before.map((img) => `${BASE_URL}${img}`)}
       afterImages={service_images.after.map((img) => `${BASE_URL}${img}`)}
       bookingTrack={booking_track}
