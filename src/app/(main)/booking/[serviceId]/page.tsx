@@ -1,13 +1,12 @@
 "use client";
 
-import {
-  useState,
-  useCallback,
-  useSyncExternalStore,
-} from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useState, useCallback, useSyncExternalStore } from "react";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { BookingState } from "@/types/booking.type";
-import { useGetBookingAddonsQuery } from "@/redux/features/booking/bookingApi";
+import {
+  useGetBookingAddonsQuery,
+  useGetPaymentDetailsQuery,
+} from "@/redux/features/booking/bookingApi";
 import AdditionalFeaturesStep from "@/components/Booking/AdditionalFeaturesStep";
 import ServicingInformationStep from "@/components/Booking/ServicingInformationStep";
 import DateTimeStep from "@/components/Booking/DateTimeStep";
@@ -53,7 +52,9 @@ const emptySubscribe = () => () => {};
 export default function BookingPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const bookingId = parseInt(params.serviceId as string);
+  const sessionId = searchParams.get("session_id");
 
   // Use useSyncExternalStore to safely detect client-side mounting without causing re-renders
   const mounted = useSyncExternalStore(
@@ -62,9 +63,17 @@ export default function BookingPage() {
     () => false,
   );
 
+  // Determine initial step: if returning from Stripe with session_id, go to confirmation
+  const initialStep = sessionId ? 5 : mounted ? getSavedStep(bookingId) : 1;
+
+  // Persist step 5 if returning from Stripe
+  if (sessionId && mounted) {
+    saveStep(bookingId, 5);
+  }
+
   // Initialize with saved step using lazy initialization
   const [bookingState, setBookingState] = useState<BookingState>(() => ({
-    currentStep: mounted ? getSavedStep(bookingId) : 1,
+    currentStep: initialStep,
     totalSteps: 5,
     serviceId: bookingId.toString(),
     serviceName: "",
@@ -93,6 +102,11 @@ export default function BookingPage() {
     error,
   } = useGetBookingAddonsQuery(bookingId, {
     skip: !mounted,
+  });
+
+  // Fetch payment details to check payment status
+  const { data: paymentDetails } = useGetPaymentDetailsQuery(bookingId, {
+    skip: !mounted || bookingState.currentStep !== 4,
   });
 
   const handleNext = useCallback(() => {
@@ -233,6 +247,7 @@ export default function BookingPage() {
                 bookingId={bookingId}
                 onNext={handleNext}
                 onBack={handleBack}
+                isPaid={paymentDetails?.payment_status === "paid"}
               />
             )}
 

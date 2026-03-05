@@ -14,12 +14,14 @@ interface PaymentStepProps {
   bookingId: number;
   onNext: () => void;
   onBack: () => void;
+  isPaid?: boolean;
 }
 
 export default function PaymentStep({
   bookingId,
   onNext,
   onBack,
+  isPaid = false,
 }: PaymentStepProps) {
   const {
     data: paymentDetails,
@@ -69,7 +71,7 @@ export default function PaymentStep({
     );
   }
 
-  const { service, available_addons, breakdown, } = paymentDetails;
+  const { service, available_addons, breakdown } = paymentDetails;
 
   console.log("Payment Details:", paymentDetails);
   return (
@@ -152,7 +154,9 @@ export default function PaymentStep({
               <p className="text-sm text-gray-500 mt-1">{`${service.description.slice(0, 100)}...`}</p>
             </div>
             <div className="text-right">
-              <p className="font-semibold text-yellow-600">${service.base_price}</p>
+              <p className="font-semibold text-yellow-600">
+                ${service.base_price}
+              </p>
             </div>
           </div>
 
@@ -160,7 +164,7 @@ export default function PaymentStep({
           {available_addons?.length > 0 && (
             <div className="space-y-3 pb-4 mb-4 border-b border-gray-200">
               <h4 className="font-medium text-gray-900">Additional Services</h4>
-              {available_addons.map((addon:any) => (
+              {available_addons.map((addon: any) => (
                 <div
                   key={addon.id}
                   className="flex justify-between items-start"
@@ -196,7 +200,9 @@ export default function PaymentStep({
             </div>
             <div className="flex justify-between text-gray-700">
               <span>Additional Service</span>
-              <span className="font-semibold">${breakdown.additional_service}</span>
+              <span className="font-semibold">
+                ${breakdown.additional_service}
+              </span>
             </div>
             <div className="flex justify-between text-gray-700">
               <span>Tax</span>
@@ -218,7 +224,12 @@ export default function PaymentStep({
           Previous
         </Button>
         <div className="flex items-center gap-4">
-          <Button onClick={onNext} size="lg">
+          <Button
+            onClick={onNext}
+            size="lg"
+            disabled={!isPaid}
+            title={!isPaid ? "Please complete payment first" : undefined}
+          >
             Continue
           </Button>
         </div>
