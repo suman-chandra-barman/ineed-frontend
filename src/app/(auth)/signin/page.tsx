@@ -67,10 +67,10 @@ function SigninPage() {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // Handle Google sign in logic here
-    console.log("Google sign in");
-  };
+  // const handleGoogleSignIn = () => {
+  //   // Handle Google sign in logic here
+  //   console.log("Google sign in");
+  // };
 
   return (
     <div className="min-h-screen flex">
@@ -215,7 +215,7 @@ function SigninPage() {
           </div>
 
           {/* Google Sign In */}
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             onClick={handleGoogleSignIn}
