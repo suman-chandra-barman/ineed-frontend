@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import {
   LayoutDashboard,
   Calendar,
@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import logo from "@/assets/logo.svg"
+import logo from "@/assets/logo.svg";
+import { LogoutModal } from "../Modals/LogoutModal";
 
 interface NavLink {
   href: string;
@@ -30,7 +31,13 @@ const navLinks: NavLink[] = [
 ];
 
 export function DashboardSidebar() {
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+
   const pathname = usePathname();
+
+  const handleLogout = () => {
+    setLogoutModalOpen(true);
+  };
 
   return (
     <aside className="fixed top-0 left-0 bottom-0 w-64 bg-white shadow-sm z-40 hidden lg:block">
@@ -76,11 +83,16 @@ export function DashboardSidebar() {
         </nav>
 
         {/* Logout Button */}
-        <Button className="w-full mt-6 flex items-center gap-3 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-700 transition-colors">
+        <Button
+          onClick={handleLogout}
+          className="w-full mt-6 flex items-center gap-3 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
           <LogOut className="w-5 h-5" />
           <span className="font-medium">Log Out</span>
         </Button>
       </div>
+      {/* logout modal */}
+      <LogoutModal open={logoutModalOpen} onOpenChange={setLogoutModalOpen} />
     </aside>
   );
 }

@@ -26,6 +26,8 @@ import {
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import logo from "@/assets/logo.svg";
+import { useState } from "react";
+import { LogoutModal } from "../Modals/LogoutModal";
 
 interface NavLink {
   href: string;
@@ -43,9 +45,15 @@ const navLinks: NavLink[] = [
 ];
 
 export function ProviderDashboardSidebar() {
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+
+  const handleLogout = () => {
+    setLogoutModalOpen(true);
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -111,11 +119,13 @@ export function ProviderDashboardSidebar() {
         <Button
           className="w-full flex items-center justify-center gap-2 bg-red-500 text-white hover:bg-red-600"
           size={isCollapsed ? "icon" : "default"}
+          onClick={handleLogout}
         >
           <LogOut className="w-5 h-5" />
           {!isCollapsed && <span>Log Out</span>}
         </Button>
       </SidebarFooter>
+      <LogoutModal open={logoutModalOpen} onOpenChange={setLogoutModalOpen} />
     </Sidebar>
   );
 }
