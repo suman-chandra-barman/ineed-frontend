@@ -190,7 +190,9 @@ export default function ServiceDetailsPage() {
                   description: feature.description,
                   price: parseFloat(feature.price),
                   duration: feature.duration,
-                  image: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${feature.image}`,
+                  image: feature.image
+                    ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${feature.image}`
+                    : `https://placehold.co/80x80/e5e7eb/6b7280?text=Service`,
                 }),
               )}
             />

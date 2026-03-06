@@ -36,9 +36,10 @@ export default function Hero() {
             </div>
 
             {/* Search Box */}
-            <div className="rounded-2xl space-y-4">
+
+            {/* <div className="rounded-2xl space-y-4">
               <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-3 md:gap-0 border border-primary p-2 rounded-2xl">
-                {/* Service Select */}
+                Service Select
                 <Select>
                   <SelectTrigger className="border-0 bg-white h-14">
                     <SelectValue placeholder="Select your service" />
@@ -56,7 +57,7 @@ export default function Hero() {
                   </SelectContent>
                 </Select>
 
-                {/* Location Input */}
+                Location Input
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <Input
@@ -65,14 +66,14 @@ export default function Hero() {
                   />
                 </div>
 
-                {/* Search Button */}
+                Search Button
                 <Button className="bg-primary h-14 text-base sm:text-lg font-semibold sm:col-span-2 md:col-span-1 w-full">
                   <Search className="mr-2 h-5 w-5" />
                   Search
                 </Button>
               </div>
 
-              {/* Popular Searches */}
+               Popular Searches 
               <div className="flex items-center gap-2 flex-wrap text-xs sm:text-sm">
                 <span className="text-gray-600 font-medium">
                   Popular Searches:
@@ -85,7 +86,8 @@ export default function Hero() {
                   Corporate and commercial cleaning
                 </button>
               </div>
-            </div>
+            </div> */}
+
           </div>
 
           {/* Right Image */}

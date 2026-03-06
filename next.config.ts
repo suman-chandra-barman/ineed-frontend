@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
         hostname: "**localhost",
         pathname: "/media/**",
       },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+      },
     ],
   },
 };
