@@ -4,6 +4,7 @@ import ServiceCard from "@/components/Cards/ServiceCard";
 import PageHeader from "@/components/Dashboard/PageHeader";
 import { ErrorDisplay, LoadingSpinner } from "@/components/Shared";
 import { useGetFavoritesQuery } from "@/redux/features/service/serviceApi";
+import { fa } from "zod/v4/locales";
 
 function FavoritePage() {
   const { data, isLoading, isError } = useGetFavoritesQuery({});
@@ -41,6 +42,7 @@ function FavoritePage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8">
           {favorites.map((favorite) => {
+            console.log("favorite -----<", favorite);
             // Transform favorite data to match Service type
             const service = {
               id: favorite.service_id,
@@ -55,6 +57,7 @@ function FavoritePage() {
               is_active: true,
               created_at: "",
               updated_at: "",
+              rating: 0,
             };
             return (
               <ServiceCard
