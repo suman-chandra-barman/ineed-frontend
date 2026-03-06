@@ -7,6 +7,7 @@ interface Conversation {
   id: string;
   name: string;
   avatar: string;
+  avatarUrl?: string | null;
   lastMessage: string;
   timestamp: string;
   unreadCount?: number;
@@ -33,7 +34,6 @@ export default function ChatHeader({
   return (
     <div className="p-4 border-b">
       <div className="flex items-center gap-3">
-        {/* Back Button for Mobile */}
         <Button
           variant="ghost"
           size="icon"
@@ -42,19 +42,29 @@ export default function ChatHeader({
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${getAvatarColor(
-            selectedConv.id,
-          )}`}
-        >
-          {selectedConv.avatar}
-        </div>
+
+        {selectedConv.avatarUrl ? (
+          <img
+            src={selectedConv.avatarUrl}
+            alt={selectedConv.name}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        ) : (
+          <div
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${getAvatarColor(
+              selectedConv.id,
+            )}`}
+          >
+            {selectedConv.avatar}
+          </div>
+        )}
+
         <div>
           <h3 className="font-semibold">{selectedConv.name}</h3>
           <p className="text-xs text-gray-500">
             {selectedConv.isOnline
               ? "Active now"
-              : selectedConv.lastSeen || "Last seen 7h ago"}
+              : selectedConv.lastSeen || "Conversation"}
           </p>
         </div>
       </div>

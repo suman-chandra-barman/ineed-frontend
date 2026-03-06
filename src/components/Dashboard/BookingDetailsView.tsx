@@ -7,10 +7,11 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { BookingTrackStep } from "@/types/booking.type";
 import ReviewModal from "@/components/Dashboard/ReviewModal";
+import { useLazyGetBookingChatRoomQuery } from "@/redux/features/chat/chatApi";
 
 interface BookingDetailsViewProps {
   numericId: number;
-  bookingId: string;
+  bookingId: number;
   bookingDate: string;
   location: string;
   canReschedule: boolean;
@@ -60,7 +61,20 @@ export default function BookingDetailsView({
   const router = useRouter();
   const [reviewOpen, setReviewOpen] = useState(false);
 
+  const [getBookingChatRoom, { isLoading: openingChat }] =
+    useLazyGetBookingChatRoomQuery();
+
   const isCompleted = rawStatus === "completed" || rawStatus === "complete";
+
+  const handleOpenChat = async (bookingId: number) => {
+    try {
+      const res = await getBookingChatRoom(bookingId).unwrap();
+      const roomId = res.data.id;
+      router.push(`/user/chat?roomId=${roomId}`);
+    } catch (error) {
+      console.error("Failed to open chat room", error);
+    }
+  };
 
   const activeStep =
     bookingTrack.find((s) => s.active)?.step ??
@@ -224,9 +238,13 @@ export default function BookingDetailsView({
             </div>
 
             {chatEnabled && (
-              <Button className="w-full">
+              <Button
+                className="w-full"
+                onClick={() => handleOpenChat(bookingId)}
+                disabled={openingChat}
+              >
                 <MessageCircle className="w-4 h-4 mr-2" />
-                Chat
+                {openingChat ? "Opening..." : "Chat"}
               </Button>
             )}
           </div>

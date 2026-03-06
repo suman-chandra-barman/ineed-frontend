@@ -7,6 +7,7 @@ interface Conversation {
   id: string;
   name: string;
   avatar: string;
+  avatarUrl?: string | null;
   lastMessage: string;
   timestamp: string;
   unreadCount?: number;
@@ -44,7 +45,6 @@ export default function ChatSidebar({
         showMobileSidebar ? "w-full" : "hidden"
       } lg:w-80 lg:block border-r flex flex-col`}
     >
-      {/* Sidebar Header */}
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -53,9 +53,8 @@ export default function ChatSidebar({
           </h2>
         </div>
 
-        {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             type="text"
             placeholder="Search..."
@@ -66,7 +65,6 @@ export default function ChatSidebar({
         </div>
       </div>
 
-      {/* Conversations List */}
       <div className="flex-1 overflow-y-auto">
         {conversations
           .filter((conv) =>
@@ -80,36 +78,41 @@ export default function ChatSidebar({
                 selectedConversation === conv.id ? "bg-blue-50" : ""
               }`}
             >
-              {/* Avatar */}
-              <div className="relative">
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${getAvatarColor(
-                    conv.id,
-                  )}`}
-                >
-                  {conv.avatar}
-                </div>
+              <div className="relative shrink-0">
+                {conv.avatarUrl ? (
+                  <img
+                    src={conv.avatarUrl}
+                    alt={conv.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${getAvatarColor(
+                      conv.id,
+                    )}`}
+                  >
+                    {conv.avatar}
+                  </div>
+                )}
                 {conv.isOnline && (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                 )}
               </div>
 
-              {/* Message Info */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="font-semibold text-sm truncate">
-                    {conv.name}
-                  </h3>
+                <div className="flex items-center justify-between mb-1 gap-2">
+                  <h3 className="font-semibold text-sm truncate">{conv.name}</h3>
                   <span className="text-xs text-gray-500 shrink-0">
                     {conv.timestamp}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
+
+                <div className="flex items-center justify-between gap-2">
                   <p className="text-sm text-gray-600 truncate">
-                    {conv.lastMessage}
+                    {conv.lastMessage || "No messages yet"}
                   </p>
                   {conv.unreadCount && conv.unreadCount > 0 ? (
-                    <span className="bg-yellow-400 text-yellow-900 text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center shrink-0 ml-2">
+                    <span className="bg-yellow-400 text-yellow-900 text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
                       {conv.unreadCount}
                     </span>
                   ) : null}

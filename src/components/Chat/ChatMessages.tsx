@@ -1,11 +1,14 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 interface Message {
   id: string;
   senderId: string;
   content: string;
   timestamp: string;
   isRead: boolean;
+  attachment?: string | null;
 }
 
 interface ChatMessagesProps {
@@ -13,6 +16,12 @@ interface ChatMessagesProps {
 }
 
 export default function ChatMessages({ messages }: ChatMessagesProps) {
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   if (messages.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -23,10 +32,9 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
 
   return (
     <div className="space-y-4">
-      {/* Date Badge */}
       <div className="flex justify-center mb-6">
         <span className="bg-blue-100 text-primary text-xs font-medium px-3 py-1 rounded-full">
-          28 April
+          Messages
         </span>
       </div>
 
@@ -44,7 +52,27 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
                 : "bg-white text-gray-900"
             } rounded-lg px-3 sm:px-4 py-2 sm:py-3 shadow-sm`}
           >
-            <p className="text-xs sm:text-sm">{message.content}</p>
+            {message.content ? (
+              <p className="text-xs sm:text-sm whitespace-pre-wrap">
+                {message.content}
+              </p>
+            ) : null}
+
+            {message.attachment ? (
+              <a
+                href={message.attachment}
+                target="_blank"
+                rel="noreferrer"
+                className={`block mt-2 underline text-xs ${
+                  message.senderId === "current"
+                    ? "text-blue-100"
+                    : "text-blue-600"
+                }`}
+              >
+                View attachment
+              </a>
+            ) : null}
+
             <div className="flex items-center justify-end gap-1 mt-1">
               <span
                 className={`text-xs ${
@@ -68,6 +96,9 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
           </div>
         </div>
       ))}
+
+      <div ref={bottomRef} />
     </div>
   );
 }
+ 
