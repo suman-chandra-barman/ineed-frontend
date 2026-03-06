@@ -14,13 +14,11 @@ import { Loader2 } from "lucide-react";
 interface JobActionsProps {
   bookingId: number;
   status: string;
-  onStatusChange: (status: string) => void;
 }
 
 export default function JobActions({
   bookingId,
   status,
-  onStatusChange,
 }: JobActionsProps) {
   const [isStartJobModalOpen, setIsStartJobModalOpen] = useState(false);
   const [isCompleteJobModalOpen, setIsCompleteJobModalOpen] = useState(false);
@@ -32,7 +30,6 @@ export default function JobActions({
       const res = await startJob(bookingId).unwrap();
       if (res.success) {
         toast.success("Job started successfully!");
-        onStatusChange(res.data.status);
       }
     } catch {
       toast.error("Failed to start job.");
@@ -46,7 +43,6 @@ export default function JobActions({
       const res = await completeJob(bookingId).unwrap();
       if (res.success) {
         toast.success("Job completed successfully!");
-        onStatusChange(res.data.status);
       }
     } catch {
       toast.error("Failed to complete job.");
@@ -63,7 +59,7 @@ export default function JobActions({
   return (
     <>
       <div className="mt-6 flex items-center justify-center gap-4">
-        {status === "pending" && (
+        {status === "assigned" && (
           <Button
             onClick={() => setIsStartJobModalOpen(true)}
             size="lg"

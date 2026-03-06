@@ -8,29 +8,27 @@ import JobScheduleLocation from "@/components/Dashboard/JobScheduleLocation";
 import JobServiceInfo from "@/components/Dashboard/JobServiceInfo";
 import { ErrorDisplay } from "@/components/Shared/ErrorDisplay";
 import { LoadingSpinner } from "@/components/Shared/LoadingSpinner";
-import { Button } from "@/components/ui/button";
 import { useGetJobDetailsQuery } from "@/redux/features/provider/providerApi";
 import { MoveLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
-    case "pending":
-      return "bg-amber-100 text-black hover:bg-amber-100";
+    case "assigned":
+      return "bg-amber-100 text-black";
     case "in_progress":
-      return "bg-blue-100 text-blue-700 hover:bg-blue-100";
+      return "bg-blue-100 text-blue-700";
     case "completed":
-      return "bg-green-100 text-green-700 hover:bg-green-100";
+      return "bg-green-100 text-green-700";
     default:
-      return "bg-gray-100 text-gray-700 hover:bg-gray-100";
+      return "bg-gray-100 text-gray-700";
   }
 };
 
 const formatStatus = (status: string) => {
   switch (status) {
-    case "pending":
-      return "Pending";
+    case "assigned":
+      return "Assigned";
     case "in_progress":
       return "In Progress";
     case "completed":
@@ -44,8 +42,6 @@ export default function JobDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const bookingId = Number(params.id);
-
-  const [jobStatus, setJobStatus] = useState<string>("pending");
 
   const { data, isLoading, isError } = useGetJobDetailsQuery(bookingId, {
     skip: !bookingId,
@@ -76,9 +72,9 @@ export default function JobDetailsPage() {
           >
             <MoveLeft /> Job Details
           </button>
-          <Button className={`ml-4 ${getStatusStyle(jobStatus)}`}>
-            {formatStatus(jobStatus)}
-          </Button>
+          <span className={`ml-4 py-2 px-4 rounded-md ${getStatusStyle(jobData.job_information.status)}`}>
+            {formatStatus(jobData.job_information.status)}
+          </span>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column */}
@@ -111,7 +107,7 @@ export default function JobDetailsPage() {
             <JobServiceInfo services={jobData.service_information.services} />
             <JobImageUpload
               bookingId={bookingId}
-              isUploadable={jobStatus === "in_progress"}
+              isUploadable={jobData.job_information.status === "in_progress"}
               existingBeforeImages={jobData.image_upload_section.before_images}
               existingAfterImages={jobData.image_upload_section.after_images}
             />
@@ -121,8 +117,7 @@ export default function JobDetailsPage() {
         {/* Action Buttons */}
         <JobActions
           bookingId={bookingId}
-          status={jobStatus}
-          onStatusChange={setJobStatus}
+          status={jobData.job_information.status}
         />
       </div>
     </div>

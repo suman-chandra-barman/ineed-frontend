@@ -182,6 +182,7 @@ export interface JobInformation {
   job_id: string;
   job_category: string;
   booking_date: string;
+  status: string;
 }
 
 export interface JobScheduleLocations {
