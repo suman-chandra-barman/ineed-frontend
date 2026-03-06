@@ -283,7 +283,7 @@ export default function BookingDetailsView({
           </div>
         )}
 
-        {/* â”€â”€ Booking Track â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/*  Booking Track */}
         <div className="bg-white rounded-lg p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6 text-center">
             Booking Track
@@ -305,27 +305,29 @@ export default function BookingDetailsView({
               className="relative grid gap-4"
               style={{ gridTemplateColumns: `repeat(${totalSteps}, 1fr)` }}
             >
-              {bookingTrack.map((step) => (
-                <div key={step.step} className="flex flex-col items-center">
-                  <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold z-10 ${
-                      step.done
-                        ? "bg-primary text-white"
-                        : "bg-gray-200 text-gray-500"
-                    }`}
-                  >
-                    {step.done && !step.active ? "âœ“" : step.step}
+              {bookingTrack.map((step) => {
+                return (
+                  <div key={step.step} className="flex flex-col items-center">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold z-10 ${
+                        step.done
+                          ? "bg-primary text-white"
+                          : "bg-gray-200 text-gray-500"
+                      }`}
+                    >
+                      {step.done && !step.active ? step.step : step.step}
+                    </div>
+                    <span className="mt-2 text-xs text-center text-gray-700">
+                      {step.label}
+                    </span>
                   </div>
-                  <span className="mt-2 text-xs text-center text-gray-700">
-                    {step.label}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* â”€â”€ Action Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/*  Action Buttons  */}
         <div className="flex gap-4 justify-center pb-8">
           <Button
             variant="outline"
