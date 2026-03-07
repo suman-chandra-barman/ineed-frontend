@@ -9,12 +9,15 @@ import ReviewModal from "@/components/Dashboard/ReviewModal";
 import { useGetUserBookingsQuery } from "@/redux/features/booking/bookingApi";
 import { UserBookingListItem } from "@/types/booking.type";
 import { ErrorDisplay, LoadingSpinner } from "@/components/Shared";
+import { useLazyGetBookingChatRoomQuery } from "@/redux/features/chat/chatApi";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL ?? "";
 
 function BookingPage() {
   const router = useRouter();
   const { data, isLoading, isError } = useGetUserBookingsQuery();
+  const [getBookingChatRoom, { isLoading: openingChat }] =
+    useLazyGetBookingChatRoomQuery();
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] =
@@ -22,12 +25,19 @@ function BookingPage() {
 
   const bookings = data?.data ?? [];
 
-  const handleNavigate = (bookingId: number) => {
-    router.push(`/user/booking/${bookingId}`);
+  const handleNavigate = async (bookingId: number) => {
+    try {
+      const res = await getBookingChatRoom(bookingId).unwrap();
+
+      const roomId = res.data.id;
+      router.push(`/user/chat?roomId=${roomId}`);
+    } catch (error) {
+      console.error("Failed to open chat room", error);
+    }
   };
 
   const handleChatClick = (bookingId: number) => {
-    router.push(`/user/chat?booking=${bookingId}`);
+    router.push(`/user/chat?roomId=${bookingId}`);
   };
 
   const handleReviewClick = (booking: UserBookingListItem) => {

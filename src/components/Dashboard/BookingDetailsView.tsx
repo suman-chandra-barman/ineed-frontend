@@ -66,9 +66,10 @@ export default function BookingDetailsView({
 
   const isCompleted = rawStatus === "completed" || rawStatus === "complete";
 
-  const handleOpenChat = async (bookingId: number) => {
+  const handleOpenChat = async () => {
     try {
-      const res = await getBookingChatRoom(bookingId).unwrap();
+      const res = await getBookingChatRoom(numericId).unwrap();
+
       const roomId = res.data.id;
       router.push(`/user/chat?roomId=${roomId}`);
     } catch (error) {
@@ -240,7 +241,7 @@ export default function BookingDetailsView({
             {chatEnabled && (
               <Button
                 className="w-full"
-                onClick={() => handleOpenChat(bookingId)}
+                onClick={() => handleOpenChat()}
                 disabled={openingChat}
               >
                 <MessageCircle className="w-4 h-4 mr-2" />

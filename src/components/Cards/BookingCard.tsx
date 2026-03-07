@@ -1,6 +1,7 @@
 import Image, { StaticImageData } from "next/image";
 import { MessageCircle, Star } from "lucide-react";
 import { Button } from "../ui/button";
+import { useLazyGetBookingChatRoomQuery } from "@/redux/features/chat/chatApi";
 
 export type BookingStatus =
   | "pending"
