@@ -13,6 +13,7 @@ interface Conversation {
   unreadCount?: number;
   isOnline?: boolean;
   lastSeen?: string;
+  chatType?: "user_provider" | "admin_provider";
 }
 
 interface ChatSidebarProps {
@@ -47,9 +48,7 @@ export default function ChatSidebar({
     >
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">
-            Messages
-          </h2>
+          <h2 className="text-xl font-semibold">Messages</h2>
         </div>
 
         <div className="relative">
@@ -100,7 +99,16 @@ export default function ChatSidebar({
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1 gap-2">
-                  <h3 className="font-semibold text-sm truncate">{conv.name}</h3>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h3 className="font-semibold text-sm truncate">
+                      {conv.name}
+                    </h3>
+                    {conv.chatType === "admin_provider" && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 shrink-0">
+                        Admin
+                      </span>
+                    )}
+                  </div>
                   <span className="text-xs text-gray-500 shrink-0">
                     {conv.timestamp}
                   </span>

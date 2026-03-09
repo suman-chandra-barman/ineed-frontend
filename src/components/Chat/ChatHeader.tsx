@@ -13,6 +13,7 @@ interface Conversation {
   unreadCount?: number;
   isOnline?: boolean;
   lastSeen?: string;
+  chatType?: "user_provider" | "admin_provider";
 }
 
 interface ChatHeaderProps {

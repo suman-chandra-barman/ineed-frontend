@@ -5,8 +5,11 @@ export interface ChatRoomLastMessage {
   created_at: string;
 }
 
+export type ChatType = "user_provider" | "admin_provider";
+
 export interface ChatRoomItem {
   id: number;
+  chat_type?: ChatType;
   booking_id: number;
   booking_code: string;
   booking_status: string;
@@ -102,6 +105,7 @@ export interface SocketChatMessageEvent {
 export interface UIConversation {
   id: string;
   roomId: number;
+  chatType?: ChatType;
   bookingId: number;
   bookingCode: string;
   bookingStatus: string;

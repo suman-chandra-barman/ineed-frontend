@@ -25,6 +25,7 @@ function getInitials(name?: string | null) {
     .toUpperCase();
 }
 
+
 export function mapRoomToConversation(
   room: ChatRoomItem,
   role: "user" | "provider",
@@ -37,6 +38,7 @@ export function mapRoomToConversation(
   return {
     id: String(room.id),
     roomId: room.id,
+    chatType: room.chat_type,
     bookingId: room.booking_id,
     bookingCode: room.booking_code,
     bookingStatus: room.booking_status,
