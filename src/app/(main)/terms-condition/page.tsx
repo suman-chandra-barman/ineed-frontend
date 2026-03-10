@@ -20,16 +20,14 @@ export default function TermsAndConditionPage() {
               <span className="text-primary">Contractor Agreement</span>
             </h1>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-              This Independent Contractor Agreement (&quot;Agreement&quot;) is entered
-              into between <strong>iNeed, LLC</strong> (&quot;iNeed,&quot; &quot;Platform,&quot; or
-              &quot;Company&quot;) and the undersigned service provider (&quot;Provider&quot;).
+              This Independent Contractor Agreement (&quot;Agreement&quot;) is
+              entered into between <strong>iNeed, LLC</strong>{" "}
+              (&quot;iNeed,&quot; &quot;Platform,&quot; or &quot;Company&quot;)
+              and the undersigned service provider (&quot;Provider&quot;).
             </p>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mt-4">
               By creating an account, accepting jobs, or providing services
               through iNeed, Provider agrees to the terms below.
-            </p>
-            <p className="text-sm text-gray-500 mt-4">
-              Effective Date: [25 Sep, 2025]
             </p>
           </div>
         </div>

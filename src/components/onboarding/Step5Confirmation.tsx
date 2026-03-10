@@ -2,6 +2,7 @@ import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check } from "lucide-react";
+import Link from "next/link";
 import * as z from "zod";
 import { onboardingStep5Schema } from "@/schemas/auth.schema";
 
@@ -20,13 +21,24 @@ export function Step5Confirmation({ form }: Step5ConfirmationProps) {
 
       <div className="bg-slate-50 rounded-lg p-6 space-y-3">
         <p className="text-slate-700 text-center leading-relaxed">
-          I confirm that the information provided is accurate to the best of my
-          knowledge and is submitted for payment and reporting purposes.
+          By completing your registration, you agree to the{" "}
+          <Link
+            href="/terms-condition"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline hover:text-blue-800"
+          >
+            Provider Independent Contractor Agreement
+          </Link>
+          .
         </p>
         <p className="text-slate-700 text-center leading-relaxed">
-          I understand that this information is required for independent
-          contractors receiving payments through iNeed and does not constitute
-          employment or tax withholding by the platform.
+          You acknowledge that you are an independent contractor, not an
+          employee of iNeed, and are responsible for your own taxes, insurance,
+          licenses, and business expenses.
+        </p>
+        <p className="text-slate-700 text-center leading-relaxed">
+          Please review the full agreement before proceeding.
         </p>
       </div>
 
@@ -42,9 +54,9 @@ export function Step5Confirmation({ form }: Step5ConfirmationProps) {
         />
         <label
           htmlFor="acknowledged"
-          className="text-sm font-medium text-slate-700 cursor-pointer underline"
+          className="text-sm font-medium text-slate-700 cursor-pointer"
         >
-          I acknowledge and agree
+          I have read and agree to the Provider Independent Contractor Agreement
         </label>
       </div>
       {form.formState.errors.acknowledged && (

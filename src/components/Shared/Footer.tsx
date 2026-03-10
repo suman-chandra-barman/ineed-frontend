@@ -3,10 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Phone, MapPin } from "lucide-react";
-import logo from "@/assets/logo.svg"
+import logo from "@/assets/logo.svg";
 
 export default function Footer() {
-
   return (
     <footer className="w-full bg-primary/5">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
@@ -121,14 +120,6 @@ export default function Footer() {
                   Provider Policy
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/terms-condition"
-                  className="text-gray-600 hover:text-[#0077CC] transition-colors"
-                >
-                  Terms & Conditions
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -140,24 +131,24 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-gray-600 mt-1 shrink-0" />
-                <span className="text-gray-600">Seattle, WA 98119</span>
+                <span className="text-gray-600">New York</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-gray-600 shrink-0" />
                 <a
-                  href="tel:+919876543254"
+                  href="tel:+19296618967"
                   className="text-gray-600 hover:text-[#0077CC] transition-colors"
                 >
-                  (91) 98765 4321 54
+                  929-661-8967
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-gray-600 shrink-0" />
                 <a
-                  href="mailto:info@eateryiq.com"
+                  href="mailto:connect@hey-iNeed.com"
                   className="text-gray-600 hover:text-[#0077CC] transition-colors"
                 >
-                  info@eateryiq.com
+                  connect@hey-iNeed.com
                 </a>
               </li>
             </ul>
