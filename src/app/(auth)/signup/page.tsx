@@ -36,6 +36,8 @@ function SignupPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("");
 
   const [signup, { isLoading: isSigningUp }] = useSignupMutation();
 
@@ -177,7 +179,11 @@ function SignupPage() {
                   <FormItem>
                     <FormLabel className="text-gray-700">User Role</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedRole(value);
+                        setSmsConsent(false);
+                      }}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -264,6 +270,29 @@ function SignupPage() {
                   </FormItem>
                 )}
               />
+
+              {selectedRole === "user" && (
+                <div className="flex items-start gap-3 rounded-lg border border-gray-200 bg-blue-50 p-4">
+                  <input
+                    id="sms-consent"
+                    type="checkbox"
+                    checked={smsConsent}
+                    onChange={(e) => setSmsConsent(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary cursor-pointer"
+                  />
+                  <label
+                    htmlFor="sms-consent"
+                    className="text-xs text-gray-600 leading-relaxed cursor-pointer"
+                  >
+                    By entering your phone number, you consent to receive SMS
+                    notifications from iNeed regarding booking updates, service
+                    reminders, account notifications, and customer support.
+                    Message frequency may vary. Standard message and data rates
+                    may apply. Reply <span className="font-semibold">STOP</span>{" "}
+                    at any time to opt out of future messages.
+                  </label>
+                </div>
+              )}
 
               <Button type="submit" className="w-full" disabled={isSigningUp}>
                 {isSigningUp ? (

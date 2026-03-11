@@ -1,4 +1,3 @@
-import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check } from "lucide-react";
@@ -20,7 +19,7 @@ export function Step5Confirmation({ form }: Step5ConfirmationProps) {
       </div>
 
       <div className="bg-slate-50 rounded-lg p-6 space-y-3">
-        <p className="text-slate-700 text-center leading-relaxed">
+        <p className="text-slate-700 leading-relaxed">
           By completing your registration, you agree to the{" "}
           <Link
             href="/terms-condition"
@@ -32,17 +31,17 @@ export function Step5Confirmation({ form }: Step5ConfirmationProps) {
           </Link>
           .
         </p>
-        <p className="text-slate-700 text-center leading-relaxed">
+        <p className="text-slate-700 leading-relaxed">
           You acknowledge that you are an independent contractor, not an
           employee of iNeed, and are responsible for your own taxes, insurance,
           licenses, and business expenses.
         </p>
-        <p className="text-slate-700 text-center leading-relaxed">
+        <p className="text-slate-700 leading-relaxed">
           Please review the full agreement before proceeding.
         </p>
       </div>
 
-      <div className="flex items-center space-x-3 justify-center">
+      <div className="flex items-center space-x-3 ">
         <Checkbox
           id="acknowledged"
           checked={form.watch("acknowledged")}
