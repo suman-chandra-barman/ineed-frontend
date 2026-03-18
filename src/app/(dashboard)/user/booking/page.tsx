@@ -26,15 +26,14 @@ function BookingPage() {
   const bookings = data?.data ?? [];
 
   const handleNavigate = async (bookingId: number) => {
-    try {
-      const res = await getBookingChatRoom(bookingId).unwrap();
-
-      const roomId = res.data.id;
-      router.push(`/user/chat?roomId=${roomId}`);
-    } catch (error) {
-      console.error("Failed to open chat room", error);
-    }
-  };
+  try {
+    const res = await getBookingChatRoom({ bookingId }).unwrap();
+    const roomId = res.data.id;
+    router.push(`/user/chat?roomId=${roomId}`);
+  } catch (error) {
+    console.error("Failed to open chat room", error);
+  }
+};
 
   const handleChatClick = (bookingId: number) => {
     router.push(`/user/chat?roomId=${bookingId}`);

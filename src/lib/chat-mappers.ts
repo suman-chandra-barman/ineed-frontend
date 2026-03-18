@@ -25,15 +25,30 @@ function getInitials(name?: string | null) {
     .toUpperCase();
 }
 
-
 export function mapRoomToConversation(
   room: ChatRoomItem,
   role: "user" | "provider",
 ): UIConversation {
-  const isProvider = role === "provider";
+  let name = "";
+  let avatarUrl: string | null = null;
 
-  const name = isProvider ? room.customer_name : room.provider_name;
-  const avatarUrl = isProvider ? room.customer_image : room.provider_image;
+  if (role === "provider") {
+    if (room.chat_type === "admin_provider") {
+      name = room.customer_name || "Admin";
+      avatarUrl = room.customer_image;
+    } else {
+      name = room.customer_name;
+      avatarUrl = room.customer_image;
+    }
+  } else {
+    if (room.chat_type === "user_admin") {
+      name = room.provider_name || "Admin";
+      avatarUrl = room.provider_image;
+    } else {
+      name = room.provider_name;
+      avatarUrl = room.provider_image;
+    }
+  }
 
   return {
     id: String(room.id),

@@ -6,6 +6,7 @@ import type {
   SendChatMessageRequest,
   SendChatMessageResponse,
   MarkReadResponse,
+  GetBookingChatRoomArgs,
 } from "@/types/chat.type";
 
 export const chatApi = baseApi.injectEndpoints({
@@ -18,9 +19,11 @@ export const chatApi = baseApi.injectEndpoints({
       providesTags: ["Booking"],
     }),
 
-    getBookingChatRoom: builder.query<ChatRoomResponse, number>({
-      query: (bookingId) => ({
-        url: `/bookings/chat/booking/${bookingId}/room/`,
+    getBookingChatRoom: builder.query<ChatRoomResponse, GetBookingChatRoomArgs>({
+      query: ({ bookingId, chatWith }) => ({
+        url: `/bookings/chat/booking/${bookingId}/room/${
+          chatWith ? `?chat_with=${chatWith}` : ""
+        }`,
         method: "GET",
       }),
       providesTags: ["Booking"],
@@ -39,7 +42,7 @@ export const chatApi = baseApi.injectEndpoints({
       SendChatMessageRequest
     >({
       query: (body) => ({
-        url: "/bookings/chat/messages/",
+        url: "/bookings/chat/send-message/",
         method: "POST",
         body,
       }),

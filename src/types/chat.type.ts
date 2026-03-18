@@ -5,7 +5,7 @@ export interface ChatRoomLastMessage {
   created_at: string;
 }
 
-export type ChatType = "user_provider" | "admin_provider";
+export type ChatType = "user_provider" | "admin_provider" | "user_admin";
 
 export interface ChatRoomItem {
   id: number;
@@ -29,7 +29,8 @@ export interface ChatRoomsResponse {
     page: number;
     limit: number;
     total: number;
-    total_pages: number;
+    totalPage?: number;
+    total_pages?: number;
   };
   data: ChatRoomItem[];
 }
@@ -60,9 +61,15 @@ export interface ChatMessagesResponse {
     page: number;
     limit: number;
     total: number;
-    total_pages: number;
+    totalPage?: number;
+    total_pages?: number;
   };
   data: ChatMessageItem[];
+}
+
+export interface GetBookingChatRoomArgs {
+  bookingId: number;
+  chatWith?: "admin";
 }
 
 export interface SendChatMessageRequest {
@@ -118,7 +125,6 @@ export interface UIConversation {
   isOnline?: boolean;
   lastSeen?: string;
 }
-
 export interface UIMessage {
   id: string;
   senderId: string;

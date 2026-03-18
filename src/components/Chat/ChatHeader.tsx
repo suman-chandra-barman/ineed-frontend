@@ -2,6 +2,7 @@
 
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface Conversation {
   id: string;
@@ -45,10 +46,13 @@ export default function ChatHeader({
         </Button>
 
         {selectedConv.avatarUrl ? (
-          <img
-            src={selectedConv.avatarUrl}
+          <Image
+            src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${selectedConv.avatarUrl}`}
             alt={selectedConv.name}
             className="w-10 h-10 rounded-full object-cover"
+            width={40}
+            height={40}
+
           />
         ) : (
           <div

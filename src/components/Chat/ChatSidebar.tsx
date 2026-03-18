@@ -2,6 +2,7 @@
 
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
 interface Conversation {
   id: string;
@@ -13,7 +14,7 @@ interface Conversation {
   unreadCount?: number;
   isOnline?: boolean;
   lastSeen?: string;
-  chatType?: "user_provider" | "admin_provider";
+  chatType?: "user_provider" | "admin_provider" | "user_admin";
 }
 
 interface ChatSidebarProps {
@@ -38,6 +39,17 @@ export default function ChatSidebar({
     if (convId === "3") return "bg-pink-500";
     if (convId === "4") return "bg-blue-500";
     return "bg-gray-400";
+  };
+
+  const getBadge = (chatType?: Conversation["chatType"]) => {
+    if (chatType === "admin_provider" || chatType === "user_admin") {
+      return (
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 shrink-0">
+          Admin
+        </span>
+      );
+    }
+    return null;
   };
 
   return (
@@ -78,14 +90,16 @@ export default function ChatSidebar({
             >
               <div className="relative shrink-0">
                 {conv.avatarUrl ? (
-                  <img
-                    src={conv.avatarUrl}
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${conv.avatarUrl}`}
                     alt={conv.name}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-10 h-10 rounded-full object-cover"
+                    width={40}
+                    height={40}
                   />
                 ) : (
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${getAvatarColor(
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${getAvatarColor(
                       conv.id,
                     )}`}
                   >
@@ -103,11 +117,7 @@ export default function ChatSidebar({
                     <h3 className="font-semibold text-sm truncate">
                       {conv.name}
                     </h3>
-                    {conv.chatType === "admin_provider" && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 shrink-0">
-                        Admin
-                      </span>
-                    )}
+                    {getBadge(conv.chatType)}
                   </div>
                   <span className="text-xs text-gray-500 shrink-0">
                     {conv.timestamp}

@@ -66,16 +66,15 @@ export default function BookingDetailsView({
 
   const isCompleted = rawStatus === "completed" || rawStatus === "complete";
 
-  const handleOpenChat = async () => {
-    try {
-      const res = await getBookingChatRoom(numericId).unwrap();
-
-      const roomId = res.data.id;
-      router.push(`/user/chat?roomId=${roomId}`);
-    } catch (error) {
-      console.error("Failed to open chat room", error);
-    }
-  };
+ const handleOpenChat = async () => {
+  try {
+    const res = await getBookingChatRoom({ bookingId: numericId }).unwrap();
+    const roomId = res.data.id;
+    router.push(`/user/chat?roomId=${roomId}`);
+  } catch (error) {
+    console.error("Failed to open chat room", error);
+  }
+};
 
   const activeStep =
     bookingTrack.find((s) => s.active)?.step ??
