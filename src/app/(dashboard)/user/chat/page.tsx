@@ -40,6 +40,7 @@ function UserChatPage() {
   const [messages, setMessages] = useState<Record<string, UIMessage[]>>({});
 
   const socketRef = useRef<WebSocket | null>(null);
+  const hasInitializedFromQuery = useRef(false);
 
   const {
     data: roomsResponse,
@@ -60,7 +61,11 @@ function UserChatPage() {
   const currentUserId = user?.id || "";
 
   useEffect(() => {
-    if (roomIdFromQuery && conversations.length > 0) {
+    if (
+      roomIdFromQuery &&
+      conversations.length > 0 &&
+      !hasInitializedFromQuery.current
+    ) {
       const match = conversations.find(
         (c) => String(c.roomId) === String(roomIdFromQuery),
       );
@@ -68,8 +73,9 @@ function UserChatPage() {
         startTransition(() => {
           setSelectedConversation(match.id);
           setShowMobileSidebar(false);
+          hasInitializedFromQuery.current = true;
+          return;
         });
-        return;
       }
     }
 
