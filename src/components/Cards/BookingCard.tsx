@@ -1,7 +1,13 @@
-import Image, { StaticImageData } from "next/image";
+"use client";
+
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { MessageCircle, Star } from "lucide-react";
 import { Button } from "../ui/button";
+import { UserBookingListItem } from "@/types/booking.type";
 import { useLazyGetBookingChatRoomQuery } from "@/redux/features/chat/chatApi";
+import Link from "next/link";
 
 export type BookingStatus =
   | "pending"
@@ -15,19 +21,8 @@ export type BookingStatus =
   | "draft";
 
 export interface BookingCardProps {
-  id: string;
-  serviceImage: string | StaticImageData;
-  serviceTitle: string;
-  bookingDate: string;
-  bookingTime: string;
-  amount: string | number;
-  location: string;
-  providerName: string;
-  providerContact: string;
-  status: BookingStatus;
-  onNavigate?: () => void;
-  onChatClick?: () => void;
-  onReviewClick?: () => void;
+  booking: UserBookingListItem;
+  onReviewClick?: (booking: UserBookingListItem) => void;
 }
 
 const statusConfig: Record<
@@ -81,46 +76,63 @@ const statusConfig: Record<
   },
 };
 
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "";
+
 export default function BookingCard({
-  serviceImage,
-  serviceTitle,
-  bookingDate,
-  bookingTime,
-  amount,
-  location,
-  providerName,
-  providerContact,
-  status,
-  onNavigate,
-  onChatClick,
+  booking,
   onReviewClick,
 }: BookingCardProps) {
-  const statusStyle = statusConfig[status];
+  const router = useRouter();
+  const [getBookingChatRoom] = useLazyGetBookingChatRoomQuery();
+
+  const {
+    booking_id,
+    service_image,
+    service_name,
+    booking_date,
+    time_slot,
+    amount,
+    location,
+    provider_name,
+    provider_phone,
+    status,
+  } = booking;
+
+  const statusStyle = statusConfig[status as BookingStatus];
+
+  /* Navigate to booking detail/chat */
+  const handleChat = useCallback(async () => {
+    try {
+      const res = await getBookingChatRoom({ bookingId: booking_id }).unwrap();
+      const roomId = res.data.id;
+      router.push(`/user/chat?roomId=${roomId}`);
+    } catch (error) {
+      console.error("Failed to open chat room", error);
+    }
+  }, [booking_id, getBookingChatRoom, router]);
+
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-2 sm:p-4 hover:shadow-md transition-shadow">
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Service Image — clickable */}
-        <div
-          onClick={onNavigate}
-          className="relative w-full sm:w-28 h-40 sm:h-28 rounded-xl overflow-hidden shrink-0 cursor-pointer"
-        >
-          <Image
-            src={serviceImage}
-            alt={serviceTitle}
-            fill
-            className="object-cover hover:scale-105 transition-transform duration-200"
-          />
-        </div>
+        <Link href={`/user/booking/${booking_id}`}>
+          <div className="relative w-full sm:w-28 h-40 sm:h-28 rounded-xl overflow-hidden shrink-0 cursor-pointer">
+            <Image
+              src={`${BASE_URL}/media/${service_image}`}
+              alt={service_name}
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-200"
+            />
+          </div>
+        </Link>
 
         {/* Content */}
         <div className="flex-1 space-y-3">
           {/* Title — clickable */}
-          <h3
-            onClick={onNavigate}
-            className="text-lg sm:text-xl font-semibold text-gray-900 cursor-pointer hover:text-primary hover:underline transition-colors"
-          >
-            {serviceTitle}
+
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 cursor-pointer hover:text-primary hover:underline transition-colors">
+            <Link href={`/user/booking/${booking_id}`}> {service_name}</Link>
           </h3>
 
           {/* Details Grid */}
@@ -131,7 +143,7 @@ export default function BookingCard({
               </span>
               <span className="text-gray-500">:</span>
               <span className="text-gray-700">
-                {bookingDate}, {bookingTime}
+                {booking_date}, {time_slot}
               </span>
             </div>
 
@@ -160,10 +172,12 @@ export default function BookingCard({
               <span className="text-gray-500">:</span>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center text-white text-xs font-bold">
-                  {providerName.charAt(0).toUpperCase()}
+                  {provider_name?.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-gray-700">{providerName}</span>
-                <span className="text-gray-400">› {providerContact}</span>
+                <span className="text-gray-700">
+                  {provider_name || "Not assigned"}
+                </span>
+                <span className="text-gray-400">› {provider_phone || "—"}</span>
               </div>
             </div>
           </div>
@@ -173,11 +187,9 @@ export default function BookingCard({
         <div className="flex sm:flex-col gap-2 justify-end sm:justify-start">
           {/* Chat Button */}
           <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onChatClick?.();
-            }}
+            onClick={handleChat}
             size="sm"
+            disabled={provider_name ? false : true}
           >
             <MessageCircle className="w-4 h-4" />
             <span>Chat</span>
@@ -194,10 +206,7 @@ export default function BookingCard({
           {(status === "complete" || status === "completed") && (
             <Button
               size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onReviewClick?.();
-              }}
+              onClick={onReviewClick ? () => onReviewClick(booking) : undefined}
               className=" bg-amber-400 hover:bg-amber-500"
             >
               <Star className="w-4 h-4" />

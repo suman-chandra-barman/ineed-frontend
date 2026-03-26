@@ -1,52 +1,53 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
-import Image, { StaticImageData } from "next/image";
+import { useState } from "react";
+import Image from "next/image";
 import { X, Star, Loader2, CheckCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   useGetUserBookingReviewQuery,
   useCreateUserBookingReviewMutation,
+  useGetUserBookingDetailsQuery,
 } from "@/redux/features/booking/bookingApi";
 
 interface ReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   bookingId: number;
-  serviceImage: string | StaticImageData;
-  serviceTitle: string;
-  amount: number;
 }
+
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "";
 
 export default function ReviewModal({
   isOpen,
   onClose,
   bookingId,
-  serviceImage,
-  serviceTitle,
-  amount,
 }: ReviewModalProps) {
-  const [rating, setRating] = useState(0);
+  const [draftRating, setDraftRating] = useState<number | null>(null);
   const [hoveredRating, setHoveredRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [draftComment, setDraftComment] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+
+  /* Fetch booking details */
+  const { data: bookingData, isLoading: bookingLoading } =
+    useGetUserBookingDetailsQuery(bookingId, { skip: !isOpen });
 
   /* Fetch existing review */
   const { data: existingReview, isLoading: reviewLoading } =
     useGetUserBookingReviewQuery(bookingId, { skip: !isOpen });
 
-  /* Populate form when existing review loads */
-  useEffect(() => {
-    if (existingReview?.data) {
-      setRating(existingReview.data.rating);
-      setComment(existingReview.data.comment);
-    }
-  }, [existingReview]);
+  const existingRating = existingReview?.data?.rating ?? 0;
+  const existingComment = existingReview?.data?.comment ?? "";
+  const rating = draftRating ?? existingRating;
+  const comment = draftComment ?? existingComment;
 
   const [createReview, { isLoading: submitting }] =
     useCreateUserBookingReviewMutation();
 
   if (!isOpen) return null;
+
+  const booking = bookingData?.data;
+  const isLoading = bookingLoading || !booking;
 
   const handleSubmit = async () => {
     if (rating === 0) return;
@@ -63,8 +64,8 @@ export default function ReviewModal({
   };
 
   const handleCancel = () => {
-    setRating(existingReview?.data?.rating ?? 0);
-    setComment(existingReview?.data?.comment ?? "");
+    setDraftRating(null);
+    setDraftComment(null);
     setSubmitted(false);
     onClose();
   };
@@ -87,23 +88,36 @@ export default function ReviewModal({
         </h2>
 
         {/* Service Info */}
-        <div className="flex items-start gap-3 mb-6">
-          <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
-            <Image
-              src={serviceImage}
-              alt={serviceTitle}
-              fill
-              className="object-cover"
-            />
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
-          <div className="flex-1">
-            <h3 className="font-medium text-gray-900">{serviceTitle}</h3>
+        ) : (
+          <div className="flex items-start gap-3 mb-6">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
+              <Image
+                src={`${BASE_URL}${booking?.booking_details.service_image}`}
+                alt={booking?.booking_details.service_name}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-medium text-gray-900">
+                {booking?.booking_details.service_name}
+              </h3>
+            </div>
+            <div className="text-right">
+              <div className="text-lg font-semibold text-primary">
+                $
+                {Number(
+                  booking?.booking_details.pricing.main_service,
+                ).toLocaleString()}
+              </div>
+              <div className="text-xs text-gray-500">Starting From</div>
+            </div>
           </div>
-          <div className="text-right">
-            <div className="text-lg font-semibold text-primary">${amount}</div>
-            <div className="text-xs text-gray-500">Starting From</div>
-          </div>
-        </div>
+        )}
 
         {reviewLoading ? (
           <div className="flex justify-center py-8">
@@ -126,7 +140,7 @@ export default function ReviewModal({
                   <button
                     key={star}
                     type="button"
-                    onClick={() => setRating(star)}
+                    onClick={() => setDraftRating(star)}
                     onMouseEnter={() => setHoveredRating(star)}
                     onMouseLeave={() => setHoveredRating(0)}
                     className="transition-transform hover:scale-110"
@@ -150,7 +164,7 @@ export default function ReviewModal({
               </label>
               <textarea
                 value={comment}
-                onChange={(e) => setComment(e.target.value)}
+                onChange={(e) => setDraftComment(e.target.value)}
                 placeholder="Please write your review"
                 rows={4}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-sm"

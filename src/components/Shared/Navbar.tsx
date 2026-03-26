@@ -65,7 +65,7 @@ export default function Navbar() {
           </div>
 
           {/* Right Section - Desktop Buttons */}
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-2">
             {!user ? (
               <>
                 <Button

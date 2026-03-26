@@ -11,7 +11,7 @@ import { useLazyGetBookingChatRoomQuery } from "@/redux/features/chat/chatApi";
 
 interface BookingDetailsViewProps {
   numericId: number;
-  bookingId: number;
+  bookingId: string;
   bookingDate: string;
   location: string;
   canReschedule: boolean;
@@ -66,15 +66,15 @@ export default function BookingDetailsView({
 
   const isCompleted = rawStatus === "completed" || rawStatus === "complete";
 
- const handleOpenChat = async () => {
-  try {
-    const res = await getBookingChatRoom({ bookingId: numericId }).unwrap();
-    const roomId = res.data.id;
-    router.push(`/user/chat?roomId=${roomId}`);
-  } catch (error) {
-    console.error("Failed to open chat room", error);
-  }
-};
+  const handleOpenChat = async () => {
+    try {
+      const res = await getBookingChatRoom({ bookingId: numericId }).unwrap();
+      const roomId = res.data.id;
+      router.push(`/user/chat?roomId=${roomId}`);
+    } catch (error) {
+      console.error("Failed to open chat room", error);
+    }
+  };
 
   const activeStep =
     bookingTrack.find((s) => s.active)?.step ??
@@ -85,7 +85,7 @@ export default function BookingDetailsView({
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="bg-white p-4 sm:p-6 lg:p-8 space-y-6 rounded-2xl">
-        {/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* Header */}
         <div>
           <div className="px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -115,7 +115,7 @@ export default function BookingDetailsView({
 
           <div className="px-4 pb-3 space-y-1">
             <p className="font-bold text-xl md:text-2xl">
-              Booking ID: #{bookingId}
+              Booking ID: {bookingId}
             </p>
             <p className="text-sm text-gray-600">
               Booking Date: {bookingDate}
@@ -125,9 +125,9 @@ export default function BookingDetailsView({
           </div>
         </div>
 
-        {/* â”€â”€ Main Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/*  Main Grid */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Left â€“ Booking Details */}
+          {/* Left Booking Details */}
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Booking Details :
@@ -250,7 +250,7 @@ export default function BookingDetailsView({
           </div>
         </div>
 
-        {/* â”€â”€ Service Images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/*  Service Images  */}
         {(beforeImages.length > 0 || afterImages.length > 0) && (
           <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -372,9 +372,6 @@ export default function BookingDetailsView({
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}
           bookingId={numericId}
-          serviceImage={serviceImage}
-          serviceTitle={serviceTitle}
-          amount={mainService}
         />
       )}
     </div>

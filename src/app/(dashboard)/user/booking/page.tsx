@@ -1,23 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import PageHeader from "@/components/Dashboard/PageHeader";
 import BookingCard from "@/components/Cards/BookingCard";
-import { BookingStatus } from "@/components/Cards/BookingCard";
 import ReviewModal from "@/components/Dashboard/ReviewModal";
 import { useGetUserBookingsQuery } from "@/redux/features/booking/bookingApi";
 import { UserBookingListItem } from "@/types/booking.type";
 import { ErrorDisplay, LoadingSpinner } from "@/components/Shared";
-import { useLazyGetBookingChatRoomQuery } from "@/redux/features/chat/chatApi";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL ?? "";
 
 function BookingPage() {
-  const router = useRouter();
   const { data, isLoading, isError } = useGetUserBookingsQuery();
-  const [getBookingChatRoom, { isLoading: openingChat }] =
-    useLazyGetBookingChatRoomQuery();
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] =
@@ -25,26 +17,12 @@ function BookingPage() {
 
   const bookings = data?.data ?? [];
 
-  const handleNavigate = async (bookingId: number) => {
-  try {
-    const res = await getBookingChatRoom({ bookingId }).unwrap();
-    const roomId = res.data.id;
-    router.push(`/user/chat?roomId=${roomId}`);
-  } catch (error) {
-    console.error("Failed to open chat room", error);
-  }
-};
-
-  const handleChatClick = (bookingId: number) => {
-    router.push(`/user/chat?roomId=${bookingId}`);
-  };
-
   const handleReviewClick = (booking: UserBookingListItem) => {
     setSelectedBooking(booking);
     setIsReviewModalOpen(true);
   };
 
-  // loadin and error states
+  // loading and error states
   if (isLoading) {
     return <LoadingSpinner message="Loading Bookings..." fullPage />;
   }
@@ -68,23 +46,8 @@ function BookingPage() {
         {bookings.map((booking) => (
           <BookingCard
             key={booking.booking_id}
-            id={String(booking.booking_id)}
-            serviceImage={
-              booking.service_image
-                ? `${BASE_URL}/media/${booking.service_image}`
-                : "/placeholder-service.jpg"
-            }
-            serviceTitle={booking.service_name}
-            bookingDate={booking.booking_date ?? "—"}
-            bookingTime={booking.time_slot ?? "—"}
-            amount={booking.amount}
-            location={booking.location || "—"}
-            providerName={booking.provider_name ?? "Not assigned"}
-            providerContact={booking.provider_phone ?? "—"}
-            status={booking.status as BookingStatus}
-            onNavigate={() => handleNavigate(booking.booking_id)}
-            onChatClick={() => handleChatClick(booking.booking_id)}
-            onReviewClick={() => handleReviewClick(booking)}
+            booking={booking}
+            onReviewClick={handleReviewClick}
           />
         ))}
       </div>
@@ -95,13 +58,6 @@ function BookingPage() {
           isOpen={isReviewModalOpen}
           onClose={() => setIsReviewModalOpen(false)}
           bookingId={selectedBooking.booking_id}
-          serviceImage={
-            selectedBooking.service_image
-              ? `${BASE_URL}/media/${selectedBooking.service_image}`
-              : "/placeholder-service.jpg"
-          }
-          serviceTitle={selectedBooking.service_name}
-          amount={Number(selectedBooking.amount)}
         />
       )}
 

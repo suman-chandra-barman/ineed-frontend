@@ -54,7 +54,7 @@ export default function BookingDetailsPage({
 
   return (
     <BookingDetailsView
-      bookingId={Number(header.booking_id)}
+      bookingId={header.booking_id}
       bookingDate={header.booking_date}
       location={header.location}
       canReschedule={header.can_reschedule}
