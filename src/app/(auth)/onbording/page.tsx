@@ -20,11 +20,11 @@ import { Check, ArrowLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/logo.svg";
 import * as z from "zod";
-import { Step1PersonalInfo } from "@/components/Onboarding/Step1PersonalInfo";
-import { Step2ServiceInfo } from "@/components/Onboarding/Step2ServiceInfo";
-import { Step3Availability } from "@/components/Onboarding/Step3Availability";
-import { Step4LegalInfo } from "@/components/Onboarding/Step4LegalInfo";
-import { Step5Confirmation } from "@/components/Onboarding/Step5Confirmation";
+import { Step1PersonalInfo } from "@/components/onboarding/Step1PersonalInfo";
+import { Step2ServiceInfo } from "@/components/onboarding/Step2ServiceInfo";
+import { Step3Availability } from "@/components/onboarding/Step3Availability";
+import { Step4LegalInfo } from "@/components/onboarding/Step4LegalInfo";
+import { Step5Confirmation } from "@/components/onboarding/Step5Confirmation";
 import { useRouter } from "next/navigation";
 import {
   useGetProfileQuery,
