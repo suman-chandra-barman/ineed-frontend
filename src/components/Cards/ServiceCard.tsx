@@ -13,6 +13,7 @@ import { useToggleFavoriteMutation } from "@/redux/features/service/serviceApi";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import placeholderImage from "@/assets/service-1.jpg";
+import { useAppSelector } from "@/hooks/auth";
 
 // Types
 interface ServiceCardProps {
@@ -52,6 +53,8 @@ const ServiceCard = memo(function ServiceCard({
   const [toggleFavorite, { isLoading: isFavoriteLoading }] =
     useToggleFavoriteMutation();
 
+    const user =useAppSelector((state) => state.auth.user);
+
   // Memoized derived data
   const serviceData = useMemo(() => {
     const hasDiscount = service.man_price !== service.offer_price;
@@ -73,6 +76,10 @@ const ServiceCard = memo(function ServiceCard({
   const handleBookNow = useCallback(
     async (e: React.MouseEvent) => {
       e.preventDefault();
+      if (!user) {
+        router.push("/signin");
+        return;
+      }
 
       try {
         const result = await createBooking({
@@ -86,7 +93,7 @@ const ServiceCard = memo(function ServiceCard({
         );
       }
     },
-    [createBooking, serviceData.id, router],
+    [createBooking, serviceData.id, router, user],
   );
 
   const handleFavoriteClick = useCallback(

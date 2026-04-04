@@ -1,6 +1,3 @@
-import React from "react";
-import { FiMap } from "react-icons/fi";
-
 interface JobScheduleLocationProps {
   customer: {
     name: string;
@@ -20,7 +17,6 @@ export default function JobScheduleLocation({
   customer,
   schedule,
 }: JobScheduleLocationProps) {
-
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -36,13 +32,6 @@ export default function JobScheduleLocation({
         </div>
 
         <div className="flex justify-between items-center pb-3 border-b border-gray-100">
-          <span className="text-sm text-gray-600">Contact Number :</span>
-          <span className="text-sm font-medium text-gray-500">
-            {customer.contact}
-          </span>
-        </div>
-
-        <div className="flex justify-between items-center pb-3 border-b border-gray-100">
           <span className="text-sm text-gray-600">Date :</span>
           <span className="text-sm font-medium text-gray-500">
             {schedule.date}
@@ -52,7 +41,11 @@ export default function JobScheduleLocation({
         <div className="flex justify-between items-center pb-3 border-b border-gray-100">
           <span className="text-sm text-gray-600">Time :</span>
           <span className="text-sm font-medium text-gray-500">
-            {schedule.time === "morning" ? "Morning (9:00 AM - 12:00 PM)" : schedule.time === "afternoon" ? "Afternoon (12:00 PM - 4:00 PM)" : "Evening (4:00 PM - 7:00 PM)"}
+            {schedule.time === "morning"
+              ? "Morning (9:00 AM - 12:00 PM)"
+              : schedule.time === "afternoon"
+                ? "Afternoon (12:00 PM - 4:00 PM)"
+                : "Evening (4:00 PM - 7:00 PM)"}
           </span>
         </div>
 
