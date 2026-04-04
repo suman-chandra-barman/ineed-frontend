@@ -117,13 +117,10 @@ export default function Testimonials() {
                       <div className="flex items-center gap-4">
                         <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
                           <Image
-                            src={
-                              testimonial.user_image
-                                ? `${BASE_URL}${testimonial.user_image}`
-                                : "/avatar-1.jpg"
-                            }
+                            src={`${BASE_URL}${testimonial.user_image}`}
                             alt={testimonial.user_name}
                             fill
+                            unoptimized
                             className="object-cover"
                           />
                         </div>

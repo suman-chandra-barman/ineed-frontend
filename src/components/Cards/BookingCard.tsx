@@ -122,6 +122,7 @@ export default function BookingCard({
               src={`${BASE_URL}/media/${service_image}`}
               alt={service_name}
               fill
+              unoptimized
               className="object-cover hover:scale-105 transition-transform duration-200"
             />
           </div>

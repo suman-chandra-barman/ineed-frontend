@@ -32,6 +32,7 @@ export function CategoryCard({
                 alt="Category Icon"
                 width={40}
                 height={40}
+                unoptimized
                 className="w-full h-full rounded-full"
               />
             ) : (
