@@ -8,12 +8,11 @@ import logo from "@/assets/logo.svg";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { ProfileDropdown } from "./ProfileDropdown";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { useAppSelector } from "@/redux/hooks";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
   const pathname = usePathname();
 
@@ -62,6 +61,14 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {user && user.role === "provider" && (
+              <Link
+                href="/onbording"
+                className="font-medium hover:text-primary transition-colors"
+              >
+                Onboarding
+              </Link>
+            )}
           </div>
 
           {/* Right Section - Desktop Buttons */}
@@ -114,6 +121,14 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {user && user.role === "provider" && (
+                <Link
+                  href="/onbording"
+                  className="font-medium hover:text-primary transition-colors"
+                >
+                  Onboarding
+                </Link>
+              )}
               <div className="flex flex-col space-y-3 pt-4 border-t">
                 {!user ? (
                   <>

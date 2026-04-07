@@ -38,6 +38,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
                 className="w-full h-full object-cover"
                 width={48}
                 height={48}
+                unoptimized
               />
             ) : (
               <User className="w-5 h-5 text-primary" />
