@@ -23,6 +23,7 @@ export type BookingStatus =
 export interface BookingCardProps {
   booking: UserBookingListItem;
   onReviewClick?: (booking: UserBookingListItem) => void;
+  onCancelClick?: (booking: UserBookingListItem) => void;
 }
 
 const statusConfig: Record<
@@ -81,6 +82,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "";
 export default function BookingCard({
   booking,
   onReviewClick,
+  onCancelClick,
 }: BookingCardProps) {
   const router = useRouter();
   const [getBookingChatRoom] = useLazyGetBookingChatRoomQuery();
@@ -110,7 +112,6 @@ export default function BookingCard({
       console.error("Failed to open chat room", error);
     }
   }, [booking_id, getBookingChatRoom, router]);
-
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-2 sm:p-4 hover:shadow-md transition-shadow">
@@ -212,6 +213,18 @@ export default function BookingCard({
             >
               <Star className="w-4 h-4" />
               <span>Review</span>
+            </Button>
+          )}
+
+          {(status === "pending" ||
+            status === "assigned" ||
+            status === "assign") && (
+            <Button
+              variant="outline"
+              className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+              onClick={onCancelClick ? () => onCancelClick(booking) : undefined}
+            >
+              Cancel
             </Button>
           )}
         </div>

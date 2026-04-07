@@ -352,6 +352,23 @@ export interface CreateReviewRequest {
   comment: string;
 }
 
+export interface CancelBookingRequest {
+  bookingId: number;
+  reason: string;
+}
+
+export interface CancelBookingResponse {
+  success: boolean;
+  refund: string;
+  fee: string;
+  reason: string;
+  stripe_refund_id: string;
+  provider_assigned: boolean;
+  provider_chat_sent: boolean;
+  provider_email_sent: boolean;
+  provider_message: string;
+}
+
 // ─── (existing) ───────────────────────────────────────────────────────────────
 export interface BookingConfirmationResponse {
   id: number;

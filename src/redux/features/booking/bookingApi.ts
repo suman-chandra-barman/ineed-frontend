@@ -13,6 +13,8 @@ import {
   BookingReviewResponse,
   CreateReviewRequest,
   TestimonialsResponse,
+  CancelBookingRequest,
+  CancelBookingResponse,
 } from "@/types/booking.type";
 
 const bookingApi = baseApi.injectEndpoints({
@@ -114,6 +116,18 @@ const bookingApi = baseApi.injectEndpoints({
       invalidatesTags: ["Booking"],
     }),
 
+    cancelBooking: builder.mutation<
+      CancelBookingResponse,
+      CancelBookingRequest
+    >({
+      query: ({ bookingId, reason }) => ({
+        url: `/bookings/${bookingId}/cancel/`,
+        method: "POST",
+        body: { reason },
+      }),
+      invalidatesTags: ["Booking"],
+    }),
+
     getTestimonials: builder.query<TestimonialsResponse, void>({
       query: () => "/bookings/testimonials/",
       providesTags: ["Booking"],
@@ -135,4 +149,5 @@ export const {
   useGetUserBookingDetailsQuery,
   useGetUserBookingReviewQuery,
   useCreateUserBookingReviewMutation,
+  useCancelBookingMutation,
 } = bookingApi;

@@ -4,9 +4,18 @@ import { useState } from "react";
 import PageHeader from "@/components/Dashboard/PageHeader";
 import BookingCard from "@/components/Cards/BookingCard";
 import ReviewModal from "@/components/Dashboard/ReviewModal";
-import { useGetUserBookingsQuery } from "@/redux/features/booking/bookingApi";
-import { UserBookingListItem } from "@/types/booking.type";
+import CancelBookingModal from "@/components/Dashboard/CancelBookingModal";
+import CancelBookingSuccessModal from "@/components/Dashboard/CancelBookingSuccessModal";
+import {
+  useCancelBookingMutation,
+  useGetUserBookingsQuery,
+} from "@/redux/features/booking/bookingApi";
+import {
+  CancelBookingResponse,
+  UserBookingListItem,
+} from "@/types/booking.type";
 import { ErrorDisplay, LoadingSpinner } from "@/components/Shared";
+import { toast } from "sonner";
 
 function BookingPage() {
   const { data, isLoading, isError } = useGetUserBookingsQuery();
@@ -14,12 +23,55 @@ function BookingPage() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] =
     useState<UserBookingListItem | null>(null);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelResponse, setCancelResponse] =
+    useState<CancelBookingResponse | null>(null);
+  const [cancelReasonSnapshot, setCancelReasonSnapshot] = useState("");
+  const [isCancelSuccessOpen, setIsCancelSuccessOpen] = useState(false);
+
+  const [cancelBooking, { isLoading: isCancelling }] =
+    useCancelBookingMutation();
 
   const bookings = data?.data ?? [];
 
   const handleReviewClick = (booking: UserBookingListItem) => {
     setSelectedBooking(booking);
     setIsReviewModalOpen(true);
+  };
+
+  const handleCancelClick = (booking: UserBookingListItem) => {
+    setSelectedBooking(booking);
+    setCancelReason("");
+    setIsCancelModalOpen(true);
+  };
+
+  const handleCancelConfirm = async () => {
+    if (!selectedBooking || !cancelReason.trim()) {
+      return;
+    }
+
+    try {
+      const res = await cancelBooking({
+        bookingId: selectedBooking.booking_id,
+        reason: cancelReason.trim(),
+      }).unwrap();
+
+      setCancelResponse(res);
+      setCancelReasonSnapshot(cancelReason.trim());
+      setIsCancelModalOpen(false);
+      setIsCancelSuccessOpen(true);
+      toast.success("Booking cancelled successfully");
+    } catch {
+      toast.error("Failed to cancel booking. Please try again.");
+    }
+  };
+
+  const handleCancelModalOpenChange = (open: boolean) => {
+    setIsCancelModalOpen(open);
+    if (!open) {
+      setCancelReason("");
+    }
   };
 
   // loading and error states
@@ -48,6 +100,7 @@ function BookingPage() {
             key={booking.booking_id}
             booking={booking}
             onReviewClick={handleReviewClick}
+            onCancelClick={handleCancelClick}
           />
         ))}
       </div>
@@ -60,6 +113,22 @@ function BookingPage() {
           bookingId={selectedBooking.booking_id}
         />
       )}
+
+      <CancelBookingModal
+        open={isCancelModalOpen}
+        reason={cancelReason}
+        isSubmitting={isCancelling}
+        onReasonChange={setCancelReason}
+        onConfirm={handleCancelConfirm}
+        onOpenChange={handleCancelModalOpenChange}
+      />
+
+      <CancelBookingSuccessModal
+        open={isCancelSuccessOpen}
+        data={cancelResponse}
+        customerReason={cancelReasonSnapshot}
+        onOpenChange={setIsCancelSuccessOpen}
+      />
 
       {/* Empty State */}
       {bookings.length === 0 && (
