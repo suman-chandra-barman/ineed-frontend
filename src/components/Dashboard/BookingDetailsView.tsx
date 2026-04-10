@@ -177,7 +177,7 @@ export default function BookingDetailsView({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Tax</span>
+                <span className="text-gray-600">Service Charge</span>
                 <span className="text-gray-900 font-medium">${tax}</span>
               </div>
               <div className="flex justify-between pt-3 border-t">

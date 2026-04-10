@@ -199,13 +199,13 @@ export default function PaymentStep({
               <span className="font-semibold">${breakdown.service_fee}</span>
             </div>
             <div className="flex justify-between text-gray-700">
-              <span>Additional Service</span>
+              <span>Additional service</span>
               <span className="font-semibold">
                 ${breakdown.additional_service}
               </span>
             </div>
             <div className="flex justify-between text-gray-700">
-              <span>Tax</span>
+              <span>Service charge</span>
               <span className="font-semibold">${breakdown.tax}</span>
             </div>
           </div>
