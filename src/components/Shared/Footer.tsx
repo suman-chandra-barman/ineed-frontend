@@ -30,23 +30,6 @@ export default function Footer() {
                 Where cleaning feels easier and more reliable
               </p>
             </div>
-
-            {/* Newsletter Subscription */}
-
-            {/* <form onSubmit={handleSubscribe} className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="Enter your email address"
-                className="flex-1 bg-white border-gray-300"
-                required
-              />
-              <Button
-                type="submit"
-                className="bg-[#0077CC] hover:bg-[#005FA3] text-white px-6"
-              >
-                Join
-              </Button>
-            </form> */}
           </div>
 
           {/* Company Links */}
@@ -104,6 +87,22 @@ export default function Footer() {
               Legal & Policies
             </h3>
             <ul className="space-y-3">
+              <li>
+                <Link
+                  href="/terms-condition"
+                  className="text-gray-600 hover:text-[#0077CC] transition-colors"
+                >
+                  Pricing & Fair Use Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="text-gray-600 hover:text-[#0077CC] transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/customer-policy"
