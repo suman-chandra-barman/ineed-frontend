@@ -154,7 +154,7 @@ export default function ConfirmationStep({
             <span className="font-semibold">${bookingData.sub_total}</span>
           </div>
           <div className="flex justify-between text-gray-700">
-            <span>Tax</span>
+            <span>Service charge</span>
             <span className="font-semibold">${bookingData.tax_amount}</span>
           </div>
         </div>
