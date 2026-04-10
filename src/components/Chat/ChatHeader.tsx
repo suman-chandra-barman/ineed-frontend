@@ -52,6 +52,7 @@ export default function ChatHeader({
             className="w-10 h-10 rounded-full object-cover"
             width={40}
             height={40}
+            unoptimized
 
           />
         ) : (

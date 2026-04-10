@@ -220,6 +220,7 @@ export default function JobImageUpload({
                   width={200}
                   height={150}
                   className="mx-auto rounded-lg object-cover"
+                  unoptimized
                 />
                 <button
                   onClick={() => handleRemoveImage("before")}
@@ -274,6 +275,7 @@ export default function JobImageUpload({
                   width={200}
                   height={150}
                   className="mx-auto rounded-lg object-cover"
+                  unoptimized
                 />
                 <button
                   onClick={() => handleRemoveImage("after")}

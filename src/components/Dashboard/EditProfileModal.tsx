@@ -118,6 +118,7 @@ export default function EditProfileModal({
                   alt="Profile"
                   fill
                   className="object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-200">

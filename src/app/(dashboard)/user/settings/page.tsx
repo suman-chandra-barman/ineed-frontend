@@ -70,6 +70,7 @@ function AccountSettingsPage() {
                     alt={userData.fullName}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center ">

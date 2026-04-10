@@ -100,6 +100,7 @@ export default function ReviewModal({
                 alt={booking?.booking_details.service_name}
                 fill
                 className="object-cover"
+                unoptimized
               />
             </div>
             <div className="flex-1">

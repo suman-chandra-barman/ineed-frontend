@@ -141,6 +141,7 @@ export default function BookingDetailsView({
                   alt={serviceTitle}
                   fill
                   className="object-cover"
+                  unoptimized
                 />
               </div>
               <div className="flex-1">
@@ -200,6 +201,7 @@ export default function BookingDetailsView({
                     src={providerImage}
                     alt={providerName}
                     fill
+                    unoptimized
                     className="object-cover"
                   />
                 ) : (
@@ -271,6 +273,7 @@ export default function BookingDetailsView({
                           alt={`Before ${i + 1}`}
                           fill
                           className="object-cover"
+                          unoptimized
                         />
                       </div>
                     ))}
@@ -291,6 +294,7 @@ export default function BookingDetailsView({
                           alt={`After ${i + 1}`}
                           fill
                           className="object-cover"
+                          unoptimized
                         />
                       </div>
                     ))}

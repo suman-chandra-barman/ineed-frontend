@@ -147,6 +147,7 @@ export default function PaymentStep({
                 width={64}
                 height={64}
                 className="w-full h-full object-cover"
+                unoptimized
               />
             </div>
             <div className="flex-1">
@@ -178,6 +179,7 @@ export default function PaymentStep({
                           width={40}
                           height={40}
                           className="w-full h-full object-cover"
+                          unoptimized
                         />
                       </div>
                     )}

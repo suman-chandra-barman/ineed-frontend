@@ -53,7 +53,7 @@ const ServiceCard = memo(function ServiceCard({
   const [toggleFavorite, { isLoading: isFavoriteLoading }] =
     useToggleFavoriteMutation();
 
-    const user =useAppSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
   // Memoized derived data
   const serviceData = useMemo(() => {

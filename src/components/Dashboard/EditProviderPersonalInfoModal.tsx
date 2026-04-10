@@ -173,6 +173,7 @@ export default function EditProviderPersonalInfoModal({
                   src={imagePreview}
                   alt="Profile"
                   fill
+                  unoptimized
                   className="object-cover"
                 />
               ) : (

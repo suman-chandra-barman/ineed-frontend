@@ -62,6 +62,7 @@ export default function ServiceGallery({ images }: ServiceGalleryProps) {
                       height={100}
                       alt={`Service image ${index + 1}`}
                       className="w-full h-full object-cover"
+                      unoptimized
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = `https://placehold.co/800x500/e5e7eb/6b7280?text=Image+${index + 1}`;
