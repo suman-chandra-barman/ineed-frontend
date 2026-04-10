@@ -189,6 +189,7 @@ export interface JobScheduleLocations {
   customer_name: string;
   contact_number: string;
   date: string;
+  address: string;
   time: string;
   city_state: string;
   zip_code: string;

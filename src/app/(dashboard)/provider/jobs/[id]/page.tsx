@@ -93,6 +93,7 @@ export default function JobDetailsPage() {
               schedule={{
                 date: jobData.job_schedule_locations.date,
                 time: jobData.job_schedule_locations.time,
+                address: jobData.job_schedule_locations.address,
                 location: {
                   city: jobData.job_schedule_locations.city_state,
                   zipCode: jobData.job_schedule_locations.zip_code,

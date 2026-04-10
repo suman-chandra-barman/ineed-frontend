@@ -160,6 +160,7 @@ export default function JobImageUpload({
                         width={120}
                         height={90}
                         className="object-cover"
+                        unoptimized
                       />
                     </div>
                   ))}
@@ -183,6 +184,7 @@ export default function JobImageUpload({
                         width={120}
                         height={90}
                         className="object-cover"
+                        unoptimized
                       />
                     </div>
                   ))}

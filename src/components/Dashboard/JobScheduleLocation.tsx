@@ -6,6 +6,7 @@ interface JobScheduleLocationProps {
   schedule: {
     date: string;
     time: string;
+    address: string;
     location: {
       city: string;
       zipCode: string;
@@ -46,6 +47,13 @@ export default function JobScheduleLocation({
               : schedule.time === "afternoon"
                 ? "Afternoon (12:00 PM - 4:00 PM)"
                 : "Evening (4:00 PM - 7:00 PM)"}
+          </span>
+        </div>
+
+        <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+          <span className="text-sm text-gray-600">Address :</span>
+          <span className="text-sm font-medium text-gray-500">
+            {schedule.address}
           </span>
         </div>
 
