@@ -89,7 +89,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/terms-condition"
+                  href="/pricing-fair-use-policy"
                   className="text-gray-600 hover:text-[#0077CC] transition-colors"
                 >
                   Pricing & Fair Use Policy

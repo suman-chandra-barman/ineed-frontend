@@ -22,12 +22,12 @@ export function Step5Confirmation({ form }: Step5ConfirmationProps) {
         <p className="text-slate-700 leading-relaxed">
           By completing your registration, you agree to the{" "}
           <Link
-            href="/terms-condition"
+            href="/pricing-fair-use-policy"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline hover:text-blue-800"
           >
-            Provider Independent Contractor Agreement
+            Pricing & Fair Use Policy
           </Link>
           .
         </p>
