@@ -63,7 +63,8 @@ export default function DateTimeStep({
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
+    // Adjust for Monday start (0 = Monday, 6 = Sunday)
+    const startingDayOfWeek = (firstDay.getDay() - 1 + 7) % 7;
 
     return { daysInMonth, startingDayOfWeek, year, month };
   };
@@ -94,6 +95,15 @@ export default function DateTimeStep({
       localDate.getDate() === day &&
       localDate.getMonth() === month &&
       localDate.getFullYear() === year
+    );
+  };
+
+  const isToday = (day: number) => {
+    const today = new Date();
+    return (
+      day === today.getDate() &&
+      month === today.getMonth() &&
+      year === today.getFullYear()
     );
   };
 
@@ -229,7 +239,9 @@ export default function DateTimeStep({
                     ${
                       isDateSelected(day!)
                         ? "bg-primary text-white"
-                        : "hover:bg-gray-100 text-gray-700"
+                        : isToday(day!)
+                          ? "border-2 border-primary text-primary font-bold"
+                          : "hover:bg-gray-100 text-gray-700"
                     }
                   `}
                 >
