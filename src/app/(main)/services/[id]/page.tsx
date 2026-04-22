@@ -79,6 +79,8 @@ export default function ServiceDetailsPage() {
   const serviceDetail = data.data;
   const service = serviceDetail.service;
 
+  console.log("serviceDetail", serviceDetail.additional_features);
+
   // Prepare images array
   const images = service.images.map(
     (img) => `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${img.image}`,
@@ -190,9 +192,7 @@ export default function ServiceDetailsPage() {
                   description: feature.description,
                   price: parseFloat(feature.price),
                   duration: feature.duration,
-                  image: feature.image
-                    ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${feature.image}`
-                    : `https://placehold.co/80x80/e5e7eb/6b7280?text=Service`,
+                  image: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${feature.image}`,
                 }),
               )}
             />
