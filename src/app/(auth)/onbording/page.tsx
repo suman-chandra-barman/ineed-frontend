@@ -20,11 +20,11 @@ import { Check, ArrowLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/logo.svg";
 import * as z from "zod";
-import { Step1PersonalInfo } from "@/components/onboarding/Step1PersonalInfo";
-import { Step2ServiceInfo } from "@/components/onboarding/Step2ServiceInfo";
-import { Step3Availability } from "@/components/onboarding/Step3Availability";
-import { Step4LegalInfo } from "@/components/onboarding/Step4LegalInfo";
-import { Step5Confirmation } from "@/components/onboarding/Step5Confirmation";
+import { Step1PersonalInfo } from "@/components/Onboarding/Step1PersonalInfo";
+import { Step2ServiceInfo } from "@/components/Onboarding/Step2ServiceInfo";
+import { Step3Availability } from "@/components/Onboarding/Step3Availability";
+import { Step4LegalInfo } from "@/components/Onboarding/Step4LegalInfo";
+import { Step5Confirmation } from "@/components/Onboarding/Step5Confirmation";
 import { useRouter } from "next/navigation";
 import {
   useGetProfileQuery,
@@ -75,9 +75,11 @@ interface FormData {
   zipCode: string;
 
   // Step 2: Service Information
-  serviceType: string;
-  experienceLevel: string;
-  shortDescription: string;
+  services: {
+    serviceType: string;
+    experienceLevel: string;
+    shortDescription: string;
+  }[];
 
   // Step 3: Availability
   availableDays: string[];
@@ -135,9 +137,13 @@ function OnboardingPage() {
     city: "",
     state: "",
     zipCode: "",
-    serviceType: "",
-    experienceLevel: "",
-    shortDescription: "",
+    services: [
+      {
+        serviceType: "",
+        experienceLevel: "",
+        shortDescription: "",
+      },
+    ],
     availableDays: [],
     availableTimes: [],
     legalName: "",
@@ -184,9 +190,7 @@ function OnboardingPage() {
     resolver: zodResolver(onboardingStep2Schema),
     mode: "onChange",
     defaultValues: {
-      serviceType: formData.serviceType,
-      experienceLevel: formData.experienceLevel,
-      shortDescription: formData.shortDescription,
+      services: formData.services,
     },
   });
 
@@ -309,23 +313,17 @@ function OnboardingPage() {
       } else if (currentStep === 2) {
         // Step 2: Create service information
         const step2Data = stepData as z.infer<typeof onboardingStep2Schema>;
-        const serviceId = parseInt(step2Data.serviceType, 10);
+        const services = step2Data.services.map((service) => ({
+          service_id: Number(service.serviceType),
+          experience_level: service.experienceLevel,
+          short_description: service.shortDescription,
+        }));
 
-        if (serviceId) {
-          await createServiceInfo({
-            services: [
-              {
-                service_id: serviceId,
-                experience_level: step2Data.experienceLevel,
-                short_description: step2Data.shortDescription,
-              },
-            ],
-          }).unwrap();
+        await createServiceInfo({ services }).unwrap();
 
-          const nextStep = 3;
-          saveStep(nextStep);
-          setCurrentStep(nextStep);
-        }
+        const nextStep = 3;
+        saveStep(nextStep);
+        setCurrentStep(nextStep);
       } else if (currentStep === 3) {
         // Step 3: Create availability
         const step3Data = stepData as z.infer<typeof onboardingStep3Schema>;
@@ -446,7 +444,7 @@ function OnboardingPage() {
       case 1:
         return "Tell us a little about yourself so we can set up your provider profile.";
       case 2:
-        return "Confirm your service details to receive cleaning jobs through our platform.";
+        return "Add one or more services so clients can match you with the right jobs.";
       case 3:
         return "Let us know when you're available so we can assign suitable jobs.";
       case 4:
@@ -459,9 +457,9 @@ function OnboardingPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col lg:flex-row p-4 gap-4">
+    <main className="min-h-screen lg:h-screen flex flex-col lg:flex-row p-4 gap-4 lg:overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-full lg:w-80 bg-primary/15 p-6 lg:p-8 flex flex-col rounded-2xl">
+      <aside className="w-full lg:w-80 lg:shrink-0 bg-primary/15 p-6 lg:p-8 flex flex-col rounded-2xl lg:fixed lg:left-4 lg:top-4 lg:bottom-4 lg:overflow-y-auto">
         <div className="mb-8 lg:mb-12">
           <div className="flex items-center gap-2">
             <Image src={logo} alt="iNeed Logo" />
@@ -537,7 +535,7 @@ function OnboardingPage() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 lg:p-12">
+      <div className="flex-1 flex items-start justify-center p-4 lg:p-12 lg:ml-88 lg:overflow-y-auto lg:h-[calc(100vh-2rem)]">
         <div className="w-full max-w-2xl">
           <div className="mb-6 lg:mb-8">
             <h1 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-2">

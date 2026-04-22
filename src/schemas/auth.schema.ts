@@ -68,13 +68,21 @@ export const onboardingStep1Schema = z.object({
   zipCode: z.string().min(4, { message: "Please enter a valid ZIP code" }),
 });
 
-// Onboarding Step 2: Service Information
-export const onboardingStep2Schema = z.object({
+export const onboardingServiceSchema = z.object({
   serviceType: z.string().min(1, { message: "Please select a service type" }),
   experienceLevel: z
     .string()
     .min(1, { message: "Please select your experience level" }),
-  shortDescription: z.string().min(10, { message: "Please enter a short description (at least 10 characters)" }),
+  shortDescription: z.string().min(10, {
+    message: "Please enter a short description (at least 10 characters)",
+  }),
+});
+
+// Onboarding Step 2: Service Information
+export const onboardingStep2Schema = z.object({
+  services: z
+    .array(onboardingServiceSchema)
+    .min(1, { message: "Please add at least one service" }),
 });
 
 // Onboarding Step 3: Availability
