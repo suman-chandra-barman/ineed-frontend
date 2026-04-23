@@ -108,7 +108,15 @@ const ServiceCard = memo(function ServiceCard({
           : "Removed from favorites";
         toast.success(message);
       } catch (error) {
-        console.error("Failed to toggle favorite:", error);
+        const apiError = error as ApiError;
+        if (
+          apiError?.data?.message ===
+          "Authentication credentials were not provided."
+        ) {
+          router.push("/signin");
+          return;
+        }
+        
         toast.error(
           getErrorMessage(
             error,
@@ -117,7 +125,7 @@ const ServiceCard = memo(function ServiceCard({
         );
       }
     },
-    [toggleFavorite, serviceData.id],
+    [toggleFavorite, serviceData.id, router],
   );
 
   return (

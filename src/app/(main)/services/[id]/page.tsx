@@ -1,18 +1,28 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useGetServiceDetailQuery } from "@/redux/features/service/serviceApi";
+import { useToggleFavoriteMutation } from "@/redux/features/service/serviceApi";
 import { formatServiceHours } from "@/lib/service/formatServiceHours";
 import { ErrorDisplay } from "@/components/Shared/ErrorDisplay";
 import Reviews from "@/components/ServiceDetails/Reviews";
 import ServiceBooking from "@/components/ServiceDetails/ServiceBooking";
 import ServiceGallery from "@/components/ServiceDetails/ServiceGallery";
 import ServiceInfo from "@/components/ServiceDetails/ServiceInfo";
+import { getErrorMessage, redirectToSigninOnAuthError } from "@/lib/api-error";
+import { cn } from "@/lib/utils";
 import { ChevronRight, Heart, Home, Star, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ServiceDetailsPage() {
   const params = useParams();
   const serviceId = params.id as string;
+  const router = useRouter();
+
+  const [isFavorited, setIsFavorited] = useState<boolean | null>(null);
+  const [toggleFavorite, { isLoading: isFavoriteLoading }] =
+    useToggleFavoriteMutation();
 
   const { data, isLoading, error } = useGetServiceDetailQuery(
     parseInt(serviceId),
@@ -42,6 +52,7 @@ export default function ServiceDetailsPage() {
 
   const serviceDetail = data.data;
   const service = serviceDetail.service;
+  const currentIsFavorited = isFavorited ?? service.is_favorite ?? false;
 
   // Prepare images array
   const images = service.images.map(
@@ -68,6 +79,28 @@ export default function ServiceDetailsPage() {
     average_rating: 0,
     total_reviews: 0,
     rating_breakdown: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 },
+  };
+
+  const handleFavoriteClick = async () => {
+    try {
+      const result = await toggleFavorite(service.id).unwrap();
+      const nextFavorited = result.data.is_favorite;
+      setIsFavorited(nextFavorited);
+
+      toast.success(
+        nextFavorited ? "Added to favorites" : "Removed from favorites",
+      );
+    } catch (err) {
+      const isAuthError = redirectToSigninOnAuthError(err, () =>
+        router.push("/signin"),
+      );
+
+      if (!isAuthError) {
+        toast.error(
+          getErrorMessage(err, "Failed to update favorite. Please try again."),
+        );
+      }
+    }
   };
 
   return (
@@ -108,8 +141,29 @@ export default function ServiceDetailsPage() {
                     ({reviewSummary.total_reviews} reviews)
                   </span>
                 </div>
-                <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Heart className="w-5 h-5 text-gray-600" />
+                <button
+                  type="button"
+                  onClick={handleFavoriteClick}
+                  disabled={isFavoriteLoading}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label={
+                    currentIsFavorited
+                      ? "Remove from favorites"
+                      : "Add to favorites"
+                  }
+                >
+                  {isFavoriteLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                  ) : (
+                    <Heart
+                      className={cn(
+                        "w-5 h-5 transition-colors duration-200",
+                        currentIsFavorited
+                          ? "fill-red-500 text-red-500"
+                          : "text-gray-600 hover:text-red-500",
+                      )}
+                    />
+                  )}
                 </button>
               </div>
             </div>

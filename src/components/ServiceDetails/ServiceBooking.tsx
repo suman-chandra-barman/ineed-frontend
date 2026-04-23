@@ -4,6 +4,7 @@ import { CalendarDays, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useCreateBookingMutation } from "@/redux/features/booking/bookingApi";
+import { getErrorMessage, redirectToSigninOnAuthError } from "@/lib/api-error";
 import { toast } from "sonner";
 
 interface ServiceHour {
@@ -38,14 +39,14 @@ export default function ServiceBooking({
 
       // Navigate to booking page with booking ID
       router.push(`/booking/${result.id}`);
-    } catch (error: any) {
-      if (
-        error?.data?.message === "Authentication credentials were not provided."
-      ) {
-        router.push("/signin");
-      } else {
+    } catch (error) {
+      const isAuthError = redirectToSigninOnAuthError(error, () =>
+        router.push("/signin"),
+      );
+
+      if (!isAuthError) {
         toast.error(
-          error?.data?.message || "Failed to create booking. Please try again.",
+          getErrorMessage(error, "Failed to create booking. Please try again."),
         );
       }
     }
