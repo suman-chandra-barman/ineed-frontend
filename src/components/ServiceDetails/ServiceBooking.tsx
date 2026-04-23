@@ -39,10 +39,15 @@ export default function ServiceBooking({
       // Navigate to booking page with booking ID
       router.push(`/booking/${result.id}`);
     } catch (error: any) {
-      console.error("Failed to create booking:", error);
-      toast.error(
-        error?.data?.message || "Failed to create booking. Please try again.",
-      );
+      if (
+        error?.data?.message === "Authentication credentials were not provided."
+      ) {
+        router.push("/signin");
+      } else {
+        toast.error(
+          error?.data?.message || "Failed to create booking. Please try again.",
+        );
+      }
     }
   };
 
