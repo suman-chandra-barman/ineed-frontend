@@ -140,10 +140,10 @@ const GetInTouch = () => {
                     />
                   </svg>
                   <a
-                    href="mailto:connect@hey-iNeed.com"
+                    href="mailto:connect@hey-ineed.com"
                     className="hover:text-white transition-colors"
                   >
-                    connect@hey-iNeed.com
+                    connect@hey-ineed.com
                   </a>
                 </li>
               </ul>
