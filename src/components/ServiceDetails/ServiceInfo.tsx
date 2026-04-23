@@ -5,12 +5,16 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
 
 interface AdditionalService {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  duration: number;
-  image: string;
+  id: number;
+  service_id: number;
+  additional_features_title: string;
+  subtitle: string;
+  additional_features_image: string;
+  additional_features_price: string;
+  estimate_time: string;
+  estimate_time_unit: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface ServiceInfoProps {
@@ -98,15 +102,11 @@ export default function ServiceInfo({
                 <div className="shrink-0 w-full sm:w-20 h-20">
                   <div className="relative w-full h-full rounded-lg overflow-hidden bg-gray-200">
                     <Image
-                      src={service.image}
-                      alt={service.name}
+                      src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${service.additional_features_image}`}
+                      alt={service.additional_features_title}
                       className="w-full h-full object-cover"
                       width={100}
                       height={100}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `https://placehold.co/80x80/e5e7eb/6b7280?text=Service`;
-                      }}
                     />
                   </div>
                 </div>
@@ -114,20 +114,22 @@ export default function ServiceInfo({
                 {/* Service Info */}
                 <div className="flex-1 min-w-0">
                   <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">
-                    {service.name}
+                    {service.additional_features_title}
                   </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {service.description}
-                  </p>
+                  {service.subtitle && (
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {service.subtitle}
+                    </p>
+                  )}
                 </div>
 
                 {/* Price and Duration */}
                 <div className="flex sm:flex-col items-end justify-between sm:justify-start gap-1 shrink-0">
                   <span className="text-xl md:text-2xl font-bold text-yellow-500">
-                    ${service.price}
+                    ${service.additional_features_price}
                   </span>
                   <span className="text-sm text-gray-500">
-                    {service.duration} min
+                    {service.estimate_time} {service.estimate_time_unit}
                   </span>
                 </div>
               </div>

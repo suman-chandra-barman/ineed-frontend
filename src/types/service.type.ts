@@ -19,6 +19,7 @@ export type Service = {
   created_at: string;
   updated_at: string;
   rating: number;
+  total_bookings: number;
 };
 
 export type ServiceHour = {
@@ -33,17 +34,45 @@ export type ServiceHour = {
 
 export type AdditionalFeature = {
   id: number;
-  name: string;
-  description: string;
-  price: string;
-  duration: number;
-  image: string;
+  service_id: number;
+  additional_features_title: string;
+  subtitle: string;
+  additional_features_image: string;
+  additional_features_price: string;
+  estimate_time: string;
+  estimate_time_unit: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ServiceReviewSummary = {
+  average_rating: number;
+  total_reviews: number;
+  rating_breakdown: {
+    "1": number;
+    "2": number;
+    "3": number;
+    "4": number;
+    "5": number;
+  };
+};
+
+export type ServiceReview = {
+  id: number;
+  rating: number;
+  comment: string;
+  user_name: string;
+  user_image: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type ServiceDetail = {
   service: Service;
   service_hours: ServiceHour[];
   additional_features: AdditionalFeature[];
+  review_summary: ServiceReviewSummary;
+  reviews: ServiceReview[];
 };
 
 export type ServicesResponse = {

@@ -2,49 +2,13 @@
 
 import { useParams } from "next/navigation";
 import { useGetServiceDetailQuery } from "@/redux/features/service/serviceApi";
-import { ServiceHour } from "@/types/service.type";
+import { formatServiceHours } from "@/lib/service/formatServiceHours";
 import { ErrorDisplay } from "@/components/Shared/ErrorDisplay";
 import Reviews from "@/components/ServiceDetails/Reviews";
 import ServiceBooking from "@/components/ServiceDetails/ServiceBooking";
 import ServiceGallery from "@/components/ServiceDetails/ServiceGallery";
 import ServiceInfo from "@/components/ServiceDetails/ServiceInfo";
 import { ChevronRight, Heart, Home, Star, Loader2 } from "lucide-react";
-
-// Helper function to format service hours
-const formatServiceHours = (serviceHours: ServiceHour[]) => {
-  const days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-
-  return days.map((day, index) => {
-    const hour = serviceHours.find((h) => h.day_of_week === index);
-
-    if (!hour || hour.is_closed) {
-      return { day, hours: "", closed: true };
-    }
-
-    // Convert 24-hour format to 12-hour format
-    const formatTime = (time: string) => {
-      const [hours, minutes] = time.split(":");
-      const hour = parseInt(hours);
-      const ampm = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-      return `${displayHour}:${minutes} ${ampm}`;
-    };
-
-    return {
-      day,
-      hours: `${formatTime(hour.from_time)} - ${formatTime(hour.to_time)}`,
-      closed: false,
-    };
-  });
-};
 
 export default function ServiceDetailsPage() {
   const params = useParams();
@@ -79,8 +43,6 @@ export default function ServiceDetailsPage() {
   const serviceDetail = data.data;
   const service = serviceDetail.service;
 
-  console.log("serviceDetail", serviceDetail.additional_features);
-
   // Prepare images array
   const images = service.images.map(
     (img) => `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${img.image}`,
@@ -102,33 +64,10 @@ export default function ServiceDetailsPage() {
         )
       : 0;
 
-  // Mock reviews data (since API doesn't provide it yet)
-  const reviews = {
-    total: 235,
-    average: 4.9,
-    totalReviews: 2650,
-    breakdown: [
-      { stars: 5, count: 156 },
-      { stars: 4, count: 156 },
-      { stars: 3, count: 156 },
-      { stars: 2, count: 156 },
-      { stars: 1, count: 156 },
-    ],
-    items: [
-      {
-        id: "1",
-        author: "Adrian Hendriques",
-        avatar:
-          "https://ui-avatars.com/api/?name=Adrian+Hendriques&background=3b82f6&color=fff&size=96",
-        date: "2 days ago",
-        serviceType: "Excellences Service!",
-        rating: 4.9,
-        comment:
-          "The quality of work was exceptional, and they left the site clean and tidy. I was impressed by their attention to detail and commitment to safety standards. Highly recommend their services!",
-        likes: 26,
-        dislikes: 6,
-      },
-    ],
+  const reviewSummary = serviceDetail.review_summary ?? {
+    average_rating: 0,
+    total_reviews: 0,
+    rating_breakdown: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 },
   };
 
   return (
@@ -157,15 +96,17 @@ export default function ServiceDetailsPage() {
                 <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-full">
                   <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-semibold text-gray-700">
-                    302+ Bookings
+                    {serviceDetail.service.total_bookings} Bookings
                   </span>
                 </div>
                 <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-full">
                   <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-semibold text-gray-700">
-                    4.9/5
+                    {reviewSummary.average_rating.toFixed(1)}/5
                   </span>
-                  <span className="text-sm text-gray-500">(123 reviews)</span>
+                  <span className="text-sm text-gray-500">
+                    ({reviewSummary.total_reviews} reviews)
+                  </span>
                 </div>
                 <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                   <Heart className="w-5 h-5 text-gray-600" />
@@ -185,18 +126,12 @@ export default function ServiceDetailsPage() {
                 title: "Service Overview",
                 description: service.description,
               }}
-              additionalServices={serviceDetail.additional_features.map(
-                (feature) => ({
-                  id: feature.id.toString(),
-                  name: feature.name,
-                  description: feature.description,
-                  price: parseFloat(feature.price),
-                  duration: feature.duration,
-                  image: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${feature.image}`,
-                }),
-              )}
+              additionalServices={serviceDetail.additional_features}
             />
-            <Reviews reviews={reviews} />
+            <Reviews
+              summary={reviewSummary}
+              reviews={serviceDetail.reviews ?? []}
+            />
           </div>
 
           {/* Right Sidebar - 1 column */}

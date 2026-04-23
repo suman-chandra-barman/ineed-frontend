@@ -1,41 +1,44 @@
 "use client";
 
 import { useState } from "react";
-import { ThumbsUp, ThumbsDown, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import Image from "next/image";
-
-interface ReviewItem {
-  id: string;
-  author: string;
-  avatar: string;
-  date: string;
-  serviceType: string;
-  rating: number;
-  comment: string;
-  likes: number;
-  dislikes: number;
-}
-
-interface ReviewsData {
-  total: number;
-  average: number;
-  totalReviews: number;
-  breakdown: {
-    stars: number;
-    count: number;
-  }[];
-  items: ReviewItem[];
-}
+import { ServiceReview, ServiceReviewSummary } from "@/types/service.type";
 
 interface ReviewsProps {
-  reviews: ReviewsData;
+  summary: ServiceReviewSummary;
+  reviews: ServiceReview[];
 }
 
-export default function Reviews({ reviews }: ReviewsProps) {
+export default function Reviews({ summary, reviews }: ReviewsProps) {
   const [visibleReviews, setVisibleReviews] = useState(3);
 
   const loadMoreReviews = () => {
     setVisibleReviews((prev) => prev + 3);
+  };
+
+  const ratingBreakdown = [5, 4, 3, 2, 1].map((stars) => ({
+    stars,
+    count:
+      summary.rating_breakdown[String(stars) as "1" | "2" | "3" | "4" | "5"],
+  }));
+
+  const formatReviewDate = (dateString: string) => {
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+    return date.toLocaleDateString();
+  };
+
+  const getReviewImage = (imagePath: string | null) => {
+    if (!imagePath) {
+      return "";
+    }
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${imagePath}`;
   };
 
   const renderStars = (rating: number) => {
@@ -56,7 +59,10 @@ export default function Reviews({ reviews }: ReviewsProps) {
   };
 
   const renderRatingBars = (stars: number, count: number) => {
-    const percentage = (count / reviews.totalReviews) * 100;
+    const percentage = summary.total_reviews
+      ? (count / summary.total_reviews) * 100
+      : 0;
+
     return (
       <div className="flex items-center gap-3">
         <span className="text-sm text-gray-600 w-24">{stars} star rating</span>
@@ -78,7 +84,7 @@ export default function Reviews({ reviews }: ReviewsProps) {
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <div className="p-6">
         <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">
-          Reviews ({reviews.total})
+          Reviews ({summary.total_reviews})
         </h2>
 
         {/* Reviews Summary Grid */}
@@ -89,19 +95,19 @@ export default function Reviews({ reviews }: ReviewsProps) {
               Customer Reviews & Ratings
             </h3>
             <div className="flex items-center justify-center gap-1 mb-2">
-              {renderStars(5)}
+              {renderStars(summary.average_rating)}
             </div>
             <p className="text-2xl font-bold text-gray-900 mb-1">
-              ({reviews.average} out of 5.0)
+              ({summary.average_rating.toFixed(1)} out of 5.0)
             </p>
             <p className="text-sm text-gray-600">
-              Base On {reviews.totalReviews.toLocaleString()} Reviews
+              Base On {summary.total_reviews.toLocaleString()} Reviews
             </p>
           </div>
 
           {/* Rating Breakdown */}
           <div className="border border-gray-200 rounded-lg p-6 space-y-3">
-            {reviews.breakdown.map((item) => (
+            {ratingBreakdown.map((item) => (
               <div key={item.stars}>
                 {renderRatingBars(item.stars, item.count)}
               </div>
@@ -111,7 +117,7 @@ export default function Reviews({ reviews }: ReviewsProps) {
 
         {/* Individual Reviews */}
         <div className="space-y-6">
-          {reviews.items.slice(0, visibleReviews).map((review) => (
+          {reviews.slice(0, visibleReviews).map((review) => (
             <div
               key={review.id}
               className="border-b border-gray-200 pb-6 last:border-b-0"
@@ -120,13 +126,19 @@ export default function Reviews({ reviews }: ReviewsProps) {
                 {/* Avatar */}
                 <div className="shrink-0">
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
-                    <Image
-                      src={review.avatar}
-                      alt={review.author}
-                      className="w-full h-full object-cover"
-                      width={48}
-                      height={48}
-                    />
+                    {review.user_image ? (
+                      <Image
+                        src={getReviewImage(review.user_image)}
+                        alt={review.user_name}
+                        className="w-full h-full object-cover"
+                        width={48}
+                        height={48}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-sm font-semibold text-gray-600">
+                        {review.user_name.slice(0, 1).toUpperCase()}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -135,10 +147,10 @@ export default function Reviews({ reviews }: ReviewsProps) {
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                     <div>
                       <h4 className="font-semibold text-gray-900">
-                        {review.author}
+                        {review.user_name}
                       </h4>
                       <p className="text-sm text-gray-500">
-                        {review.date} · {review.serviceType}
+                        {formatReviewDate(review.created_at)}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 bg-yellow-50 px-3 py-1 rounded-full w-fit">
@@ -152,26 +164,20 @@ export default function Reviews({ reviews }: ReviewsProps) {
                   <p className="text-gray-700 leading-relaxed mb-4">
                     {review.comment}
                   </p>
-
-                  {/* Like/Dislike Buttons */}
-                  <div className="flex items-center gap-4">
-                    <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                      <ThumbsUp className="w-4 h-4" />
-                      <span>{review.likes}</span>
-                    </button>
-                    <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-red-600 transition-colors">
-                      <ThumbsDown className="w-4 h-4" />
-                      <span>{review.dislikes}</span>
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
           ))}
+
+          {reviews.length === 0 && (
+            <p className="text-center text-gray-500 py-8">
+              No reviews yet. Be the first to share feedback.
+            </p>
+          )}
         </div>
 
         {/* Load More Button */}
-        {visibleReviews < reviews.items.length && (
+        {visibleReviews < reviews.length && (
           <div className="flex justify-center mt-8">
             <button
               onClick={loadMoreReviews}
