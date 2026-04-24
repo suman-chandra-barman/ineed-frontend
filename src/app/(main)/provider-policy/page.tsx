@@ -16,14 +16,14 @@ export default function ProviderPolicyPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
-              Provider <span className="text-primary">Policy</span>
+              Provider Policy
             </h1>
             <div className="relative">
               <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
                 At iNeed, we believe great service starts with clarity and
                 mutual respect. Our platform is designed to support you, help
-                you grow, and make your work easier—not harder. Here&apos;s what we
-                expect so everyone has a positive experience.
+                you grow, and make your work easier—not harder. Here&apos;s what
+                we expect so everyone has a positive experience.
               </p>
             </div>
           </div>
@@ -37,7 +37,6 @@ export default function ProviderPolicyPage() {
           <div className="space-y-8 sm:space-y-12">
             {/* Section 1 */}
             <PolicySection
-              number="1"
               title="Professionalism Comes First"
               items={[
                 {
@@ -63,7 +62,6 @@ export default function ProviderPolicyPage() {
 
             {/* Section 2 */}
             <PolicySection
-              number="2"
               title="Platform-Only Communication"
               items={[
                 {
@@ -89,7 +87,6 @@ export default function ProviderPolicyPage() {
 
             {/* Section 3 */}
             <PolicySection
-              number="3"
               title="Clear Job Documentation"
               items={[
                 {
@@ -103,8 +100,8 @@ export default function ProviderPolicyPage() {
                 {
                   type: "list",
                   items: [
-                    "Upload clear before photos of the service area",
-                    "Upload clear after photos once work is complete",
+                    "Upload clear **before** photos of the service area",
+                    "Upload clear **after** photos once work is complete",
                     "Ensure photos accurately reflect the work performed",
                   ],
                 },
@@ -118,7 +115,6 @@ export default function ProviderPolicyPage() {
 
             {/* Section 4 */}
             <PolicySection
-              number="4"
               title="Completing a Job"
               items={[
                 {
@@ -142,7 +138,6 @@ export default function ProviderPolicyPage() {
 
             {/* Section 5 */}
             <PolicySection
-              number="5"
               title="When Issues Come Up"
               items={[
                 {
@@ -154,7 +149,7 @@ export default function ProviderPolicyPage() {
                   type: "list",
                   items: [
                     "Do not argue or escalate directly",
-                    "You will have the option to use the Support Escalation feature",
+                    "You will have the option to use the **Support Escalation** feature",
                     "Allow iNeed to step in and manage communication",
                   ],
                 },
@@ -168,7 +163,6 @@ export default function ProviderPolicyPage() {
 
             {/* Section 6 */}
             <PolicySection
-              number="6"
               title="Payments & Payouts"
               items={[
                 {
@@ -185,7 +179,7 @@ export default function ProviderPolicyPage() {
                   items: [
                     "Transparent tracking of completed jobs",
                     "Payouts processed through the platform",
-                    "Payments released once the job is confirmed",
+                    "Payment release once the job is confirmed",
                   ],
                 },
                 {
@@ -198,7 +192,43 @@ export default function ProviderPolicyPage() {
 
             {/* Section 7 */}
             <PolicySection
-              number="7"
+              title="How Pricing & Payouts Work"
+              items={[
+                {
+                  type: "paragraph",
+                  content:
+                    "At iNeed, we maintain a transparent and consistent pricing structure for all services.",
+                },
+                {
+                  type: "paragraph",
+                  content:
+                    "Service prices displayed to customers include a platform service margin. **iNeed retains approximately 20% of the total service price as a platform fee.**",
+                },
+                {
+                  type: "paragraph",
+                  content:
+                    "This fee covers customer acquisition, marketing, platform operations, payment processing, and customer support.",
+                },
+                {
+                  type: "paragraph",
+                  content:
+                    "As a provider, you will receive a predetermined payout amount for each completed service. This payout is shown within the platform before you accept a job.",
+                },
+                {
+                  type: "paragraph",
+                  content:
+                    "Payouts are issued after service completion and customer confirmation, in accordance with the platform's payout schedule.",
+                },
+                {
+                  type: "paragraph",
+                  content:
+                    "By accepting and completing jobs through iNeed, you acknowledge and agree to the platform's pricing structure, including the **20% service fee**.",
+                },
+              ]}
+            />
+
+            {/* Section 8 */}
+            <PolicySection
               title="Accountability & Fair Use"
               items={[
                 {
@@ -220,9 +250,8 @@ export default function ProviderPolicyPage() {
               ]}
             />
 
-            {/* Section 8 */}
+            {/* Section 9 */}
             <PolicySection
-              number="8"
               title="Our Commitment to You"
               items={[
                 {
@@ -249,11 +278,37 @@ export default function ProviderPolicyPage() {
                 },
               ]}
             />
+
+            {/* Section 10 - Optional Short Version */}
+            <PolicySection
+              title="Optional Short Version (for Onboarding Flow)"
+              items={[
+                {
+                  type: "paragraph",
+                  content:
+                    "By accepting jobs on iNeed, providers agree to communicate on-platform, upload required photos, and follow professional service standards. iNeed support is available if issues arise.",
+                },
+              ]}
+            />
           </div>
         </div>
       </div>
     </div>
   );
+}
+
+// Utility function to render bold text marked with **
+function renderBoldText(text: string | undefined): React.ReactNode {
+  if (!text) return null;
+
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
 }
 
 // Reusable Policy Section Component
@@ -264,7 +319,7 @@ interface ContentItem {
 }
 
 interface PolicySectionProps {
-  number: string;
+  number?: string;
   title: string;
   items: ContentItem[];
 }
@@ -275,7 +330,7 @@ function PolicySection({ number, title, items }: PolicySectionProps) {
       {/* Content */}
       <div className="flex-1 pt-1">
         <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-4 sm:mb-6">
-          {number}. {title}
+          {number ? `${number}. ${title}` : title}
         </h2>
 
         <div className="space-y-2 text-gray-600">
@@ -283,7 +338,7 @@ function PolicySection({ number, title, items }: PolicySectionProps) {
             if (item.type === "paragraph") {
               return (
                 <p key={index} className="text-base sm:text-lg leading-relaxed">
-                  {item.content}
+                  {renderBoldText(item.content)}
                 </p>
               );
             }
@@ -294,7 +349,7 @@ function PolicySection({ number, title, items }: PolicySectionProps) {
                   key={index}
                   className="text-base sm:text-lg font-medium text-gray-700 leading-relaxed"
                 >
-                  {item.content}
+                  {renderBoldText(item.content)}
                 </p>
               );
             }
@@ -308,7 +363,7 @@ function PolicySection({ number, title, items }: PolicySectionProps) {
                       className="flex items-start gap-3 text-base sm:text-lg"
                     >
                       <span className="text-gray-900 mt-1">•</span>
-                      <span className="flex-1">{listItem}</span>
+                      <span className="flex-1">{renderBoldText(listItem)}</span>
                     </li>
                   ))}
                 </ul>
@@ -321,7 +376,7 @@ function PolicySection({ number, title, items }: PolicySectionProps) {
                   key={index}
                   className="text-base sm:text-lg leading-relaxed italic text-gray-500 mt-4"
                 >
-                  {item.content}
+                  {renderBoldText(item.content)}
                 </p>
               );
             }
