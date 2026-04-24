@@ -137,13 +137,7 @@ function OnboardingPage() {
     city: "",
     state: "",
     zipCode: "",
-    services: [
-      {
-        serviceType: "",
-        experienceLevel: "",
-        shortDescription: "",
-      },
-    ],
+    services: [],
     availableDays: [],
     availableTimes: [],
     legalName: "",
@@ -456,6 +450,9 @@ function OnboardingPage() {
     }
   };
 
+  const isCurrentFormValid = getCurrentForm().formState.isValid;
+  const shouldShowContinueButton = currentStep !== 2 || isCurrentFormValid;
+
   return (
     <main className="min-h-screen lg:h-screen flex flex-col lg:flex-row p-4 gap-4 lg:overflow-hidden">
       {/* Sidebar */}
@@ -589,31 +586,35 @@ function OnboardingPage() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Previous
             </Button>
-            <Button
-              onClick={handleContinue}
-              disabled={
-                !getCurrentForm().formState.isValid ||
-                isUpdatingProfile ||
+            {shouldShowContinueButton && (
+              <Button
+                onClick={handleContinue}
+                disabled={
+                  !isCurrentFormValid ||
+                  isUpdatingProfile ||
+                  isCreatingService ||
+                  isCreatingAvailability ||
+                  isCreatingW9 ||
+                  isSubmitting
+                }
+                className="px-8 w-full sm:w-auto"
+              >
+                {isUpdatingProfile ||
                 isCreatingService ||
                 isCreatingAvailability ||
                 isCreatingW9 ||
-                isSubmitting
-              }
-              className="px-8 w-full sm:w-auto"
-            >
-              {isUpdatingProfile ||
-              isCreatingService ||
-              isCreatingAvailability ||
-              isCreatingW9 ||
-              isSubmitting ? (
-                "Loading..."
-              ) : (
-                <>
-                  {currentStep === 5 ? "Submit" : "Continue"}
-                  {currentStep < 5 && <ChevronRight className="w-4 h-4 ml-2" />}
-                </>
-              )}
-            </Button>
+                isSubmitting ? (
+                  "Loading..."
+                ) : (
+                  <>
+                    {currentStep === 5 ? "Submit" : "Continue"}
+                    {currentStep < 5 && (
+                      <ChevronRight className="w-4 h-4 ml-2" />
+                    )}
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>
