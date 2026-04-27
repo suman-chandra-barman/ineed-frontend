@@ -64,7 +64,9 @@ export default function Navbar() {
             {user && user.role === "provider" && (
               <Link
                 href="/onbording"
-                className="font-medium hover:text-primary transition-colors"
+                className={`font-medium hover:text-primary transition-colors ${
+                  isActive("/onbording") ? "text-primary" : "text-gray-700"
+                }`}
               >
                 Onboarding
               </Link>

@@ -35,6 +35,7 @@ import {
   useCreateW9InfoMutation,
   useSubmitOnboardingMutation,
 } from "@/redux/features/onbording/onbordingApi";
+import Link from "next/link";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -459,7 +460,9 @@ function OnboardingPage() {
       <aside className="w-full lg:w-80 lg:shrink-0 bg-primary/15 p-6 lg:p-8 flex flex-col rounded-2xl lg:fixed lg:left-4 lg:top-4 lg:bottom-4 lg:overflow-y-auto">
         <div className="mb-8 lg:mb-12">
           <div className="flex items-center gap-2">
-            <Image src={logo} alt="iNeed Logo" />
+            <Link href="/">
+              <Image src={logo} alt="iNeed Logo" />
+            </Link>
           </div>
         </div>
 
