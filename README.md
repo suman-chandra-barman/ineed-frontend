@@ -25,21 +25,23 @@
 
 ## 📚 Table of Contents
 
-- 📖 Project Overview
-- 🚀 Why this Project?
-- 💡 My Contribution
-- 🧰 Tech Stack
-- ✨ Key Features
-- 📸 Screenshots
-- 🧠 Challenges & Learnings
-- 🗂️ Project Structure
-- 🛠️ Installation
-- 🔐 Environment Variables
-- 📦 Scripts
-- 🚀 Build & Deployment
-- 🔐 Security Note
+- [📖 Project Overview](#project-overview)
+- [🚀 Why this Project?](#why-this-project)
+- [💡 My Contribution](#my-contribution)
+- [🧰 Tech Stack](#tech-stack)
+- [✨ Key Features](#key-features)
+- [📸 Screenshots Gallery](#screenshots-gallery)
+- [🧠 Challenges & Learnings](#challenges-learnings)
+- [🗂️ Project Structure](#project-structure)
+- [🛠️ Installation](#installation)
+- [🔐 Environment Variables](#environment-variables)
+- [📦 Scripts](#scripts)
+- [🚀 Build & Deployment](#build-deployment)
+- [🔐 Security Note](#security-note)
 
 ---
+
+<a id="project-overview"></a>
 
 ## 📖 Project Overview
 
@@ -55,6 +57,8 @@ It includes:
 
 ---
 
+<a id="why-this-project"></a>
+
 ## 🚀 Why this Project?
 
 iNeed was built to simplify the process of finding and booking trusted cleaning services through a smooth and modern digital experience.
@@ -62,6 +66,8 @@ iNeed was built to simplify the process of finding and booking trusted cleaning 
 The goal was to design a **scalable, real-world marketplace frontend** with clean architecture and production-ready practices.
 
 ---
+
+<a id="my-contribution"></a>
 
 ## 💡 My Contribution
 
@@ -74,6 +80,8 @@ The goal was to design a **scalable, real-world marketplace frontend** with clea
 - Managed forms with **React Hook Form + Zod validation**
 
 ---
+
+<a id="tech-stack"></a>
 
 ## 🧰 Tech Stack
 
@@ -105,6 +113,8 @@ The goal was to design a **scalable, real-world marketplace frontend** with clea
 
 ---
 
+<a id="key-features"></a>
+
 ## ✨ Key Features
 
 - 🔐 Authentication (Login, Signup, OTP, Password Reset)
@@ -120,24 +130,28 @@ The goal was to design a **scalable, real-world marketplace frontend** with clea
 
 ---
 
+<a id="screenshots-gallery"></a>
+
 ## 📸 Screenshots Gallery
 
 <div align="center">
   <p>Explore the iNeed user interface across different modules.</p>
 
-| 🏠 Home Page | 🧼 Service Page | ❤️ Favorites |
-| :---: | :---: | :---: |
+|                       🏠 Home Page                       |                       🧼 Service Page                       |                         ❤️ Favorites                         |
+| :------------------------------------------------------: | :---------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="./public/screenshots/home.png" width="100%" /> | <img src="./public/screenshots/service.png" width="100%" /> | <img src="./public/screenshots/favorite.png" width="100%" /> |
 
 <br />
 
-| 📊 Dashboard | 💬 Real-time Chat |
-| :---: | :---: |
-| <img src="./public/screenshots/dashboard.png" width="100%" /> | <img src="./public/screenshots/chat.png" width="100%" /> |
+|                         📊 Dashboard                          |                    💬 Real-time Chat                     |                         🧭 Onboarding                         |
+| :-----------------------------------------------------------: | :------------------------------------------------------: | :-----------------------------------------------------------: |
+| <img src="./public/screenshots/dashboard.png" width="100%" /> | <img src="./public/screenshots/chat.png" width="100%" /> | <img src="./public/screenshots/onbording.png" width="100%" /> |
 
 </div>
 
 ---
+
+<a id="challenges-learnings"></a>
 
 ## 🧠 Challenges & Learnings
 
@@ -149,8 +163,9 @@ The goal was to design a **scalable, real-world marketplace frontend** with clea
 
 ---
 
-## 🗂️ Project Structure
+<a id="project-structure"></a>
 
+## 🗂️ Project Structure
 
 ```
 src/
@@ -173,8 +188,11 @@ src/
 	lib/
 ```
 
-
 ---
+
+<a id="installation"></a>
+
+## 🛠️ Installation
 
 ### Install dependencies
 
@@ -192,6 +210,8 @@ Open: http://localhost:3000
 
 ---
 
+<a id="environment-variables"></a>
+
 ## 🔐 Environment Variables
 
 Create a `.env.local` file in the root directory:
@@ -204,6 +224,8 @@ NEXT_PUBLIC_BACKEND_BASE_URL=your-backend-url
 
 ---
 
+<a id="scripts"></a>
+
 ## 📦 Scripts
 
 ```bash
@@ -215,6 +237,8 @@ npm run lint    # Lint code
 
 ---
 
+<a id="build-deployment"></a>
+
 ## 🚀 Build & Deployment
 
 ```bash
@@ -225,6 +249,8 @@ npm run start
 Ensure environment variables are properly configured in your deployment platform.
 
 ---
+
+<a id="security-note"></a>
 
 ## 🔐 Security Note
 
