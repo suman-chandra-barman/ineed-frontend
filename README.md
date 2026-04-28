@@ -2,7 +2,9 @@
 
 # iNeed 🧼✨
 
-**iNeed** is a modern web app that connects customers with trusted local cleaning service providers — enabling service discovery, booking, payments, and real-time messaging.
+> ⚡ Production-grade service marketplace frontend built with Next.js
+
+**iNeed** is a modern web application that connects customers with trusted local cleaning service providers — enabling seamless service discovery, booking, payments, and real-time communication.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![React](https://img.shields.io/badge/React-19-149ECA)
@@ -11,78 +13,145 @@
 
 </div>
 
-## Table of Contents
+---
 
-- 📚 [Project Overview](#project-overview)
-- 🧰 [Tech Stack](#tech-stack)
-- ✅ [Key Features](#key-features)
-- 🗂️ [Project Structure](#project-structure)
-- 🛠️ [Installation](#installation)
-- 🔐 [Environment Variables](#environment-variables)
-- 📦 [Scripts](#scripts)
-- 🚀 [Build & Deployment](#build--deployment)
+## 🌐 Live Demo
 
-## Project Overview
+🔗 [https://hey-ineed.com](https://hey-ineed.com/)
 
-This repository contains the **frontend** for iNeed, built with the **Next.js App Router**. It includes:
+> ⚠️ Some features (authentication, payments, chat) may require valid backend credentials.
+
+---
+
+## 📚 Table of Contents
+
+- 📖 Project Overview
+- 🚀 Why this Project?
+- 💡 My Contribution
+- 🧰 Tech Stack
+- ✨ Key Features
+- 📸 Screenshots
+- 🧠 Challenges & Learnings
+- 🗂️ Project Structure
+- 🛠️ Installation
+- 🔐 Environment Variables
+- 📦 Scripts
+- 🚀 Build & Deployment
+- 🔐 Security Note
+
+---
+
+## 📖 Project Overview
+
+This repository contains the **frontend** of iNeed, built using the **Next.js App Router**.
+
+It includes:
 
 - Public marketing pages (services, categories, policies)
 - Customer booking flow (multi-step)
-- User dashboard (bookings, favorites, chat, settings)
+- User dashboard (bookings, chat, favorites, settings)
 - Provider dashboard (jobs, earnings, availability, profile & legal info)
 - Real-time chat powered by WebSockets
 
-## Tech Stack
+---
+
+## 🚀 Why this Project?
+
+iNeed was built to simplify the process of finding and booking trusted cleaning services through a smooth and modern digital experience.
+
+The goal was to design a **scalable, real-world marketplace frontend** with clean architecture and production-ready practices.
+
+---
+
+## 💡 My Contribution
+
+- Built full frontend architecture using **Next.js App Router**
+- Designed scalable state management using **Redux Toolkit & RTK Query**
+- Implemented **real-time chat system** using WebSockets
+- Developed **multi-step booking flow** with validation
+- Integrated API handling with proper error & loading states
+- Structured reusable UI components using **shadcn/ui + Tailwind**
+- Managed forms with **React Hook Form + Zod validation**
+
+---
+
+## 🧰 Tech Stack
 
 ### Core
 
-- **Next.js** (App Router)
-- **React**
-- **TypeScript**
+- Next.js (App Router)
+- React
+- TypeScript
 
 ### UI & Styling
 
-- **Tailwind CSS**
-- **Radix UI** primitives
-  - `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-select`, `@radix-ui/react-tooltip`, etc.
-- **shadcn/ui** setup (see `components.json`) + component patterns in `src/components/ui`
-- **lucide-react** + **react-icons** (icons)
-- **class-variance-authority**, **clsx**, **tailwind-merge** (utility helpers)
-- **tw-animate-css** (animation utilities)
-- **sonner** (toast notifications)
+- Tailwind CSS
+- Radix UI
+- shadcn/ui
+- lucide-react
+- react-icons
 
 ### State, Data & Forms
 
-- **Redux Toolkit** + **React Redux**
-- **RTK Query** (API layer via `fetchBaseQuery`)
-- **react-hook-form**
-- **zod** + `@hookform/resolvers` (schema validation)
+- Redux Toolkit
+- RTK Query
+- React Hook Form
+- Zod
 
 ### Utilities
 
-- **date-fns** (date/time helpers)
-- **embla-carousel-react** (carousel)
+- date-fns
+- embla-carousel-react
 
-### Tooling
+---
 
-- **ESLint** + `eslint-config-next`
+## ✨ Key Features
 
-## Key Features
+- 🔐 Authentication (Login, Signup, OTP, Password Reset)
+- 🧭 Provider onboarding system
+- 🧹 Service discovery & categories
+- ⭐ Favorites management
+- 🗓️ Multi-step booking system
+- 💳 Payment integration (via backend)
+- 🧑‍💼 User dashboard
+- 🧰 Provider dashboard
+- 💬 Real-time chat (WebSockets)
+- 🔔 Toast notifications
 
-- 🔐 **Auth flows**: Sign in / Sign up, email verification, forgot/reset password, OTP verification
-- 🧭 **Provider onboarding**: multi-step onboarding to capture service, availability, and legal info
-- 🧹 **Service discovery**: browse services & categories, view service details
-- ⭐ **Favorites**: save and manage favorite services
-- 🗓️ **Booking flow**: multi-step booking (`Additional Features → Info → Date/Time → Payment → Confirmation`)
-- 💳 **Payments**: checkout flow integrated via backend (supports returning with a `session_id`)
-- 🧑‍💼 **User dashboard**: booking list, booking details (before/after images), chat access, settings
-- 🧰 **Provider dashboard**: jobs/today view, earnings, profile management, availability management
-- 💬 **Real-time chat**: WebSocket-based chat rooms with authenticated access
-- 🔔 **Toast feedback**: non-blocking success/error notifications
+---
 
-## Project Structure
+## 📸 Screenshots
 
-The app uses route groups to keep the codebase organized:
+### 🏠 Home Page
+![Home Page](./public/screenshots/home.png)
+
+### 🧹 Service Page
+![Service](./public/screenshots/service.png)
+
+### 🧹 Service Details
+![Service Details](./public/screenshots/service1.png)
+
+### ❤️ Favorites
+![Favorites](./public/screenshots/favorite.png)
+
+### 📊 Dashboard
+![Dashboard](./public/screenshots/dashboard.png)
+
+### 💬 Chat System
+![Chat](./public/screenshots/chat.png)
+
+## 🧠 Challenges & Learnings
+
+- Managing complex multi-step booking state
+- Handling real-time communication using WebSockets
+- Designing scalable folder structure in Next.js App Router
+- Optimizing API state management with RTK Query
+- Building reusable and maintainable UI components
+
+---
+
+## 🗂️ Project Structure
+
 
 ```
 src/
@@ -105,60 +174,65 @@ src/
 	lib/
 ```
 
-## Installation
 
-### Prerequisites
+---
 
-- Node.js **18+** (recommended)
-- npm / pnpm / yarn
-
-### 1) Install dependencies
+### Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2) Configure environment variables
-
-Create a `.env.local` file in the project root (see [Environment Variables](#environment-variables-) below).
-
-### 3) Start the dev server
+### Run development server
 
 ```bash
 npm run dev
 ```
 
-Then open:
+Open: http://localhost:3000
 
-- http://localhost:3000
+---
 
-## Environment Variables
+## 🔐 Environment Variables
 
-This app expects a backend base URL for API calls, image URLs, and WebSocket chat connections.
+Create a `.env.local` file in the root directory:
 
-Create `.env.local` with:
+```env
+NEXT_PUBLIC_BACKEND_BASE_URL=your-backend-url
+```
 
-| Variable                       | Required | Example                     | Notes                                                                                                            |
-| ------------------------------ | -------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_BACKEND_BASE_URL` | ✅       | `https://api.hey-ineed.com` | Prefer **no trailing slash** (the app appends `/api` internally). Also used to derive `ws://`/`wss://` for chat. |
+> ⚠️ This project uses a private production backend. Some features may not work without valid credentials.
 
-### Notes on Images (Next.js)
+---
 
-- `next.config.ts` allows optimized images from `https://api.hey-ineed.com/**`.
-- If you point `NEXT_PUBLIC_BACKEND_BASE_URL` to a different domain, update `images.remotePatterns` in `next.config.ts` (or use unoptimized images where appropriate).
+## 📦 Scripts
 
-## Scripts
+```bash
+npm run dev     # Start development server
+npm run build   # Build for production
+npm run start   # Run production server
+npm run lint    # Lint code
+```
 
-- `npm run dev` — start Next.js in development mode
-- `npm run build` — create a production build
-- `npm run start` — start the production server
-- `npm run lint` — run ESLint
+---
 
-## Build & Deployment
+## 🚀 Build & Deployment
 
 ```bash
 npm run build
 npm run start
 ```
 
-Make sure the required environment variables are set in your hosting platform (for example, `.env.local` locally and environment settings in production).
+Ensure environment variables are properly configured in your deployment platform.
+
+---
+
+## 🔐 Security Note
+
+This is a production-level project. Sensitive configurations such as API endpoints, authentication systems, and payment integrations are intentionally restricted.
+
+---
+
+## 🙌 Final Note
+
+This project demonstrates my ability to build scalable, production-ready frontend applications using modern tools, clean architecture, and best practices.
