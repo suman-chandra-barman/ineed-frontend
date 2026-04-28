@@ -120,25 +120,24 @@ The goal was to design a **scalable, real-world marketplace frontend** with clea
 
 ---
 
-## 📸 Screenshots
+## 📸 Screenshots Gallery
 
-### 🏠 Home Page
-![Home Page](./public/screenshots/home.png)
+<div align="center">
+  <p>Explore the iNeed user interface across different modules.</p>
 
-### 🧹 Service Page
-![Service](./public/screenshots/service.png)
+| 🏠 Home Page | 🧼 Service Details | ❤️ Favorites |
+| :---: | :---: | :---: |
+| <img src="./public/screenshots/home.png" width="100%" /> | <img src="./public/screenshots/service.png" width="100%" /> | <img src="./public/screenshots/favorite.png" width="100%" /> |
 
-### 🧹 Service Details
-![Service Details](./public/screenshots/service1.png)
+<br />
 
-### ❤️ Favorites
-![Favorites](./public/screenshots/favorite.png)
+| 📊 Dashboard | 💬 Real-time Chat |
+| :---: | :---: |
+| <img src="./public/screenshots/dashboard.png" width="100%" /> | <img src="./public/screenshots/chat.png" width="100%" /> |
 
-### 📊 Dashboard
-![Dashboard](./public/screenshots/dashboard.png)
+</div>
 
-### 💬 Chat System
-![Chat](./public/screenshots/chat.png)
+---
 
 ## 🧠 Challenges & Learnings
 
