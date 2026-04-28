@@ -125,7 +125,7 @@ The goal was to design a **scalable, real-world marketplace frontend** with clea
 <div align="center">
   <p>Explore the iNeed user interface across different modules.</p>
 
-| 🏠 Home Page | 🧼 Service Details | ❤️ Favorites |
+| 🏠 Home Page | 🧼 Service Page | ❤️ Favorites |
 | :---: | :---: | :---: |
 | <img src="./public/screenshots/home.png" width="100%" /> | <img src="./public/screenshots/service.png" width="100%" /> | <img src="./public/screenshots/favorite.png" width="100%" /> |
 
